@@ -10,7 +10,7 @@ interface ChecklistItemRowProps {
 
 export default function ChecklistItemRow({ item, onToggle }: ChecklistItemRowProps) {
   return (
-    <li className="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-4">
+    <li className="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
       <input
         type="checkbox"
         id={item.id}
@@ -22,22 +22,22 @@ export default function ChecklistItemRow({ item, onToggle }: ChecklistItemRowPro
       <label htmlFor={item.id} className="flex-1 cursor-pointer">
         <span
           className={`block text-sm font-medium ${
-            item.completed ? 'text-gray-400 line-through' : 'text-gray-800'
+            item.completed ? 'text-gray-400 line-through dark:text-gray-600' : 'text-gray-800 dark:text-gray-200'
           }`}
         >
           {item.title}
           {!item.required && (
-            <span className="ml-2 text-xs font-normal text-gray-400">(opcional)</span>
+            <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-600">(opcional)</span>
           )}
         </span>
         {item.description && (
-          <span className="mt-0.5 block text-xs text-gray-500">{item.description}</span>
+          <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-500">{item.description}</span>
         )}
       </label>
       {item.relatedGuideSlug && (
         <Link
           href={`/guias/${item.relatedGuideSlug}`}
-          className="shrink-0 text-xs text-indigo-500 hover:text-indigo-700 hover:underline"
+          className="shrink-0 text-xs text-indigo-500 hover:text-indigo-700 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
         >
           Ver guia
         </Link>

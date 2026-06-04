@@ -67,7 +67,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Seu painel</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Seu painel</h1>
         <Link href="/questionario" className="text-sm text-indigo-600 hover:underline">
           Refazer diagnóstico
         </Link>
@@ -77,7 +77,7 @@ export default function DashboardPage() {
       <Card>
         <p className="text-sm text-gray-500 mb-2">Complexidade estimada</p>
         <ComplexityBadge level={complexity} />
-        <p className="mt-3 text-sm text-gray-600">
+        <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
           {complexity === 'simple' &&
             'Sua declaração parece relativamente simples. Siga o checklist e os guias indicados.'}
           {complexity === 'medium' &&
@@ -90,23 +90,23 @@ export default function DashboardPage() {
       {/* Stats row */}
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="text-center">
-          <p className="text-3xl font-bold text-indigo-600">{checklist.length}</p>
-          <p className="text-sm text-gray-500 mt-1">documentos no checklist</p>
+          <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{checklist.length}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">documentos no checklist</p>
         </Card>
         <Card className="text-center">
-          <p className="text-3xl font-bold text-yellow-600">{pendingCount}</p>
-          <p className="text-sm text-gray-500 mt-1">pendentes</p>
+          <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{pendingCount}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">pendentes</p>
         </Card>
         <Card className="text-center">
-          <p className="text-3xl font-bold text-red-600">{alerts.length}</p>
-          <p className="text-sm text-gray-500 mt-1">alertas</p>
+          <p className="text-3xl font-bold text-red-600 dark:text-red-400">{alerts.length}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">alertas</p>
         </Card>
       </div>
 
       {/* Checklist progress */}
       <Card>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-gray-900">Progresso do checklist</h2>
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">Progresso do checklist</h2>
           <Link href="/checklist" className="text-sm text-indigo-600 hover:underline">
             Ver checklist →
           </Link>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
       {/* Danger alerts */}
       {dangerAlerts.length > 0 && (
         <div className="space-y-3">
-          <h2 className="font-semibold text-gray-900">Pontos críticos</h2>
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">Pontos críticos</h2>
           {dangerAlerts.map((alert) => (
             <AlertBox key={alert.id} severity="danger" title={alert.title}>
               {alert.message}
@@ -130,38 +130,38 @@ export default function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/checklist"
-          className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition"
+          className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
             ✓
           </div>
           <div>
-            <p className="font-semibold text-gray-900">Checklist de documentos</p>
-            <p className="text-sm text-gray-500">Marque o que já separou</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">Checklist de documentos</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Marque o que já separou</p>
           </div>
         </Link>
         <Link
           href="/guias"
-          className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition"
+          className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
             📖
           </div>
           <div>
-            <p className="font-semibold text-gray-900">Guias de preenchimento</p>
-            <p className="text-sm text-gray-500">Instruções para cada situação</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">Guias de preenchimento</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Instruções para cada situação</p>
           </div>
         </Link>
         <Link
           href="/relatorio"
-          className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition sm:col-span-2"
+          className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition sm:col-span-2 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
             📋
           </div>
           <div>
-            <p className="font-semibold text-gray-900">Relatório final</p>
-            <p className="text-sm text-gray-500">Resumo completo para copiar ou imprimir</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">Relatório final</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Resumo completo para copiar ou imprimir</p>
           </div>
         </Link>
       </div>

@@ -76,7 +76,7 @@ export default function ChecklistPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Checklist de documentos</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Checklist de documentos</h1>
         <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline">
           ← Painel
         </Link>

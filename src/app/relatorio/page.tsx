@@ -166,10 +166,10 @@ export default function ReportPage() {
   if (!data) {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <p className="text-lg text-gray-600">Você ainda não concluiu o diagnóstico.</p>
+        <p className="text-lg text-gray-600 dark:text-gray-400">Você ainda não concluiu o diagnóstico.</p>
         <Link
           href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
         >
           Começar questionário
         </Link>
@@ -184,14 +184,14 @@ export default function ReportPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Relatório final</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Relatório final</h1>
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline">
+          <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
             ← Painel
           </Link>
           <button
             onClick={copyReport}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
           >
             {copied ? '✓ Copiado!' : 'Copiar relatório'}
           </button>
@@ -200,11 +200,11 @@ export default function ReportPage() {
 
       <div ref={reportRef} className="space-y-6">
         {/* Header */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <p className="text-sm text-gray-500 mb-1">Ano-base: {profile.taxYear}</p>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Ano-base: {profile.taxYear}</p>
           <ComplexityBadge level={complexity} />
           {complexity === 'complex' && (
-            <p className="mt-3 text-sm text-red-700 font-medium">
+            <p className="mt-3 text-sm text-red-700 font-medium dark:text-red-400">
               Sua declaração possui pontos de maior risco. Recomendamos revisão com contador antes
               do envio.
             </p>
@@ -212,9 +212,9 @@ export default function ReportPage() {
         </div>
 
         {/* Perfil */}
-        <section className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="font-semibold text-gray-900 mb-3">Perfil identificado</h2>
-          <ul className="space-y-1 text-sm text-gray-700">
+        <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">Perfil identificado</h2>
+          <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
             {profile.income.hasCltIncome && <li>✓ Trabalho CLT</li>}
             {profile.income.hasPensionOrRetirement && <li>✓ Aposentadoria ou INSS</li>}
             {profile.income.hasSelfEmploymentIncome && <li>✓ Renda autônoma / freelancer</li>}
@@ -237,8 +237,8 @@ export default function ReportPage() {
 
         {/* Checklist */}
         {checklist.length > 0 && (
-          <section className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="font-semibold text-gray-900 mb-3">
+          <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+            <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">
               Documentos ({checklist.filter((i) => i.completed).length}/{checklist.length} reunidos)
             </h2>
             <ul className="space-y-1.5 text-sm">
@@ -259,13 +259,13 @@ export default function ReportPage() {
 
         {/* Pending */}
         {pending.length > 0 && (
-          <section className="rounded-xl border border-yellow-200 bg-yellow-50 p-6">
-            <h2 className="font-semibold text-yellow-900 mb-3">
+          <section className="rounded-xl border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900 dark:bg-yellow-950">
+            <h2 className="font-semibold text-yellow-900 mb-3 dark:text-yellow-100">
               Pendências ({pending.length} documento{pending.length !== 1 ? 's' : ''})
             </h2>
             <ul className="space-y-1 text-sm text-yellow-800">
               {pending.map((item) => (
-                <li key={item.id} className="flex items-start gap-2">
+                <li key={item.id} className="flex items-start gap-2 text-yellow-800 dark:text-yellow-200">
                   <span>•</span> {item.title}
                 </li>
               ))}
@@ -276,7 +276,7 @@ export default function ReportPage() {
         {/* Alerts */}
         {alerts.length > 0 && (
           <section>
-            <h2 className="font-semibold text-gray-900 mb-3">Pontos de atenção</h2>
+            <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">Pontos de atenção</h2>
             <div className="space-y-3">
               {alerts.map((alert) => (
                 <AlertBox key={alert.id} severity={alert.severity} title={alert.title}>
@@ -289,12 +289,12 @@ export default function ReportPage() {
 
         {/* Guides */}
         {guides.length > 0 && (
-          <section className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="font-semibold text-gray-900 mb-3">Guias recomendados</h2>
+          <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+            <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">Guias recomendados</h2>
             <ul className="space-y-1.5 text-sm">
               {guides.map((guide) => (
                 <li key={guide.slug}>
-                  <Link href={`/guias/${guide.slug}`} className="text-indigo-600 hover:underline">
+                  <Link href={`/guias/${guide.slug}`} className="text-indigo-600 hover:underline dark:text-indigo-400">
                     {guide.title}
                   </Link>
                 </li>
@@ -304,9 +304,9 @@ export default function ReportPage() {
         )}
 
         {/* Next steps */}
-        <section className="rounded-xl border border-indigo-100 bg-indigo-50 p-6">
-          <h2 className="font-semibold text-indigo-900 mb-3">Próximos passos</h2>
-          <ol className="space-y-2 text-sm text-indigo-800">
+        <section className="rounded-xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900 dark:bg-indigo-950">
+          <h2 className="font-semibold text-indigo-900 mb-3 dark:text-indigo-100">Próximos passos</h2>
+          <ol className="space-y-2 text-sm text-indigo-800 dark:text-indigo-200">
             <li className="flex gap-2">
               <span className="font-bold">1.</span> Separe todos os documentos marcados no checklist.
             </li>

@@ -19,11 +19,9 @@ function getVisibleQuestions(answers: QuestionAnswers): Question[] {
 
 function answersToProfile(answers: QuestionAnswers): TaxProfile {
   const profile = createEmptyProfile();
-
   for (const [path, value] of Object.entries(answers)) {
     setNestedValue(profile, path, value);
   }
-
   profile.complexity = classifyComplexity(profile);
   profile.updatedAt = new Date().toISOString();
   return profile;
@@ -48,15 +46,12 @@ export default function QuestionnaireFlow() {
   const current = visibleQuestions[currentIndex];
   const progress = total > 0 ? Math.round((currentIndex / total) * 100) : 0;
 
-  // Group questions by sectionLabel to display section header
-  const currentSection = current?.sectionLabel ?? '';
   const prevQuestion = currentIndex > 0 ? visibleQuestions[currentIndex - 1] : null;
-  const showSectionHeader = !prevQuestion || prevQuestion.sectionLabel !== currentSection;
+  const showSectionHeader = !prevQuestion || prevQuestion.sectionLabel !== current?.sectionLabel;
 
   function answer(value: boolean) {
     const newAnswers = { ...answers, [current.fieldPath]: value };
     setAnswers(newAnswers);
-
     const newVisible = getVisibleQuestions(newAnswers);
     if (currentIndex + 1 >= newVisible.length) {
       finish(newAnswers);
@@ -66,9 +61,7 @@ export default function QuestionnaireFlow() {
   }
 
   function goBack() {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   }
 
   function finish(finalAnswers: QuestionAnswers) {
@@ -80,9 +73,8 @@ export default function QuestionnaireFlow() {
   if (!current) return null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
-      {/* Top progress */}
-      <div className="border-b border-gray-200 bg-white px-4 py-3">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
+      <div className="border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900">
         <div className="mx-auto max-w-xl">
           <ProgressBar value={progress} label={`Pergunta ${currentIndex + 1} de ${total}`} />
         </div>
@@ -91,42 +83,27 @@ export default function QuestionnaireFlow() {
       <div className="flex flex-1 flex-col items-center justify-center px-4 py-10">
         <div className="w-full max-w-xl">
           {showSectionHeader && (
-            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-500">
-              {currentSection}
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-400">
+              {current.sectionLabel}
             </p>
           )}
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 leading-snug">
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 leading-snug dark:text-gray-100">
               {current.title}
             </h2>
             {current.description && (
-              <p className="mt-2 text-sm text-gray-500">{current.description}</p>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{current.description}</p>
             )}
 
             <div className="mt-8 flex flex-col gap-3">
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                onClick={() => answer(true)}
-              >
+              <Button variant="primary" size="lg" fullWidth onClick={() => answer(true)}>
                 Sim
               </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                fullWidth
-                onClick={() => answer(false)}
-              >
+              <Button variant="secondary" size="lg" fullWidth onClick={() => answer(false)}>
                 Não
               </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                fullWidth
-                onClick={() => answer(false)}
-              >
+              <Button variant="ghost" size="lg" fullWidth onClick={() => answer(false)}>
                 Não sei / Não se aplica
               </Button>
             </div>
@@ -136,7 +113,7 @@ export default function QuestionnaireFlow() {
             <div className="mt-4 text-center">
               <button
                 onClick={goBack}
-                className="text-sm text-gray-500 hover:text-gray-700 underline"
+                className="text-sm text-gray-500 hover:text-gray-700 underline dark:text-gray-400 dark:hover:text-gray-300"
               >
                 ← Voltar para a pergunta anterior
               </button>

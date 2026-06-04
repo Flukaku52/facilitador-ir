@@ -16,10 +16,10 @@ export default function ChecklistGroup({ category, items, onToggle }: ChecklistG
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
           {CATEGORY_LABELS[category]}
         </h3>
-        <span className="text-sm text-gray-400">
+        <span className="text-sm text-gray-400 dark:text-gray-600">
           {done}/{items.length}
         </span>
       </div>
