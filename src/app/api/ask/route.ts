@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Assistente IA não configurado. Adicione ANTHROPIC_API_KEY ao .env.local.' },
+      { error: 'O assistente IA está temporariamente indisponível. O restante do aplicativo funciona normalmente.' },
       { status: 503 },
     );
   }
