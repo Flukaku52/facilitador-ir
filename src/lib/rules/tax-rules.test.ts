@@ -168,6 +168,102 @@ describe('generateChecklist', () => {
     const item = items.find((i) => i.id === 'cl_medical_receipts');
     expect(item?.completed).toBe(true);
   });
+
+  it('inclui informe de educação quando hasEducationExpenses = true', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_education')).toBe(true);
+    expect(items.find((i) => i.id === 'cl_education')?.required).toBe(true);
+  });
+
+  it('inclui documentos de dependentes quando hasDependents = true', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasDependents = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_dependents')).toBe(true);
+    expect(items.find((i) => i.id === 'cl_dependents')?.required).toBe(true);
+  });
+
+  it('inclui decisão judicial quando hasAlimony = true', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasAlimony = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_alimony')).toBe(true);
+    expect(items.find((i) => i.id === 'cl_alimony')?.required).toBe(true);
+  });
+
+  it('inclui renda autônoma quando hasSelfEmploymentIncome = true', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasSelfEmploymentIncome = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_self_employment')).toBe(true);
+  });
+
+  it('inclui criptoativos no checklist quando hasCrypto = true', () => {
+    const profile = createEmptyProfile();
+    profile.assets.hasCrypto = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_crypto')).toBe(true);
+  });
+
+  it('inclui bens no exterior quando hasForeignAssets = true', () => {
+    const profile = createEmptyProfile();
+    profile.assets.hasForeignAssets = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_foreign_docs')).toBe(true);
+  });
+
+  it('inclui informe de previdência quando hasPrivatePensionContributions = true', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasPrivatePensionContributions = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_pension_report')).toBe(true);
+  });
+
+  it('inclui informe do INSS quando hasPensionOrRetirement = true', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasPensionOrRetirement = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_inss_report')).toBe(true);
+  });
+
+  it('inclui outras rendas quando hasOtherIncome = true', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasOtherIncome = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_other_income')).toBe(true);
+  });
+
+  it('inclui aluguel e carnê-leão quando hasRentIncome = true', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasRentIncome = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_rent_income')).toBe(true);
+    expect(items.some((i) => i.id === 'cl_carne_leao')).toBe(true);
+  });
+
+  it('inclui DARF e notas de corretagem quando soldVariableIncome = true', () => {
+    const profile = createEmptyProfile();
+    profile.investments.soldVariableIncome = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_brokerage_notes')).toBe(true);
+    expect(items.some((i) => i.id === 'cl_darf')).toBe(true);
+  });
+
+  it('inclui informe de corretora quando hasInvestments = true', () => {
+    const profile = createEmptyProfile();
+    profile.assets.hasInvestments = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_broker_report')).toBe(true);
+  });
+
+  it('inclui documentos do veículo quando hasVehicle = true', () => {
+    const profile = createEmptyProfile();
+    profile.assets.hasVehicle = true;
+    const items = generateChecklist(profile);
+    expect(items.some((i) => i.id === 'cl_vehicle_docs')).toBe(true);
+  });
 });
 
 // ─── generateAlerts ───────────────────────────────────────────────────────────
@@ -228,6 +324,20 @@ describe('generateAlerts', () => {
     profile.assets.hasFinancedProperty = true;
     const alerts = generateAlerts(profile);
     expect(alerts.some((a) => a.id === 'alert_financed_property')).toBe(true);
+  });
+
+  it('gera alerta warning para renda autônoma', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasSelfEmploymentIncome = true;
+    const alerts = generateAlerts(profile);
+    expect(alerts.find((a) => a.id === 'alert_self_employment')?.severity).toBe('warning');
+  });
+
+  it('NÃO gera alerta de renda variável sem venda', () => {
+    const profile = createEmptyProfile();
+    profile.investments.hasStocks = true;
+    const alerts = generateAlerts(profile);
+    expect(alerts.some((a) => a.id === 'alert_variable_income')).toBe(false);
   });
 
   it('perfil complexo gera múltiplos alertas', () => {
