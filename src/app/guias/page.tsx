@@ -8,8 +8,18 @@ import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { getApplicableGuideSlugs } from '@/lib/rules/tax-rules';
 import GuideCard from '@/components/guides/GuideCard';
 import { GuidesSkeleton } from '@/components/ui/Skeleton';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
+import ErrorFallback from '@/components/layout/ErrorFallback';
 
 export default function GuidesPage() {
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <GuidesContent />
+    </ErrorBoundary>
+  );
+}
+
+function GuidesContent() {
   const profile = useStoredProfile();
 
   const guides: Guide[] = useMemo(() => {

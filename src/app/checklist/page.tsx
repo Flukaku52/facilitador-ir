@@ -11,6 +11,8 @@ import ChecklistGroup from '@/components/checklist/ChecklistGroup';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Toast from '@/components/ui/Toast';
 import { ChecklistSkeleton } from '@/components/ui/Skeleton';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
+import ErrorFallback from '@/components/layout/ErrorFallback';
 
 const CATEGORY_ORDER: ChecklistCategory[] = [
   'income', 'bank', 'assets', 'investments', 'deductions', 'complex_cases', 'other',
@@ -19,6 +21,14 @@ const CATEGORY_ORDER: ChecklistCategory[] = [
 type Filter = 'all' | 'pending' | 'done';
 
 export default function ChecklistPage() {
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <ChecklistContent />
+    </ErrorBoundary>
+  );
+}
+
+function ChecklistContent() {
   const profile = useStoredProfile();
   const checklistState = useChecklistStore();
   const [filter, setFilter] = useState<Filter>('all');

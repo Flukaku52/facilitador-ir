@@ -9,6 +9,8 @@ import { Question, QuestionAnswers } from '@/types/question';
 import { TaxProfile, createEmptyProfile } from '@/types/tax-profile';
 import { classifyComplexity } from '@/lib/rules/tax-rules';
 import { saveTaxProfile } from '@/lib/storage/local-profile-storage';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
+import ErrorFallback from '@/components/layout/ErrorFallback';
 
 function getNestedValue(obj: unknown, path: string): unknown {
   return path.split('.').reduce((acc: unknown, key) => {
@@ -53,6 +55,14 @@ function getVisibleQuestions(answers: QuestionAnswers): Question[] {
 }
 
 export default function EditarRespostasPage() {
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <EditarRespostasContent />
+    </ErrorBoundary>
+  );
+}
+
+function EditarRespostasContent() {
   const router = useRouter();
   const profile = useStoredProfile();
 

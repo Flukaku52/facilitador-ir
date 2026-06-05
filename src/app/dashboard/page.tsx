@@ -17,8 +17,18 @@ import ProgressBar from '@/components/ui/ProgressBar';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import ClearDataModal from '@/components/layout/ClearDataModal';
 import AskDialog from '@/components/ui/AskDialog';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
+import ErrorFallback from '@/components/layout/ErrorFallback';
 
 export default function DashboardPage() {
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <DashboardContent />
+    </ErrorBoundary>
+  );
+}
+
+function DashboardContent() {
   const profile = useStoredProfile();
   const checklistState = useChecklistStore();
 

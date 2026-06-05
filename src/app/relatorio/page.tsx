@@ -22,6 +22,8 @@ import AlertBox from '@/components/ui/AlertBox';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer';
 import Toast from '@/components/ui/Toast';
 import { ReportSkeleton } from '@/components/ui/Skeleton';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
+import ErrorFallback from '@/components/layout/ErrorFallback';
 
 const COMPLEXITY_LABELS: Record<ComplexityLevel, string> = {
   simple: 'Simples',
@@ -320,8 +322,10 @@ function ReportContent() {
 
 export default function ReportPage() {
   return (
-    <Suspense fallback={<ReportSkeleton />}>
-      <ReportContent />
-    </Suspense>
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <Suspense fallback={<ReportSkeleton />}>
+        <ReportContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

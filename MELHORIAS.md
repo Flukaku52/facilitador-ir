@@ -106,6 +106,18 @@ export class ErrorBoundary extends Component<
 
 ---
 
+### 1.6 Validar thresholds de 2026 com fonte oficial `P1` ⬜
+
+Os valores em `src/lib/tax-years/2026/thresholds.ts` foram inseridos como estimativa para viabilizar testes de versionamento. **Devem ser confirmados com a publicação oficial da Receita Federal antes de qualquer deploy em produção** que exiba esses valores ao usuário.
+
+Campos a validar:
+- `EDUCATION_DEDUCTION_LIMIT_PER_PERSON` (atualmente R$ 3.800,00 — estimado)
+- `DEPENDENT_ANNUAL_DEDUCTION` (atualmente R$ 2.375,08 — estimado)
+- `SIMPLIFIED_DEDUCTION_LIMIT` (atualmente R$ 17.000,00 — estimado)
+- `FILING_DEADLINE` (atualmente 2026-05-29 — estimado)
+
+---
+
 ## 2. UX e Interface
 
 ### 2.1 Edição de respostas sem reiniciar ✅
@@ -395,6 +407,7 @@ export const env = createEnv({
 | 1.3 | Testes unitários do motor de regras |
 | 1.4 | Error Boundaries nas páginas |
 | 1.5 | Versionamento completo de regras por ano-base |
+| 1.6 | Validar valores em `2026/thresholds.ts` com fonte oficial da Receita Federal antes de produção |
 | 3.4 | Autenticação + persistência na nuvem (Supabase) |
 
 ### P2 — Próxima versão
