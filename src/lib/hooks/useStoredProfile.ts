@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { TaxProfile } from '@/types/tax-profile';
 
 const PROFILE_KEY = 'ir_facilitador_profile';
@@ -8,16 +8,21 @@ const PROFILE_KEY = 'ir_facilitador_profile';
 // getSnapshot to be referentially stable between consecutive calls.
 let cachedRaw: string | null = undefined as unknown as string | null;
 let cachedValue: TaxProfile | null = null;
+let corruptionDetected = false;
 
 function getSnapshot(): TaxProfile | null {
   if (typeof window === 'undefined') return null;
+  let raw: string | null = null;
   try {
-    const raw = localStorage.getItem(PROFILE_KEY);
+    raw = localStorage.getItem(PROFILE_KEY);
     if (raw === cachedRaw) return cachedValue;
     cachedRaw = raw;
     cachedValue = raw ? (JSON.parse(raw) as TaxProfile) : null;
     return cachedValue;
   } catch {
+    corruptionDetected = true;
+    cachedRaw = raw; // stable ref — prevents re-parsing the same corrupt string on repeat calls
+    cachedValue = null;
     return null;
   }
 }
@@ -29,4 +34,20 @@ function subscribe(cb: () => void) {
 
 export function useStoredProfile(): TaxProfile | null {
   return useSyncExternalStore(subscribe, getSnapshot, () => null);
+}
+
+export function useProfileCorrupted(): boolean {
+  // Lazy initializer reads the flag synchronously during render,
+  // after the parent's useStoredProfile() has already run getSnapshot().
+  const [visible, setVisible] = useState(() =>
+    typeof window !== 'undefined' && corruptionDetected,
+  );
+  useEffect(() => {
+    if (!corruptionDetected) return;
+    corruptionDetected = false;
+    localStorage.removeItem(PROFILE_KEY);
+    const t = setTimeout(() => setVisible(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
+  return visible;
 }

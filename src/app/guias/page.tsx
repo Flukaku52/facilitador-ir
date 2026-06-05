@@ -8,6 +8,7 @@ import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { getApplicableGuideSlugs } from '@/lib/rules/tax-rules';
 import GuideCard from '@/components/guides/GuideCard';
 import { GuidesSkeleton } from '@/components/ui/Skeleton';
+import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
 
@@ -74,6 +75,7 @@ function GuidesContent() {
       {guides.length === 0 && (
         <p className="text-gray-500 dark:text-gray-400 text-center py-8">Nenhum guia aplicável encontrado.</p>
       )}
+      <CorruptedDataToast />
     </div>
   );
 }

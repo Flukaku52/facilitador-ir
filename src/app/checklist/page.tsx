@@ -10,6 +10,7 @@ import { generateChecklist, calculateChecklistProgress } from '@/lib/rules/tax-r
 import ChecklistGroup from '@/components/checklist/ChecklistGroup';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Toast from '@/components/ui/Toast';
+import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import { ChecklistSkeleton } from '@/components/ui/Skeleton';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
@@ -122,6 +123,7 @@ function ChecklistContent() {
       )}
 
       <Toast message="Salvo automaticamente" show={toastVisible} />
+      <CorruptedDataToast />
     </div>
   );
 }

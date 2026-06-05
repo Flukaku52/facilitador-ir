@@ -21,6 +21,7 @@ import { ComplexityBadge } from '@/components/ui/Badge';
 import AlertBox from '@/components/ui/AlertBox';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer';
 import Toast from '@/components/ui/Toast';
+import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import { ReportSkeleton } from '@/components/ui/Skeleton';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
@@ -316,6 +317,7 @@ function ReportContent() {
       </div>
 
       <Toast message="Link copiado!" show={shared} />
+      <CorruptedDataToast />
     </div>
   );
 }

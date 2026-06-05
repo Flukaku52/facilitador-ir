@@ -9,6 +9,7 @@ import { Question, QuestionAnswers } from '@/types/question';
 import { TaxProfile, createEmptyProfile } from '@/types/tax-profile';
 import { classifyComplexity } from '@/lib/rules/tax-rules';
 import { saveTaxProfile } from '@/lib/storage/local-profile-storage';
+import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
 
@@ -202,6 +203,7 @@ function EditarRespostasContent() {
           {saved ? '✓ Salvo!' : 'Salvar alterações'}
         </button>
       </div>
+      <CorruptedDataToast />
     </div>
   );
 }

@@ -409,7 +409,7 @@ Investigar se existe (ou existiu) a chave `ir-facilitador-profile` (com hífen) 
 
 ---
 
-### 9.2 Feedback de dados corrompidos no localStorage `P2` ⬜
+### 9.2 Feedback de dados corrompidos no localStorage `P2` ✅
 
 `useStoredProfile` captura erros de `JSON.parse` e retorna `null` — comportamento intencional para estabilidade do `useSyncExternalStore`. Porém o usuário não recebe feedback: o app simplesmente mostra "Você ainda não concluiu o diagnóstico" sem explicar que os dados anteriores foram perdidos.
 
@@ -441,7 +441,7 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | 5.4 | Focus management entre perguntas |
 | 6.3 | Aviso de dados no compartilhamento |
 | 9.1 | Investigar chave `ir-facilitador-profile` (hífen) vs `ir_facilitador_profile` (underscore) — possível órfã |
-| 9.2 | Toast "dados corrompidos" quando `useStoredProfile` descarta JSON inválido |
+| 9.2 | Toast "dados corrompidos" quando `useStoredProfile` descarta JSON inválido | ✅ |
 
 ### P3 — Exploração futura
 

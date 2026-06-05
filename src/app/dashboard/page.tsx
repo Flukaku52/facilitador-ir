@@ -17,6 +17,7 @@ import ProgressBar from '@/components/ui/ProgressBar';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import ClearDataModal from '@/components/layout/ClearDataModal';
 import AskDialog from '@/components/ui/AskDialog';
+import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
 
@@ -148,6 +149,7 @@ function DashboardContent() {
       </div>
 
       <AskDialog profile={profile} />
+      <CorruptedDataToast />
     </div>
   );
 }
