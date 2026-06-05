@@ -16,6 +16,7 @@ import Card from '@/components/ui/Card';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import ClearDataModal from '@/components/layout/ClearDataModal';
+import AskDialog from '@/components/ui/AskDialog';
 
 export default function DashboardPage() {
   const profile = useStoredProfile();
@@ -56,7 +57,7 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Seu painel</h1>
-        <Link href="/questionario" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+        <Link href="/questionario/editar" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
           Editar respostas
         </Link>
       </div>
@@ -135,6 +136,8 @@ export default function DashboardPage() {
       <div className="text-center pt-4">
         <ClearDataModal />
       </div>
+
+      <AskDialog profile={profile} />
     </div>
   );
 }
