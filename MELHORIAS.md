@@ -18,7 +18,11 @@ Este documento cataloga todas as melhorias identificadas para o IR Facilitador, 
 
 | # | Melhoria | Versão |
 |---|----------|--------|
+| 1.1 | Pergunta `q_has_pension_plan` adicionada (campo `investments.hasPrivatePension`) | sprint fundação |
 | 1.2 | `useSyncExternalStore` para localStorage (snapshot cacheado) | v0.1 → v0.2 fix |
+| 1.3 | Vitest + 64 testes no motor de regras (cobertura 98,75%) | sprint fundação |
+| 1.4 | Error Boundaries em 5 páginas (`ErrorBoundary` + `ErrorFallback`) | sprint fundação |
+| 1.5 | `taxYear` em todas as funções de `tax-rules.ts`; thresholds 2025/2026 distintos | sprint fundação |
 | 2.1 | Edição de respostas sem reiniciar (`/questionario/editar`) | v0.2 |
 | 2.2 | Toast de salvamento automático | v0.1 polimento |
 | 2.3 | Skeleton loaders por página | v0.1 polimento |
@@ -34,16 +38,17 @@ Este documento cataloga todas as melhorias identificadas para o IR Facilitador, 
 | 6.1 | Páginas `/privacidade` e `/termos` | v0.1 polimento |
 | 6.2 | Botão "Limpar todos os dados" com modal de confirmação | v0.1 polimento |
 | 8.2 | Deploy no Vercel com URL de produção | v0.2 |
+| 8.3 | `@t3-oss/env-nextjs` + Zod para env vars tipadas (`src/env.ts`) | sprint fundação |
 
 ---
 
 ## 1. Correções e dívida técnica
 
-### 1.1 Campos sem perguntas no questionário `P1` ⬜
+### 1.1 Campos sem perguntas no questionário `P1` ✅
 
 **Problema:** Os campos `income.hasBusinessIncome`, `investments.hasEtfs` e `investments.hasPrivatePension` existem no tipo `TaxProfile` mas nunca são perguntados. Estão sempre `false`.
 
-**Solução:** Adicionar 3 perguntas ao questionário ou remover os campos do tipo enquanto não forem implementados.
+**Solução implementada:** Adicionada pergunta `q_has_pension_plan` para `investments.hasPrivatePension`. Os campos `hasBusinessIncome` e `hasEtfs` já haviam sido cobertos em v0.2. Total: 29 perguntas.
 
 ---
 
@@ -55,11 +60,11 @@ Este documento cataloga todas as melhorias identificadas para o IR Facilitador, 
 
 ---
 
-### 1.3 Testes unitários para o motor de regras `P1` ⬜
+### 1.3 Testes unitários para o motor de regras `P1` ✅
 
 **Problema:** `tax-rules.ts` contém toda a lógica de negócio e não tem nenhum teste.
 
-**Solução:** Instalar Vitest e criar `src/lib/rules/tax-rules.test.ts`.
+**Solução implementada:** Vitest instalado; `src/lib/rules/tax-rules.test.ts` com 64 casos cobrindo todas as funções públicas. Cobertura: 98,75% de linhas (threshold: 85%).
 
 ```bash
 npm install -D vitest @vitest/coverage-v8
@@ -73,7 +78,7 @@ Casos prioritários:
 
 ---
 
-### 1.4 Error Boundaries nas páginas client-side `P2` ⬜
+### 1.4 Error Boundaries nas páginas client-side `P2` ✅
 
 **Problema:** Se o `localStorage` contiver JSON corrompido e o fallback falhar, a página quebra sem mensagem útil ao usuário.
 
@@ -98,11 +103,9 @@ export class ErrorBoundary extends Component<
 
 ---
 
-### 1.5 Versionamento de regras tributárias por ano-base `P1` 🔄
+### 1.5 Versionamento de regras tributárias por ano-base `P1` ✅
 
-**Status:** Estrutura de limiares por ano criada em `src/lib/tax-years/` com `DeadlineBanner` usando os thresholds. As funções de regras em `tax-rules.ts` ainda não recebem `taxYear` como parâmetro.
-
-**Próximo passo:** Fazer `generateChecklist`, `generateAlerts` e `classifyComplexity` aceitarem um `taxYear` e selecionar o conjunto de regras correspondente.
+**Solução implementada:** Todas as 4 funções públicas de `tax-rules.ts` aceitam `taxYear: number` opcional (padrão: `getCurrentTaxYear()`). Thresholds distintos para 2025 e 2026. Todas as páginas passam `profile.taxYear` explicitamente.
 
 ---
 
@@ -374,7 +377,7 @@ vercel --prod
 
 ---
 
-### 8.3 Variáveis de ambiente tipadas `P2` ⬜
+### 8.3 Variáveis de ambiente tipadas `P2` ✅
 
 [`@t3-oss/env-nextjs`](https://env.t3.gg/) para validar `ANTHROPIC_API_KEY` (e futuramente `SUPABASE_*`) em build time:
 
@@ -403,10 +406,6 @@ export const env = createEnv({
 
 | # | Melhoria |
 |---|----------|
-| 1.1 | Campos `hasBusinessIncome`, `hasEtfs`, `hasPrivatePension` sem perguntas |
-| 1.3 | Testes unitários do motor de regras |
-| 1.4 | Error Boundaries nas páginas |
-| 1.5 | Versionamento completo de regras por ano-base |
 | 1.6 | Validar valores em `2026/thresholds.ts` com fonte oficial da Receita Federal antes de produção |
 | 3.4 | Autenticação + persistência na nuvem (Supabase) |
 
@@ -423,7 +422,6 @@ export const env = createEnv({
 | 5.4 | Focus management entre perguntas |
 | 6.3 | Aviso de dados no compartilhamento |
 | 8.1 | CI/CD com GitHub Actions |
-| 8.3 | Env vars tipadas |
 
 ### P3 — Exploração futura
 
