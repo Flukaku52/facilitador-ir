@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect, useState, useRef, startTransition } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { TaxProfile, ComplexityLevel } from '@/types/tax-profile';
 import { ChecklistItem } from '@/types/checklist';
 import { TaxAlert } from '@/types/alert';
 import { Guide } from '@/types/guide';
-import { loadTaxProfile, loadChecklistState } from '@/lib/storage/local-profile-storage';
+import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
+import { useChecklistStore } from '@/lib/hooks/useChecklistStore';
 import {
   classifyComplexity,
   generateChecklist,
@@ -17,13 +20,8 @@ import { GUIDES } from '@/lib/data/guides';
 import { ComplexityBadge } from '@/components/ui/Badge';
 import AlertBox from '@/components/ui/AlertBox';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer';
-
-interface ReportState {
-  profile: TaxProfile;
-  checklist: ChecklistItem[];
-  alerts: TaxAlert[];
-  guides: Guide[];
-}
+import Toast from '@/components/ui/Toast';
+import { ReportSkeleton } from '@/components/ui/Skeleton';
 
 const COMPLEXITY_LABELS: Record<ComplexityLevel, string> = {
   simple: 'Simples',
@@ -39,116 +37,120 @@ function buildReportText(
   alerts: TaxAlert[],
 ): string {
   const pending = checklist.filter((i) => i.required && !i.completed);
-  const lines: string[] = [];
-
-  lines.push('RESUMO DO SEU DIAGNÓSTICO DE IMPOSTO DE RENDA');
-  lines.push('='.repeat(50));
-  lines.push(`Ano-base: ${profile.taxYear}`);
-  lines.push(`Complexidade estimada: ${COMPLEXITY_LABELS[complexity]}`);
-  lines.push('');
-
-  lines.push('PERFIL IDENTIFICADO:');
-  const flags: string[] = [
-    profile.income.hasCltIncome ? '- Trabalho CLT: sim' : '',
-    profile.income.hasPensionOrRetirement ? '- Aposentadoria/INSS: sim' : '',
-    profile.income.hasSelfEmploymentIncome ? '- Renda autônoma/freelancer: sim' : '',
-    profile.income.hasRentIncome ? '- Aluguel recebido: sim' : '',
-    profile.assets.hasBankAccounts ? '- Contas bancárias: sim' : '',
-    profile.assets.hasInvestments ? '- Investimentos/corretora: sim' : '',
-    profile.investments.soldVariableIncome ? '- Vendeu renda variável: sim' : '',
-    profile.assets.hasCrypto ? '- Criptoativos: sim' : '',
-    profile.assets.hasProperty ? '- Imóvel: sim' : '',
-    profile.assets.hasFinancedProperty ? '- Imóvel financiado: sim' : '',
-    profile.assets.hasVehicle ? '- Veículo: sim' : '',
-    profile.assets.hasForeignAssets ? '- Bens no exterior: sim' : '',
-    profile.deductions.hasDependents ? '- Dependentes: sim' : '',
-    profile.deductions.hasMedicalExpenses ? '- Despesas médicas: sim' : '',
-    profile.deductions.hasEducationExpenses ? '- Despesas com educação: sim' : '',
-    profile.deductions.hasPrivatePensionContributions ? '- Previdência privada: sim' : '',
-    profile.deductions.hasAlimony ? '- Pensão alimentícia: sim' : '',
-  ].filter((s) => s.length > 0);
-  lines.push(...(flags.length > 0 ? flags : ['- Perfil básico']));
-  lines.push('');
-
-  lines.push('DOCUMENTOS A SEPARAR:');
-  if (checklist.length === 0) {
-    lines.push('- Nenhum documento identificado.');
-  } else {
-    for (const item of checklist) {
-      lines.push(`- [${item.completed ? 'X' : ' '}] ${item.title}`);
-    }
-  }
-  lines.push('');
-
-  if (pending.length > 0) {
-    lines.push('DOCUMENTOS AINDA PENDENTES:');
-    for (const item of pending) lines.push(`- ${item.title}`);
-    lines.push('');
-  }
-
-  if (alerts.length > 0) {
-    lines.push('PONTOS DE ATENÇÃO:');
-    for (const alert of alerts) {
-      const sev =
-        alert.severity === 'danger' ? 'CRÍTICO' : alert.severity === 'warning' ? 'ATENÇÃO' : 'INFO';
-      lines.push(`[${sev}] ${alert.title}`);
-      lines.push(`  ${alert.message}`);
-    }
-    lines.push('');
-  }
-
-  if (guides.length > 0) {
-    lines.push('GUIAS RECOMENDADOS:');
-    for (const guide of guides) lines.push(`- ${guide.title}`);
-    lines.push('');
-  }
-
-  lines.push('PRÓXIMOS PASSOS:');
-  lines.push('1. Separe os documentos marcados no checklist.');
-  lines.push('2. Leia os guias para cada situação do seu perfil.');
-  lines.push('3. Confira os pontos de atenção antes de preencher a declaração.');
-  if (complexity === 'complex') {
-    lines.push(
-      '4. Sua declaração é complexa — recomendamos revisão com contador antes do envio.',
-    );
-  }
-  lines.push('');
-  lines.push('AVISO:');
-  lines.push(
-    'Este relatório é educativo e organizacional. Ele não substitui contador ou orientação oficial da Receita Federal.',
-  );
-
+  const lines: string[] = [
+    'RESUMO DO SEU DIAGNÓSTICO DE IMPOSTO DE RENDA',
+    '='.repeat(50),
+    `Ano-base: ${profile.taxYear}`,
+    `Complexidade estimada: ${COMPLEXITY_LABELS[complexity]}`,
+    '',
+    'PERFIL IDENTIFICADO:',
+    ...[
+      profile.income.hasCltIncome ? '- Trabalho CLT: sim' : '',
+      profile.income.hasPensionOrRetirement ? '- Aposentadoria/INSS: sim' : '',
+      profile.income.hasSelfEmploymentIncome ? '- Renda autônoma/freelancer: sim' : '',
+      profile.income.hasRentIncome ? '- Aluguel recebido: sim' : '',
+      profile.income.hasBusinessIncome ? '- Empresa/dividendos: sim' : '',
+      profile.assets.hasBankAccounts ? '- Contas bancárias: sim' : '',
+      profile.assets.hasInvestments ? '- Investimentos/corretora: sim' : '',
+      profile.investments.soldVariableIncome ? '- Vendeu renda variável: sim' : '',
+      profile.investments.hasEtfs ? '- ETFs: sim' : '',
+      profile.assets.hasCrypto ? '- Criptoativos: sim' : '',
+      profile.assets.hasProperty ? '- Imóvel: sim' : '',
+      profile.assets.hasFinancedProperty ? '- Imóvel financiado: sim' : '',
+      profile.assets.hasVehicle ? '- Veículo: sim' : '',
+      profile.assets.hasForeignAssets ? '- Bens no exterior: sim' : '',
+      profile.deductions.hasDependents ? '- Dependentes: sim' : '',
+      profile.deductions.hasMedicalExpenses ? '- Despesas médicas: sim' : '',
+      profile.deductions.hasEducationExpenses ? '- Despesas com educação: sim' : '',
+      profile.deductions.hasPrivatePensionContributions ? '- Previdência privada: sim' : '',
+      profile.deductions.hasAlimony ? '- Pensão alimentícia: sim' : '',
+    ].filter(Boolean),
+    '',
+    'DOCUMENTOS A SEPARAR:',
+    ...(checklist.length === 0
+      ? ['- Nenhum documento identificado.']
+      : checklist.map((i) => `- [${i.completed ? 'X' : ' '}] ${i.title}`)),
+    '',
+    ...(pending.length > 0
+      ? ['DOCUMENTOS AINDA PENDENTES:', ...pending.map((i) => `- ${i.title}`), '']
+      : []),
+    ...(alerts.length > 0
+      ? [
+          'PONTOS DE ATENÇÃO:',
+          ...alerts.flatMap((a) => {
+            const sev = a.severity === 'danger' ? 'CRÍTICO' : a.severity === 'warning' ? 'ATENÇÃO' : 'INFO';
+            return [`[${sev}] ${a.title}`, `  ${a.message}`];
+          }),
+          '',
+        ]
+      : []),
+    ...(guides.length > 0 ? ['GUIAS RECOMENDADOS:', ...guides.map((g) => `- ${g.title}`), ''] : []),
+    'PRÓXIMOS PASSOS:',
+    '1. Separe os documentos marcados no checklist.',
+    '2. Leia os guias para cada situação do seu perfil.',
+    '3. Confira os pontos de atenção antes de preencher.',
+    ...(complexity === 'complex'
+      ? ['4. Declaração complexa — recomendamos revisão com contador antes do envio.']
+      : []),
+    '',
+    'AVISO:',
+    'Este relatório é educativo e organizacional. Não substitui contador ou orientação oficial da Receita Federal.',
+  ];
   return lines.join('\n');
 }
 
-export default function ReportPage() {
-  const [data, setData] = useState<ReportState | null>(null);
-  const [copied, setCopied] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
+function decodeSharedProfile(encoded: string): TaxProfile | null {
+  try {
+    return JSON.parse(decodeURIComponent(atob(encoded))) as TaxProfile;
+  } catch {
+    return null;
+  }
+}
 
-  useEffect(() => {
-    const p = loadTaxProfile();
-    if (!p) return;
-    const savedState = loadChecklistState();
-    const items = generateChecklist(p).map((item) => ({
+function ReportContent() {
+  const searchParams = useSearchParams();
+  const storedProfile = useStoredProfile();
+  const checklistState = useChecklistStore();
+  const reportRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
+
+  // 2.8 — Shared profile from URL ?d= param
+  const sharedData = searchParams.get('d');
+  const profile = sharedData ? decodeSharedProfile(sharedData) : storedProfile;
+  const isSharedView = !!sharedData;
+
+  const checklist = useMemo(() => {
+    if (!profile) return [];
+    return generateChecklist(profile).map((item) => ({
       ...item,
-      completed: savedState[item.id] ?? item.completed,
+      completed: isSharedView ? item.completed : (checklistState[item.id] ?? item.completed),
     }));
-    const slugs = getApplicableGuideSlugs(p);
-    startTransition(() => {
-      setData({
-        profile: p,
-        checklist: items,
-        alerts: generateAlerts(p),
-        guides: GUIDES.filter((g) => slugs.includes(g.slug)),
-      });
-    });
-  }, []);
+  }, [profile, checklistState, isSharedView]);
+
+  const alerts = useMemo(() => (profile ? generateAlerts(profile) : []), [profile]);
+  const guides = useMemo(() => {
+    if (!profile) return [];
+    const slugs = getApplicableGuideSlugs(profile);
+    return GUIDES.filter((g) => slugs.includes(g.slug));
+  }, [profile]);
+
+  if (!profile) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400">Você ainda não concluiu o diagnóstico.</p>
+        <Link href="/questionario" className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600">
+          Começar questionário
+        </Link>
+      </div>
+    );
+  }
+
+  const complexity = classifyComplexity(profile);
+  const pending = checklist.filter((i) => i.required && !i.completed);
 
   async function copyReport() {
-    if (!data) return;
-    const complexity = classifyComplexity(data.profile);
-    const text = buildReportText(data.profile, complexity, data.checklist, data.guides, data.alerts);
+    const text = buildReportText(profile!, complexity, checklist, guides, alerts);
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -163,65 +165,75 @@ export default function ReportPage() {
     }
   }
 
-  if (!data) {
-    return (
-      <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <p className="text-lg text-gray-600 dark:text-gray-400">Você ainda não concluiu o diagnóstico.</p>
-        <Link
-          href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
-        >
-          Começar questionário
-        </Link>
-      </div>
-    );
+  // 3.1 — Print / Save as PDF
+  function printReport() {
+    window.print();
   }
 
-  const { profile, checklist, alerts, guides } = data;
-  const complexity = classifyComplexity(profile);
-  const pending = checklist.filter((i) => i.required && !i.completed);
+  // 2.8 — Share via URL
+  async function shareReport() {
+    const encoded = btoa(encodeURIComponent(JSON.stringify(profile)));
+    const url = `${window.location.origin}/relatorio?d=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 2500);
+    } catch {}
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Relatório final</h1>
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
-            ← Painel
-          </Link>
-          <button
-            onClick={copyReport}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
-          >
-            {copied ? '✓ Copiado!' : 'Copiar relatório'}
+        <div className="flex flex-wrap items-center gap-2">
+          {!isSharedView && (
+            <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+              ← Painel
+            </Link>
+          )}
+          <button onClick={copyReport} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600">
+            {copied ? '✓ Copiado!' : 'Copiar texto'}
+          </button>
+          {!isSharedView && (
+            <button onClick={shareReport} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600">
+              {shared ? '✓ Link copiado!' : 'Compartilhar link'}
+            </button>
+          )}
+          <button onClick={printReport} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600">
+            Imprimir / PDF
           </button>
         </div>
       </div>
 
+      {isSharedView && (
+        <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 text-sm text-indigo-700 dark:bg-indigo-950 dark:border-indigo-900 dark:text-indigo-300 print:hidden">
+          Você está visualizando um relatório compartilhado. As marcações do checklist refletem o estado no momento do compartilhamento.
+        </div>
+      )}
+
       <div ref={reportRef} className="space-y-6">
-        {/* Header */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Ano-base: {profile.taxYear}</p>
           <ComplexityBadge level={complexity} />
           {complexity === 'complex' && (
             <p className="mt-3 text-sm text-red-700 font-medium dark:text-red-400">
-              Sua declaração possui pontos de maior risco. Recomendamos revisão com contador antes
-              do envio.
+              Declaração com pontos de maior risco. Recomendamos revisão com contador antes do envio.
             </p>
           )}
         </div>
 
-        {/* Perfil */}
         <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
           <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">Perfil identificado</h2>
-          <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+          <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300 columns-2">
             {profile.income.hasCltIncome && <li>✓ Trabalho CLT</li>}
-            {profile.income.hasPensionOrRetirement && <li>✓ Aposentadoria ou INSS</li>}
-            {profile.income.hasSelfEmploymentIncome && <li>✓ Renda autônoma / freelancer</li>}
+            {profile.income.hasPensionOrRetirement && <li>✓ Aposentadoria/INSS</li>}
+            {profile.income.hasSelfEmploymentIncome && <li>✓ Renda autônoma</li>}
             {profile.income.hasRentIncome && <li>✓ Aluguel recebido</li>}
+            {profile.income.hasBusinessIncome && <li>✓ Empresa/dividendos</li>}
             {profile.assets.hasBankAccounts && <li>✓ Contas bancárias</li>}
-            {profile.assets.hasInvestments && <li>✓ Investimentos / corretora</li>}
+            {profile.assets.hasInvestments && <li>✓ Corretora</li>}
             {profile.investments.soldVariableIncome && <li>✓ Vendeu renda variável</li>}
+            {profile.investments.hasEtfs && <li>✓ ETFs</li>}
             {profile.assets.hasCrypto && <li>✓ Criptoativos</li>}
             {profile.assets.hasProperty && <li>✓ Imóvel</li>}
             {profile.assets.hasFinancedProperty && <li>✓ Imóvel financiado</li>}
@@ -229,13 +241,12 @@ export default function ReportPage() {
             {profile.assets.hasForeignAssets && <li>✓ Bens no exterior</li>}
             {profile.deductions.hasDependents && <li>✓ Dependentes</li>}
             {profile.deductions.hasMedicalExpenses && <li>✓ Despesas médicas</li>}
-            {profile.deductions.hasEducationExpenses && <li>✓ Despesas com educação</li>}
+            {profile.deductions.hasEducationExpenses && <li>✓ Educação</li>}
             {profile.deductions.hasPrivatePensionContributions && <li>✓ Previdência privada</li>}
             {profile.deductions.hasAlimony && <li>✓ Pensão alimentícia</li>}
           </ul>
         </section>
 
-        {/* Checklist */}
         {checklist.length > 0 && (
           <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
             <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">
@@ -243,13 +254,8 @@ export default function ReportPage() {
             </h2>
             <ul className="space-y-1.5 text-sm">
               {checklist.map((item) => (
-                <li
-                  key={item.id}
-                  className={`flex items-start gap-2 ${item.completed ? 'text-gray-400' : 'text-gray-700'}`}
-                >
-                  <span className={item.completed ? 'text-green-500' : 'text-gray-400'}>
-                    {item.completed ? '✓' : '○'}
-                  </span>
+                <li key={item.id} className={`flex items-start gap-2 ${item.completed ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-300'}`}>
+                  <span className={item.completed ? 'text-green-500' : 'text-gray-400'}>{item.completed ? '✓' : '○'}</span>
                   <span className={item.completed ? 'line-through' : ''}>{item.title}</span>
                 </li>
               ))}
@@ -257,44 +263,33 @@ export default function ReportPage() {
           </section>
         )}
 
-        {/* Pending */}
         {pending.length > 0 && (
           <section className="rounded-xl border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900 dark:bg-yellow-950">
             <h2 className="font-semibold text-yellow-900 mb-3 dark:text-yellow-100">
               Pendências ({pending.length} documento{pending.length !== 1 ? 's' : ''})
             </h2>
-            <ul className="space-y-1 text-sm text-yellow-800">
-              {pending.map((item) => (
-                <li key={item.id} className="flex items-start gap-2 text-yellow-800 dark:text-yellow-200">
-                  <span>•</span> {item.title}
-                </li>
-              ))}
+            <ul className="space-y-1 text-sm text-yellow-800 dark:text-yellow-200">
+              {pending.map((item) => <li key={item.id} className="flex gap-2"><span>•</span>{item.title}</li>)}
             </ul>
           </section>
         )}
 
-        {/* Alerts */}
         {alerts.length > 0 && (
           <section>
             <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">Pontos de atenção</h2>
             <div className="space-y-3">
-              {alerts.map((alert) => (
-                <AlertBox key={alert.id} severity={alert.severity} title={alert.title}>
-                  {alert.message}
-                </AlertBox>
-              ))}
+              {alerts.map((alert) => <AlertBox key={alert.id} severity={alert.severity} title={alert.title}>{alert.message}</AlertBox>)}
             </div>
           </section>
         )}
 
-        {/* Guides */}
         {guides.length > 0 && (
           <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
             <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">Guias recomendados</h2>
             <ul className="space-y-1.5 text-sm">
               {guides.map((guide) => (
                 <li key={guide.slug}>
-                  <Link href={`/guias/${guide.slug}`} className="text-indigo-600 hover:underline dark:text-indigo-400">
+                  <Link href={`/guias/${guide.slug}`} className="text-indigo-600 hover:underline dark:text-indigo-400 print:text-gray-700">
                     {guide.title}
                   </Link>
                 </li>
@@ -303,30 +298,30 @@ export default function ReportPage() {
           </section>
         )}
 
-        {/* Next steps */}
         <section className="rounded-xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900 dark:bg-indigo-950">
           <h2 className="font-semibold text-indigo-900 mb-3 dark:text-indigo-100">Próximos passos</h2>
           <ol className="space-y-2 text-sm text-indigo-800 dark:text-indigo-200">
-            <li className="flex gap-2">
-              <span className="font-bold">1.</span> Separe todos os documentos marcados no checklist.
-            </li>
-            <li className="flex gap-2">
-              <span className="font-bold">2.</span> Leia os guias para cada situação do seu perfil.
-            </li>
-            <li className="flex gap-2">
-              <span className="font-bold">3.</span> Confira os pontos de atenção antes de preencher.
-            </li>
+            <li className="flex gap-2"><span className="font-bold">1.</span> Separe todos os documentos marcados no checklist.</li>
+            <li className="flex gap-2"><span className="font-bold">2.</span> Leia os guias para cada situação do seu perfil.</li>
+            <li className="flex gap-2"><span className="font-bold">3.</span> Confira os pontos de atenção antes de preencher.</li>
             {complexity === 'complex' && (
-              <li className="flex gap-2 font-medium">
-                <span className="font-bold">4.</span> Declaração complexa — considere revisão com
-                contador.
-              </li>
+              <li className="flex gap-2 font-medium"><span className="font-bold">4.</span> Declaração complexa — considere revisão com contador.</li>
             )}
           </ol>
         </section>
 
         <LegalDisclaimer />
       </div>
+
+      <Toast message="Link copiado!" show={shared} />
     </div>
+  );
+}
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={<ReportSkeleton />}>
+      <ReportContent />
+    </Suspense>
   );
 }

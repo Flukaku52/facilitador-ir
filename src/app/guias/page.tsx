@@ -1,27 +1,26 @@
 'use client';
 
-import { useEffect, useState, startTransition } from 'react';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { GUIDES } from '@/lib/data/guides';
 import { Guide } from '@/types/guide';
-import { loadTaxProfile } from '@/lib/storage/local-profile-storage';
+import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { getApplicableGuideSlugs } from '@/lib/rules/tax-rules';
 import GuideCard from '@/components/guides/GuideCard';
+import { GuidesSkeleton } from '@/components/ui/Skeleton';
 
 export default function GuidesPage() {
-  const [guides, setGuides] = useState<Guide[] | null>(null);
+  const profile = useStoredProfile();
 
-  useEffect(() => {
-    const profile = loadTaxProfile();
+  const guides: Guide[] = useMemo(() => {
     if (profile) {
       const slugs = getApplicableGuideSlugs(profile);
-      startTransition(() => setGuides(GUIDES.filter((g) => slugs.includes(g.slug))));
-    } else {
-      startTransition(() => setGuides(GUIDES));
+      return GUIDES.filter((g) => slugs.includes(g.slug));
     }
-  }, []);
+    return GUIDES;
+  }, [profile]);
 
-  if (guides === null) return null;
+  if (guides.length === 0 && !profile) return <GuidesSkeleton />;
 
   const alertGuides = guides.filter((g) => g.isAlert);
   const regularGuides = guides.filter((g) => !g.isAlert);
@@ -46,9 +45,7 @@ export default function GuidesPage() {
             Guias aplicáveis
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {regularGuides.map((guide) => (
-              <GuideCard key={guide.slug} guide={guide} />
-            ))}
+            {regularGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}
           </div>
         </section>
       )}
@@ -59,9 +56,7 @@ export default function GuidesPage() {
             Situações que exigem atenção especial
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {alertGuides.map((guide) => (
-              <GuideCard key={guide.slug} guide={guide} />
-            ))}
+            {alertGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}
           </div>
         </section>
       )}

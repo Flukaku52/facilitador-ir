@@ -8,13 +8,17 @@ function isBrowser(): boolean {
   return typeof window !== 'undefined';
 }
 
+function notify(key: string) {
+  if (!isBrowser()) return;
+  window.dispatchEvent(new StorageEvent('storage', { key }));
+}
+
 export function saveTaxProfile(profile: TaxProfile): void {
   if (!isBrowser()) return;
   try {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-  } catch {
-    // localStorage quota exceeded or unavailable
-  }
+    notify(PROFILE_KEY);
+  } catch {}
 }
 
 export function loadTaxProfile(): TaxProfile | null {
@@ -31,19 +35,25 @@ export function loadTaxProfile(): TaxProfile | null {
 export function clearTaxProfile(): void {
   if (!isBrowser()) return;
   localStorage.removeItem(PROFILE_KEY);
+  notify(PROFILE_KEY);
 }
 
 export function saveChecklistState(items: ChecklistItem[]): void {
   if (!isBrowser()) return;
   try {
     const state: Record<string, boolean> = {};
-    for (const item of items) {
-      state[item.id] = item.completed;
-    }
+    for (const item of items) state[item.id] = item.completed;
     localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
-  } catch {
-    // ignore
-  }
+    notify(CHECKLIST_KEY);
+  } catch {}
+}
+
+export function saveChecklistStateMap(state: Record<string, boolean>): void {
+  if (!isBrowser()) return;
+  try {
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
+    notify(CHECKLIST_KEY);
+  } catch {}
 }
 
 export function loadChecklistState(): Record<string, boolean> {
@@ -60,6 +70,7 @@ export function loadChecklistState(): Record<string, boolean> {
 export function clearChecklistState(): void {
   if (!isBrowser()) return;
   localStorage.removeItem(CHECKLIST_KEY);
+  notify(CHECKLIST_KEY);
 }
 
 export function clearAll(): void {

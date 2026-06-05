@@ -46,6 +46,16 @@ export const QUESTIONS: Question[] = [
     fieldPath: 'income.hasOtherIncome',
   },
 
+  {
+    id: 'q_business',
+    title: 'Você tem empresa (CNPJ) ou recebeu dividendos de empresas das quais é sócio?',
+    description: 'Ex: MEI, Ltda, S/A, participação societária com distribuição de lucros.',
+    type: 'boolean',
+    section: 'income',
+    sectionLabel: 'Renda',
+    fieldPath: 'income.hasBusinessIncome',
+  },
+
   // ─── BANCOS E INVESTIMENTOS ──────────────────────────────────────────────
   {
     id: 'q_bank',
@@ -91,6 +101,15 @@ export const QUESTIONS: Question[] = [
     section: 'investments',
     sectionLabel: 'Bancos e Investimentos',
     fieldPath: 'investments.hasFiis',
+    showWhen: { fieldPath: 'assets.hasInvestments', equals: true },
+  },
+  {
+    id: 'q_etfs',
+    title: 'Você tinha ETFs (fundos de índice como BOVA11, IVVB11, HASH11)?',
+    type: 'boolean',
+    section: 'investments',
+    sectionLabel: 'Bancos e Investimentos',
+    fieldPath: 'investments.hasEtfs',
     showWhen: { fieldPath: 'assets.hasInvestments', equals: true },
   },
   {

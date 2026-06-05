@@ -1,0 +1,17 @@
+{
+  "name": "IR Facilitador",
+  "short_name": "IR Facilitador",
+  "description": "Assistente guiado de Imposto de Renda Pessoa Física",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#4f46e5",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
