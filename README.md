@@ -20,14 +20,14 @@ O app **não transmite declarações à Receita Federal**, **não calcula impost
 
 ### 1. Diagnóstico tributário guiado
 
-O app conduz o usuário por **30 perguntas de Sim/Não** organizadas em 5 blocos temáticos:
+O app conduz o usuário por **29 perguntas de Sim/Não** organizadas em 5 blocos temáticos:
 
 | Bloco | Perguntas | O que mapeia |
 |-------|-----------|--------------|
-| Renda | 5 | CLT, INSS, autônomo, aluguel, outras rendas |
-| Bancos e Investimentos | 8 | Bancos, corretoras, renda fixa, ações, FIIs, cripto, exterior |
+| Renda | 6 | CLT, INSS, autônomo, aluguel, empresa/dividendos, outras rendas |
+| Bancos e Investimentos | 8 | Bancos, corretoras, renda fixa, ações, FIIs, ETFs, cripto, exterior |
 | Bens | 3 | Imóvel, financiamento, veículo |
-| Despesas e Deduções | 6 | Dependentes, médico, educação, previdência, pensão |
+| Despesas e Deduções | 8 | Dependentes, médico, educação, previdência privada (plano + contribuições), pensão alimentícia |
 | Documentos | 4 | Confirmação de quais informes já foram obtidos |
 
 **Lógica `showWhen`:** perguntas condicionais só aparecem quando a resposta anterior é relevante. Exemplo: "O imóvel é financiado?" só surge se o usuário disse que tem imóvel.
@@ -149,7 +149,7 @@ Tudo que o usuário responde e marca fica salvo no `localStorage`. Ao recarregar
 ```
 / → Leia e clique em "Começar diagnóstico gratuito"
       ↓
-/questionario → Responda as 30 perguntas (Sim / Não / Não sei)
+/questionario → Responda as 29 perguntas (Sim / Não / Não sei)
       ↓ (salva automaticamente e redireciona)
 /dashboard → Veja complexidade, pendências e alertas críticos
       ↓
@@ -266,7 +266,7 @@ src/
 │
 ├── lib/
 │   ├── data/
-│   │   ├── questions.ts               # Array de 30 Questions com fieldPath e showWhen
+│   │   ├── questions.ts               # Array de 29 Questions com fieldPath e showWhen
 │   │   └── guides.ts                  # Array de 17 Guides + getGuideBySlug()
 │   ├── hooks/
 │   │   ├── useStoredProfile.ts        # useSyncExternalStore para TaxProfile no localStorage
@@ -500,7 +500,6 @@ Extensões de browser injetam atributos no `<body>` antes da hidratação React.
 | Sem exportação PDF nativa | Relatório via `window.print()` apenas | v0.3 |
 | Sem upload de documentos | Organização manual | v0.3 |
 | Regras sem versionamento de limites numéricos | Thresholds por ano-base definidos mas sem uso nas regras | v0.3 |
-| Campos `hasBusinessIncome`, `hasEtfs`, `hasPrivatePension` sem perguntas | Sempre `false` | v0.3 |
 | Sem testes automatizados | Risco em refatorações | v0.3 |
 | Assistente IA requer chave manual | Não funciona sem `ANTHROPIC_API_KEY` | — |
 
