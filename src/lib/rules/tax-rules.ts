@@ -2,8 +2,18 @@ import { TaxProfile, ComplexityLevel } from '@/types/tax-profile';
 import { ChecklistItem } from '@/types/checklist';
 import { TaxAlert } from '@/types/alert';
 import { GUIDES } from '@/lib/data/guides';
+import { getTaxYearThresholds, getCurrentTaxYear } from '@/lib/tax-years';
 
-export function classifyComplexity(profile: TaxProfile): ComplexityLevel {
+function formatBRL(value: number): string {
+  return value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+export function classifyComplexity(
+  profile: TaxProfile,
+  taxYear: number = getCurrentTaxYear(),
+): ComplexityLevel {
+  // thresholds available for future income-based classification rules
+  void getTaxYearThresholds(taxYear);
   const { income, assets, investments, deductions } = profile;
 
   const isComplex =
@@ -34,7 +44,11 @@ export function classifyComplexity(profile: TaxProfile): ComplexityLevel {
   return 'simple';
 }
 
-export function generateChecklist(profile: TaxProfile): ChecklistItem[] {
+export function generateChecklist(
+  profile: TaxProfile,
+  taxYear: number = getCurrentTaxYear(),
+): ChecklistItem[] {
+  const thresholds = getTaxYearThresholds(taxYear);
   const items: ChecklistItem[] = [];
   const { income, assets, investments, deductions, documents } = profile;
 
@@ -250,7 +264,7 @@ export function generateChecklist(profile: TaxProfile): ChecklistItem[] {
     items.push({
       id: 'cl_education',
       title: 'Informe de pagamentos da instituição de ensino',
-      description: 'Escola, faculdade ou curso técnico.',
+      description: `Escola, faculdade ou curso técnico. Limite de dedução por pessoa em ${taxYear}: R$ ${formatBRL(thresholds.EDUCATION_DEDUCTION_LIMIT_PER_PERSON)}.`,
       category: 'deductions',
       required: true,
       completed: false,
@@ -283,7 +297,12 @@ export function generateChecklist(profile: TaxProfile): ChecklistItem[] {
   return items;
 }
 
-export function getApplicableGuideSlugs(profile: TaxProfile): string[] {
+export function getApplicableGuideSlugs(
+  profile: TaxProfile,
+  taxYear: number = getCurrentTaxYear(),
+): string[] {
+  // taxYear reserved for future guide filtering by year
+  void taxYear;
   const slugs: string[] = [];
 
   for (const guide of GUIDES) {
@@ -297,7 +316,11 @@ export function getApplicableGuideSlugs(profile: TaxProfile): string[] {
   return slugs;
 }
 
-export function generateAlerts(profile: TaxProfile): TaxAlert[] {
+export function generateAlerts(
+  profile: TaxProfile,
+  taxYear: number = getCurrentTaxYear(),
+): TaxAlert[] {
+  const thresholds = getTaxYearThresholds(taxYear);
   const alerts: TaxAlert[] = [];
   const { income, assets, investments, deductions, documents } = profile;
 
@@ -375,6 +398,16 @@ export function generateAlerts(profile: TaxProfile): TaxAlert[] {
       message:
         'Renda recebida de pessoas físicas como autônomo ou freelancer exige carnê-leão mensal. Verifique se todos os meses foram pagos corretamente.',
       relatedGuideSlug: 'autonomo-freelancer-alerta',
+    });
+  }
+
+  if (deductions.hasEducationExpenses) {
+    alerts.push({
+      id: 'alert_education_limit',
+      severity: 'info',
+      title: 'Atenção ao limite de dedução com educação',
+      message: `O limite de dedução com educação por pessoa para ${taxYear} é R$ ${formatBRL(thresholds.EDUCATION_DEDUCTION_LIMIT_PER_PERSON)}. Apenas ensino formal é dedutível — cursos livres e idiomas geralmente não são.`,
+      relatedGuideSlug: 'despesas-educacao',
     });
   }
 

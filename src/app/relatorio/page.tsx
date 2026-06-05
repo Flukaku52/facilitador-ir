@@ -122,16 +122,16 @@ function ReportContent() {
 
   const checklist = useMemo(() => {
     if (!profile) return [];
-    return generateChecklist(profile).map((item) => ({
+    return generateChecklist(profile, profile.taxYear).map((item) => ({
       ...item,
       completed: isSharedView ? item.completed : (checklistState[item.id] ?? item.completed),
     }));
   }, [profile, checklistState, isSharedView]);
 
-  const alerts = useMemo(() => (profile ? generateAlerts(profile) : []), [profile]);
+  const alerts = useMemo(() => (profile ? generateAlerts(profile, profile.taxYear) : []), [profile]);
   const guides = useMemo(() => {
     if (!profile) return [];
-    const slugs = getApplicableGuideSlugs(profile);
+    const slugs = getApplicableGuideSlugs(profile, profile.taxYear);
     return GUIDES.filter((g) => slugs.includes(g.slug));
   }, [profile]);
 
@@ -146,7 +146,7 @@ function ReportContent() {
     );
   }
 
-  const complexity = classifyComplexity(profile);
+  const complexity = classifyComplexity(profile, profile.taxYear);
   const pending = checklist.filter((i) => i.required && !i.completed);
 
   async function copyReport() {

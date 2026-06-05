@@ -386,6 +386,77 @@ describe('calculateChecklistProgress', () => {
   });
 });
 
+// ─── versionamento por ano-base ───────────────────────────────────────────────
+
+describe('versionamento por taxYear', () => {
+  it('classifyComplexity aceita taxYear sem alterar resultado baseado em flags', () => {
+    const profile = createEmptyProfile();
+    profile.assets.hasCrypto = true;
+    expect(classifyComplexity(profile, 2025)).toBe('complex');
+    expect(classifyComplexity(profile, 2026)).toBe('complex');
+  });
+
+  it('generateChecklist - cl_education usa limite de dedução do ano 2025', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    const items = generateChecklist(profile, 2025);
+    const edu = items.find((i) => i.id === 'cl_education');
+    expect(edu?.description).toContain('3.561,50');
+    expect(edu?.description).toContain('2025');
+  });
+
+  it('generateChecklist - cl_education usa limite de dedução do ano 2026', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    const items = generateChecklist(profile, 2026);
+    const edu = items.find((i) => i.id === 'cl_education');
+    expect(edu?.description).toContain('3.800,00');
+    expect(edu?.description).toContain('2026');
+  });
+
+  it('generateChecklist - limites diferem entre 2025 e 2026', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    const desc2025 = generateChecklist(profile, 2025).find((i) => i.id === 'cl_education')?.description;
+    const desc2026 = generateChecklist(profile, 2026).find((i) => i.id === 'cl_education')?.description;
+    expect(desc2025).not.toBe(desc2026);
+  });
+
+  it('generateAlerts - alerta de educação contém limite de 2025', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    const alerts = generateAlerts(profile, 2025);
+    const alert = alerts.find((a) => a.id === 'alert_education_limit');
+    expect(alert).toBeDefined();
+    expect(alert?.severity).toBe('info');
+    expect(alert?.message).toContain('3.561,50');
+  });
+
+  it('generateAlerts - alerta de educação contém limite de 2026', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    const alerts = generateAlerts(profile, 2026);
+    const alert = alerts.find((a) => a.id === 'alert_education_limit');
+    expect(alert?.message).toContain('3.800,00');
+  });
+
+  it('getApplicableGuideSlugs aceita taxYear sem alterar slugs', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasCltIncome = true;
+    const slugs2025 = getApplicableGuideSlugs(profile, 2025);
+    const slugs2026 = getApplicableGuideSlugs(profile, 2026);
+    expect(slugs2025).toEqual(slugs2026);
+  });
+
+  it('ano desconhecido usa fallback para thresholds mais recentes', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    // Ano hipotético — não deve jogar erro, usa fallback
+    expect(() => generateChecklist(profile, 9999)).not.toThrow();
+    expect(() => generateAlerts(profile, 9999)).not.toThrow();
+  });
+});
+
 // ─── getApplicableGuideSlugs ──────────────────────────────────────────────────
 
 describe('getApplicableGuideSlugs', () => {

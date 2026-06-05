@@ -26,7 +26,7 @@ export default function ChecklistPage() {
 
   const allItems = useMemo<ChecklistItem[]>(() => {
     if (!profile) return [];
-    return generateChecklist(profile).map((item) => ({
+    return generateChecklist(profile, profile.taxYear).map((item) => ({
       ...item,
       completed: checklistState[item.id] ?? item.completed,
     }));

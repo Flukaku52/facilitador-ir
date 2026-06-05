@@ -24,13 +24,13 @@ export default function DashboardPage() {
 
   const checklist = useMemo(() => {
     if (!profile) return [];
-    return generateChecklist(profile).map((item) => ({
+    return generateChecklist(profile, profile.taxYear).map((item) => ({
       ...item,
       completed: checklistState[item.id] ?? item.completed,
     }));
   }, [profile, checklistState]);
 
-  const alerts = useMemo(() => (profile ? generateAlerts(profile) : []), [profile]);
+  const alerts = useMemo(() => (profile ? generateAlerts(profile, profile.taxYear) : []), [profile]);
   const progress = useMemo(() => calculateChecklistProgress(checklist), [checklist]);
 
   if (!profile) {
@@ -49,7 +49,7 @@ export default function DashboardPage() {
 
   if (checklist.length === 0 && alerts.length === 0) return <DashboardSkeleton />;
 
-  const complexity = classifyComplexity(profile);
+  const complexity = classifyComplexity(profile, profile.taxYear);
   const pendingCount = checklist.filter((i) => i.required && !i.completed).length;
   const dangerAlerts = alerts.filter((a) => a.severity === 'danger');
 

@@ -14,7 +14,7 @@ export default function GuidesPage() {
 
   const guides: Guide[] = useMemo(() => {
     if (profile) {
-      const slugs = getApplicableGuideSlugs(profile);
+      const slugs = getApplicableGuideSlugs(profile, profile.taxYear);
       return GUIDES.filter((g) => slugs.includes(g.slug));
     }
     return GUIDES;

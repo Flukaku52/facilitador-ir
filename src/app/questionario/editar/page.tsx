@@ -40,7 +40,7 @@ function answersToProfile(answers: QuestionAnswers): TaxProfile {
   for (const [path, value] of Object.entries(answers)) {
     setNestedValue(profile, path, value);
   }
-  profile.complexity = classifyComplexity(profile);
+  profile.complexity = classifyComplexity(profile, profile.taxYear);
   profile.updatedAt = new Date().toISOString();
   return profile;
 }
