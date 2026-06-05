@@ -38,6 +38,7 @@ Este documento cataloga todas as melhorias identificadas para o IR Facilitador, 
 | 6.1 | Páginas `/privacidade` e `/termos` | v0.1 polimento |
 | 6.2 | Botão "Limpar todos os dados" com modal de confirmação | v0.1 polimento |
 | 8.2 | Deploy no Vercel com URL de produção | v0.2 |
+| 8.1 | CI/CD com GitHub Actions (lint + tsc + vitest + build) | sprint fundação |
 | 8.3 | `@t3-oss/env-nextjs` + Zod para env vars tipadas (`src/env.ts`) | sprint fundação |
 
 ---
@@ -344,7 +345,7 @@ Versão gratuita (funcionalidades atuais) vs paga (histórico multi-ano, upload,
 
 ## 8. Infraestrutura e DevOps
 
-### 8.1 CI/CD com GitHub Actions `P2` ⬜
+### 8.1 CI/CD com GitHub Actions `P2` ✅
 
 ```yaml
 # .github/workflows/ci.yml
@@ -421,7 +422,6 @@ export const env = createEnv({
 | 5.3 | Verificação de contraste |
 | 5.4 | Focus management entre perguntas |
 | 6.3 | Aviso de dados no compartilhamento |
-| 8.1 | CI/CD com GitHub Actions |
 
 ### P3 — Exploração futura
 
