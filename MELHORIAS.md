@@ -401,6 +401,24 @@ export const env = createEnv({
 
 ---
 
+### 9.1 Chaves de localStorage: hífen vs underscore `P2` ⬜
+
+Investigar se existe (ou existiu) a chave `ir-facilitador-profile` (com hífen) no localStorage de usuários reais, além da chave atual `ir_facilitador_profile` (com underscore). O código atual usa underscore em todos os lugares (`useStoredProfile.ts`, `local-profile-storage.ts`, `useChecklistStore.ts`). Se a chave com hífen existiu em versão anterior e nunca foi migrada, usuários antigos estariam perdendo seus dados silenciosamente.
+
+**Verificar:** abrir DevTools em produção e inspecionar todas as chaves do `localStorage`. Remover a chave órfã (se existir) ou adicionar migração de leitura se houver usuários afetados.
+
+---
+
+### 9.2 Feedback de dados corrompidos no localStorage `P2` ⬜
+
+`useStoredProfile` captura erros de `JSON.parse` e retorna `null` — comportamento intencional para estabilidade do `useSyncExternalStore`. Porém o usuário não recebe feedback: o app simplesmente mostra "Você ainda não concluiu o diagnóstico" sem explicar que os dados anteriores foram perdidos.
+
+**Solução proposta (Opção A):** Expor flag `wasCorrupted` no hook via variável externa, e exibir um toast "Seus dados anteriores não puderam ser carregados" quando `wasCorrupted === true`. Não altera o contrato de `getSnapshot`.
+
+O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceções de render, não erros de storage pré-render.
+
+---
+
 ## Resumo de prioridades — pendentes
 
 ### P1 — Antes do próximo release
@@ -422,6 +440,8 @@ export const env = createEnv({
 | 5.3 | Verificação de contraste |
 | 5.4 | Focus management entre perguntas |
 | 6.3 | Aviso de dados no compartilhamento |
+| 9.1 | Investigar chave `ir-facilitador-profile` (hífen) vs `ir_facilitador_profile` (underscore) — possível órfã |
+| 9.2 | Toast "dados corrompidos" quando `useStoredProfile` descarta JSON inválido |
 
 ### P3 — Exploração futura
 
