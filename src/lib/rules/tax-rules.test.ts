@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createEmptyProfile } from '@/types/tax-profile';
+import { getTaxYearThresholds } from '@/lib/tax-years';
 import {
   classifyComplexity,
   generateChecklist,
@@ -405,12 +406,13 @@ describe('versionamento por taxYear', () => {
     expect(edu?.description).toContain('2025');
   });
 
-  it('generateChecklist - cl_education usa limite de dedução do ano 2026', () => {
+  it('generateChecklist - ano-base 2026 (sem arquivo próprio) usa fallback IRPF 2026 — limite R$ 3.561,50', () => {
     const profile = createEmptyProfile();
     profile.deductions.hasEducationExpenses = true;
     const items = generateChecklist(profile, 2026);
     const edu = items.find((i) => i.id === 'cl_education');
-    expect(edu?.description).toContain('3.800,00');
+    // ano-base 2026 ainda não tem arquivo de thresholds → fallback para exercício mais recente
+    expect(edu?.description).toContain('3.561,50');
     expect(edu?.description).toContain('2026');
   });
 
@@ -432,12 +434,13 @@ describe('versionamento por taxYear', () => {
     expect(alert?.message).toContain('3.561,50');
   });
 
-  it('generateAlerts - alerta de educação contém limite de 2026', () => {
+  it('generateAlerts - ano-base 2026 (fallback) contém limite R$ 3.561,50', () => {
     const profile = createEmptyProfile();
     profile.deductions.hasEducationExpenses = true;
     const alerts = generateAlerts(profile, 2026);
     const alert = alerts.find((a) => a.id === 'alert_education_limit');
-    expect(alert?.message).toContain('3.800,00');
+    // ano-base 2026 sem arquivo → fallback IRPF 2026 → limite confirmado
+    expect(alert?.message).toContain('3.561,50');
   });
 
   it('getApplicableGuideSlugs aceita taxYear sem alterar slugs', () => {
@@ -454,6 +457,50 @@ describe('versionamento por taxYear', () => {
     // Ano hipotético — não deve jogar erro, usa fallback
     expect(() => generateChecklist(profile, 9999)).not.toThrow();
     expect(() => generateAlerts(profile, 9999)).not.toThrow();
+  });
+});
+
+// ─── getTaxYearThresholds — semântica de ano-base ────────────────────────────
+// taxYear / profile.taxYear = BASE_YEAR = ano-calendário da renda
+// getTaxYearThresholds(baseYear) deve retornar o arquivo com BASE_YEAR === baseYear
+
+describe('getTaxYearThresholds — semântica ano-base', () => {
+  it('ano-base 2025 retorna BASE_YEAR=2025 e TAX_YEAR=2026 (IRPF 2026)', () => {
+    const t = getTaxYearThresholds(2025);
+    expect(t.BASE_YEAR).toBe(2025);
+    expect(t.TAX_YEAR).toBe(2026);
+  });
+
+  it('ano-base 2024 retorna BASE_YEAR=2024 e TAX_YEAR=2025 (IRPF 2025)', () => {
+    const t = getTaxYearThresholds(2024);
+    expect(t.BASE_YEAR).toBe(2024);
+    expect(t.TAX_YEAR).toBe(2025);
+  });
+
+  it('limite de educação para ano-base 2025 (IRPF 2026) é R$ 3.561,50', () => {
+    const t = getTaxYearThresholds(2025);
+    expect(t.EDUCATION_DEDUCTION_LIMIT_PER_PERSON).toBe(3561.50);
+  });
+
+  it('desconto simplificado para ano-base 2025 (IRPF 2026) é R$ 16.754,34', () => {
+    const t = getTaxYearThresholds(2025);
+    expect(t.SIMPLIFIED_DEDUCTION_LIMIT).toBe(16754.34);
+  });
+
+  it('profile.taxYear=2025 usa thresholds do IRPF 2026 na geração do checklist', () => {
+    const profile = createEmptyProfile();
+    profile.taxYear = 2025;
+    profile.deductions.hasEducationExpenses = true;
+    const items = generateChecklist(profile, profile.taxYear);
+    const edu = items.find((i) => i.id === 'cl_education');
+    // Label exibe o ano-base correto
+    expect(edu?.description).toContain('em 2025');
+    // Limite é o do IRPF 2026, confirmado pela Receita Federal
+    expect(edu?.description).toContain('3.561,50');
+    // Correspondência direta: taxYear=2025 → arquivo 2026/thresholds.ts
+    const thresholds = getTaxYearThresholds(profile.taxYear);
+    expect(thresholds.TAX_YEAR).toBe(2026);
+    expect(thresholds.BASE_YEAR).toBe(2025);
   });
 });
 

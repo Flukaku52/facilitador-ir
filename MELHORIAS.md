@@ -40,6 +40,8 @@ Este documento cataloga todas as melhorias identificadas para o IR Facilitador, 
 | 8.2 | Deploy no Vercel com URL de produção | v0.2 |
 | 8.1 | CI/CD com GitHub Actions (lint + tsc + vitest + build) | sprint fundação |
 | 8.3 | `@t3-oss/env-nextjs` + Zod para env vars tipadas (`src/env.ts`) | sprint fundação |
+| 3.1 | PDF nativo com `@react-pdf/renderer` (T6 Sprint 1) | sprint 1 |
+| 3.4 | Autenticação Supabase + sincronização na nuvem (T1–T5 Sprint 1) | sprint 1 |
 
 ---
 
@@ -176,9 +178,9 @@ URL `/relatorio?d=<base64>` com o `TaxProfile` codificado. Ao acessar com o par�
 
 ## 3. Novas funcionalidades
 
-### 3.1 Exportação do relatório em PDF `P1` 🔄
+### 3.1 Exportação do relatório em PDF `P1` ✅
 
-**Status:** `window.print()` implementado — funciona para imprimir ou salvar como PDF pelo navegador. PDF nativo com `@react-pdf/renderer` ainda não implementado.
+**Status:** PDF nativo com `@react-pdf/renderer` v4.5.1 implementado (Sprint 1 T6). Botão "Baixar PDF" em `/relatorio` gera arquivo `relatorio-ir-{ano}.pdf` 100% client-side. `window.print()` mantido como "Imprimir".
 
 ---
 
@@ -198,7 +200,7 @@ Requer Supabase Storage. Cada `ChecklistItem` passaria a ter `attachmentUrl?: st
 
 ---
 
-### 3.4 Autenticação e persistência na nuvem `P1` ⬜ (v0.3)
+### 3.4 Autenticação e persistência na nuvem `P1` ✅ (Sprint 1)
 
 Supabase Auth (email/senha ou Google OAuth) + migração do `localStorage` para PostgreSQL.
 
@@ -434,14 +436,14 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | # | Melhoria |
 |---|----------|
 | 1.6 | Validar valores em `2026/thresholds.ts` com fonte oficial da Receita Federal antes de produção |
-| 3.4 | Autenticação + persistência na nuvem (Supabase) |
+| ~~3.4~~ | ~~Autenticação + persistência na nuvem~~ ✅ Sprint 1 |
 
 ### P2 — Próxima versão
 
 | # | Melhoria |
 |---|----------|
 | 2.5 | Anotações no checklist |
-| 3.1 | PDF nativo com `@react-pdf/renderer` |
+| ~~3.1~~ | ~~PDF nativo com `@react-pdf/renderer`~~ ✅ Sprint 1 |
 | 3.2 | Múltiplos perfis / anos |
 | 3.3 | Upload de documentos |
 | 4.3 | Service worker / cache offline (PWA completo) |
