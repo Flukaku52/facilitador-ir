@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { useChecklistStore } from '@/lib/hooks/useChecklistStore';
@@ -20,6 +21,11 @@ import AskDialog from '@/components/ui/AskDialog';
 import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
+
+const GuestBanner = dynamic(
+  () => import('@/components/layout/GuestBanner'),
+  { ssr: false },
+);
 
 export default function DashboardPage() {
   return (
@@ -66,6 +72,7 @@ function DashboardContent() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
+      <GuestBanner />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Seu painel</h1>
         <Link href="/questionario/editar" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -25,6 +26,12 @@ import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import { ReportSkeleton } from '@/components/ui/Skeleton';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
+
+// DownloadPDFButton uses @react-pdf/renderer which requires browser APIs — must be client-only
+const DownloadPDFButton = dynamic(
+  () => import('@/components/report/DownloadPDFButton'),
+  { ssr: false },
+);
 
 const COMPLEXITY_LABELS: Record<ComplexityLevel, string> = {
   simple: 'Simples',
@@ -202,8 +209,15 @@ function ReportContent() {
               {shared ? '✓ Link copiado!' : 'Compartilhar link'}
             </button>
           )}
-          <button onClick={printReport} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600">
-            Imprimir / PDF
+          <DownloadPDFButton
+            profile={profile}
+            complexity={complexity}
+            checklist={checklist}
+            guides={guides}
+            alerts={alerts}
+          />
+          <button onClick={printReport} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600">
+            Imprimir
           </button>
         </div>
       </div>

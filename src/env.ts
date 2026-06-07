@@ -8,10 +8,17 @@ export const env = createEnv({
       .regex(/^sk-ant-/, 'ANTHROPIC_API_KEY must start with sk-ant-')
       .optional(),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
+  },
   runtimeEnv: {
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     NODE_ENV: process.env.NODE_ENV,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || undefined,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || undefined,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || undefined,
   },
 });

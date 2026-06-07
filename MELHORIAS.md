@@ -409,6 +409,14 @@ Investigar se existe (ou existiu) a chave `ir-facilitador-profile` (com hífen) 
 
 ---
 
+### 9.3 Testar magic link manualmente `P2` ⬜
+
+Magic link não pôde ser testado na Tarefa 3 por rate limit do Supabase. O `AuthHandler` implementado (hash flow) deve cobrir esse cenário, mas o teste manual está pendente.
+
+**Ação:** quando rate limit resetar, testar o fluxo completo: Supabase Authentication → Send magic link → clicar no e-mail → verificar que hash é limpo da URL e redirect ocorre para `/dashboard`.
+
+---
+
 ### 9.2 Feedback de dados corrompidos no localStorage `P2` ✅
 
 `useStoredProfile` captura erros de `JSON.parse` e retorna `null` — comportamento intencional para estabilidade do `useSyncExternalStore`. Porém o usuário não recebe feedback: o app simplesmente mostra "Você ainda não concluiu o diagnóstico" sem explicar que os dados anteriores foram perdidos.

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ThemeToggle from './ThemeToggle';
+import UserMenu from './UserMenu';
 
 export default function AppHeader() {
   return (
@@ -24,6 +25,7 @@ export default function AppHeader() {
             </Link>
           </nav>
           <ThemeToggle />
+          <UserMenu />
         </div>
       </div>
     </header>

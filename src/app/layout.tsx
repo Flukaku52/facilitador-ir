@@ -4,6 +4,8 @@ import './globals.css';
 import AppHeader from '@/components/layout/AppHeader';
 import ThemeProvider from '@/components/layout/ThemeProvider';
 import DeadlineBanner from '@/components/layout/DeadlineBanner';
+import AuthHandler from '@/components/layout/AuthHandler';
+import ProfileSyncProvider from '@/components/layout/ProfileSyncProvider';
 import Link from 'next/link';
 
 const geist = Geist({
@@ -23,6 +25,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${geist.variable} h-full antialiased`} suppressHydrationWarning>
       <body suppressHydrationWarning className="flex min-h-full flex-col bg-gray-50 font-sans dark:bg-gray-950 dark:text-gray-100">
         <ThemeProvider>
+          <AuthHandler />
+          <ProfileSyncProvider />
           <DeadlineBanner />
           <AppHeader />
           <main className="flex-1">{children}</main>

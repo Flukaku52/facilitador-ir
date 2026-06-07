@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer';
+import LandingCTA from '@/components/layout/LandingCTA';
 
 export default function LandingPage() {
   return (
@@ -13,15 +13,7 @@ export default function LandingPage() {
           você precisa separar, os pontos que exigem atenção e um guia prático para organizar sua
           declaração.
         </p>
-        <div className="mt-8">
-          <Link
-            href="/questionario"
-            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-sm hover:bg-indigo-700 active:bg-indigo-800 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
-          >
-            Começar diagnóstico gratuito
-          </Link>
-        </div>
-        <p className="mt-3 text-sm text-gray-400 dark:text-gray-600">Leva cerca de 3 minutos. Sem cadastro.</p>
+        <LandingCTA />
       </div>
 
       <div className="mt-16 grid gap-6 sm:grid-cols-3">
