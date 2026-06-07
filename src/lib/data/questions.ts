@@ -1,4 +1,4 @@
-import { Question } from '@/types/question';
+import { Question, QuestionAnswers } from '@/types/question';
 
 export const QUESTIONS: Question[] = [
   // ─── RENDA ───────────────────────────────────────────────────────────────
@@ -273,6 +273,24 @@ export const QUESTIONS: Question[] = [
     showWhen: { fieldPath: 'assets.hasProperty', equals: true },
   },
 ];
+
+// Returns the fieldPaths of all questions whose showWhen.fieldPath === fieldPath
+// and showWhen.equals === true. Used to clear dependent answers when a parent
+// question is answered false.
+export function getChildPaths(fieldPath: string): string[] {
+  return QUESTIONS
+    .filter((q) => q.showWhen?.fieldPath === fieldPath && q.showWhen.equals === true)
+    .map((q) => q.fieldPath);
+}
+
+// Single source of truth for conditional visibility logic.
+// Both QuestionnaireFlow and editar/page import this instead of duplicating it.
+export function getVisibleQuestions(answers: QuestionAnswers): Question[] {
+  return QUESTIONS.filter((q) => {
+    if (!q.showWhen) return true;
+    return answers[q.showWhen.fieldPath] === q.showWhen.equals;
+  });
+}
 
 export const SECTION_LABELS = [
   'Renda',

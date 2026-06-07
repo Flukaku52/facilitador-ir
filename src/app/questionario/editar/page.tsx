@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
-import { QUESTIONS, SECTION_LABELS } from '@/lib/data/questions';
+import { QUESTIONS, SECTION_LABELS, getChildPaths, getVisibleQuestions } from '@/lib/data/questions';
 import { Question, QuestionAnswers } from '@/types/question';
 import { TaxProfile, createEmptyProfile } from '@/types/tax-profile';
 import { classifyComplexity } from '@/lib/rules/tax-rules';
@@ -48,13 +48,6 @@ function answersToProfile(answers: QuestionAnswers): TaxProfile {
   return profile;
 }
 
-function getVisibleQuestions(answers: QuestionAnswers): Question[] {
-  return QUESTIONS.filter((q) => {
-    if (!q.showWhen) return true;
-    return answers[q.showWhen.fieldPath] === q.showWhen.equals;
-  });
-}
-
 export default function EditarRespostasPage() {
   return (
     <ErrorBoundary fallback={<ErrorFallback />}>
@@ -92,7 +85,18 @@ function EditarRespostasContent() {
   }, [visibleQuestions]);
 
   function toggle(fieldPath: string, value: boolean) {
-    setOverrides((prev) => ({ ...prev, [fieldPath]: value }));
+    setOverrides((prev) => {
+      const next = { ...prev, [fieldPath]: value };
+      // When toggling a parent to false, also force all child overrides to false.
+      // Without this, profileToAnswers() would re-inject stale profile values
+      // for the now-hidden child questions when saving.
+      if (value === false) {
+        for (const childPath of getChildPaths(fieldPath)) {
+          next[childPath] = false;
+        }
+      }
+      return next;
+    });
     setSaved(false);
   }
 

@@ -1,21 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { QUESTIONS } from '@/lib/data/questions';
-import { Question, QuestionAnswers } from '@/types/question';
+import { QUESTIONS, getChildPaths, getVisibleQuestions } from '@/lib/data/questions';
+import { QuestionAnswers } from '@/types/question';
 import { TaxProfile, createEmptyProfile } from '@/types/tax-profile';
 import { classifyComplexity } from '@/lib/rules/tax-rules';
-import { saveTaxProfile, loadTaxProfile } from '@/lib/storage/local-profile-storage';
+import { saveTaxProfile } from '@/lib/storage/local-profile-storage';
+import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import Button from '@/components/ui/Button';
 import ProgressBar from '@/components/ui/ProgressBar';
-
-function getVisibleQuestions(answers: QuestionAnswers): Question[] {
-  return QUESTIONS.filter((q) => {
-    if (!q.showWhen) return true;
-    return answers[q.showWhen.fieldPath] === q.showWhen.equals;
-  });
-}
 
 function profileToAnswers(profile: TaxProfile): QuestionAnswers {
   const answers: QuestionAnswers = {};
@@ -54,14 +48,29 @@ function setNestedValue(obj: unknown, path: string, value: unknown): void {
 
 export default function QuestionnaireFlow() {
   const router = useRouter();
-  const [answers, setAnswers] = useState<QuestionAnswers>(() => {
-    // Pre-populate from existing profile so user can edit answers
-    if (typeof window !== 'undefined') {
-      const existing = loadTaxProfile();
-      if (existing) return profileToAnswers(existing);
-    }
-    return {};
-  });
+
+  // useStoredProfile uses useSyncExternalStore with a null server snapshot,
+  // so server and client first render both start with null → empty answers.
+  // After hydration, the client snapshot loads the real profile from localStorage.
+  // This avoids the hydration mismatch from reading localStorage in useState.
+  const storedProfile = useStoredProfile();
+
+  // Baseline answers from the stored profile; null profile → empty (server-safe).
+  const profileAnswers = useMemo<QuestionAnswers>(() => {
+    if (!storedProfile) return {};
+    return profileToAnswers(storedProfile);
+  }, [storedProfile]);
+
+  // Overrides track only the answers the user sets during this questionnaire session.
+  // They are merged on top of profileAnswers so stale profile values don't survive
+  // when a parent is toggled to false (the child paths are explicitly set to false).
+  const [overrides, setOverrides] = useState<QuestionAnswers>({});
+
+  const answers = useMemo<QuestionAnswers>(
+    () => ({ ...profileAnswers, ...overrides }),
+    [profileAnswers, overrides],
+  );
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [liveText, setLiveText] = useState('');
 
@@ -73,9 +82,20 @@ export default function QuestionnaireFlow() {
   const showSectionHeader = !prevQuestion || prevQuestion.sectionLabel !== current?.sectionLabel;
 
   function answer(value: boolean) {
-    const newAnswers = { ...answers, [current.fieldPath]: value };
-    setAnswers(newAnswers);
+    const newOverrides: QuestionAnswers = { ...overrides, [current.fieldPath]: value };
+
+    // When the parent is answered false, explicitly set child answers to false in overrides
+    // so profile values (e.g. hasStocks=true) don't leak through the merge.
+    if (value === false) {
+      const childPaths = getChildPaths(current.fieldPath);
+      for (const childPath of childPaths) {
+        newOverrides[childPath] = false;
+      }
+    }
+
+    setOverrides(newOverrides);
     setLiveText(value ? 'Sim' : 'Não');
+    const newAnswers = { ...profileAnswers, ...newOverrides };
     const newVisible = getVisibleQuestions(newAnswers);
     if (currentIndex + 1 >= newVisible.length) {
       finish(newAnswers);
