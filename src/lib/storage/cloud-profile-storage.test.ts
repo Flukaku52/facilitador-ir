@@ -138,6 +138,24 @@ describe('saveCloudProfile', () => {
     const ok = await saveCloudProfile(USER_ID, PROFILE_A);
     expect(ok).toBe(false);
   });
+
+  it('usa profile.taxYear no payload do upsert — não hardcoded', async () => {
+    mockUpsert.mockResolvedValue({ error: null });
+    const profile2026 = { ...PROFILE_A, taxYear: 2026 };
+    await saveCloudProfile(USER_ID, profile2026);
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: USER_ID, tax_year: 2026 }),
+    );
+  });
+
+  it('tax_year no upsert reflete o taxYear do profile (2024)', async () => {
+    mockUpsert.mockResolvedValue({ error: null });
+    const profile2024 = { ...PROFILE_A, taxYear: 2024 };
+    await saveCloudProfile(USER_ID, profile2024);
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ tax_year: 2024 }),
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -182,5 +200,38 @@ describe('saveCloudChecklist', () => {
     mockUpdateEnd.mockResolvedValue({ error: { message: 'network error' } });
     const ok = await saveCloudChecklist(USER_ID, { item_1: true });
     expect(ok).toBe(false);
+  });
+
+  it('aceita taxYear explícito sem lançar erro', async () => {
+    mockUpdateEnd.mockResolvedValue({ error: null });
+    await expect(saveCloudChecklist(USER_ID, { item_1: true }, 2025)).resolves.toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// taxYear dinâmico — parâmetro opcional nas funções de leitura
+// ---------------------------------------------------------------------------
+describe('taxYear dinâmico — parâmetros opcionais', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('loadCloudProfile aceita taxYear explícito', async () => {
+    mockMaybySingle.mockResolvedValue({ data: null, error: null });
+    await expect(loadCloudProfile(USER_ID, 2025)).resolves.toBeNull();
+  });
+
+  it('loadCloudProfile usa default (getCurrentTaxYear) quando taxYear omitido', async () => {
+    mockMaybySingle.mockResolvedValue({ data: { profile: PROFILE_A }, error: null });
+    await expect(loadCloudProfile(USER_ID)).resolves.toEqual(PROFILE_A);
+  });
+
+  it('loadCloudChecklist aceita taxYear explícito', async () => {
+    mockMaybySingle.mockResolvedValue({ data: null, error: null });
+    await expect(loadCloudChecklist(USER_ID, 2025)).resolves.toEqual({});
+  });
+
+  it('loadCloudChecklist usa default quando taxYear omitido', async () => {
+    const state = { item_x: true };
+    mockMaybySingle.mockResolvedValue({ data: { checklist_state: state }, error: null });
+    await expect(loadCloudChecklist(USER_ID)).resolves.toEqual(state);
   });
 });

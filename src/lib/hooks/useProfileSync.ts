@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { getCurrentTaxYear } from '@/lib/tax-years';
 import {
   loadTaxProfile,
   saveTaxProfile,
@@ -55,11 +56,13 @@ export function useProfileSync(): UseProfileSyncResult {
 
     let mounted = true;
 
-    Promise.all([
-      Promise.resolve(loadTaxProfile()),
-      loadCloudProfile(user.id),
-    ])
-      .then(([localProfile, fetchedCloud]) => {
+    // loadTaxProfile is synchronous; extract it first so taxYear is available
+    // for the Supabase query without waiting for the async cloud fetch.
+    const localProfile = loadTaxProfile();
+    const taxYear = localProfile?.taxYear ?? getCurrentTaxYear();
+
+    loadCloudProfile(user.id, taxYear)
+      .then((fetchedCloud) => {
         if (!mounted) return;
 
         const decision = decideMigration(localProfile, fetchedCloud);
@@ -69,7 +72,7 @@ export function useProfileSync(): UseProfileSyncResult {
         } else if (decision === 'load-cloud') {
           // Silently hydrate localStorage from Supabase
           saveTaxProfile(fetchedCloud!);
-          loadCloudChecklist(user.id).then((cloudChecklist) => {
+          loadCloudChecklist(user.id, fetchedCloud!.taxYear).then((cloudChecklist) => {
             if (mounted) saveChecklistStateMap(cloudChecklist);
           });
           localStorage.setItem(MIGRATION_FLAG, user.id);
@@ -101,7 +104,8 @@ export function useProfileSync(): UseProfileSyncResult {
       }
       if (e.key === CHECKLIST_LS_KEY) {
         const checklist = loadChecklistState();
-        saveCloudChecklist(userId, checklist).catch(() => {});
+        const profile = loadTaxProfile();
+        saveCloudChecklist(userId, checklist, profile?.taxYear ?? getCurrentTaxYear()).catch(() => {});
       }
     }
 
@@ -114,16 +118,19 @@ export function useProfileSync(): UseProfileSyncResult {
     const profile = loadTaxProfile();
     const checklist = loadChecklistState();
     if (profile) await saveCloudProfile(user.id, profile);
-    if (Object.keys(checklist).length > 0) await saveCloudChecklist(user.id, checklist);
+    if (Object.keys(checklist).length > 0)
+      await saveCloudChecklist(user.id, checklist, profile?.taxYear ?? getCurrentTaxYear());
     localStorage.setItem(MIGRATION_FLAG, user.id);
     setSyncState('idle');
   }, [user]);
 
   const discardLocal = useCallback(async () => {
     if (!user) return;
+    const localProfile = loadTaxProfile();
+    const taxYear = localProfile?.taxYear ?? getCurrentTaxYear();
     const [fetchedCloud, cloudChecklist] = await Promise.all([
-      loadCloudProfile(user.id),
-      loadCloudChecklist(user.id),
+      loadCloudProfile(user.id, taxYear),
+      loadCloudChecklist(user.id, taxYear),
     ]);
     if (fetchedCloud) saveTaxProfile(fetchedCloud);
     saveChecklistStateMap(cloudChecklist);
