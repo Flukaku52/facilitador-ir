@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getChildPaths, getVisibleQuestions } from '@/lib/data/questions';
 import { QuestionAnswers } from '@/types/question';
-import { saveTaxProfile } from '@/lib/storage/local-profile-storage';
+import { saveTaxProfile, saveDraft, loadDraft, clearDraft } from '@/lib/storage/local-profile-storage';
 import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { profileToAnswers, answersToProfile } from '@/lib/utils/profile-answers';
 import Button from '@/components/ui/Button';
@@ -28,14 +28,17 @@ export default function QuestionnaireFlow() {
   // Overrides track only the answers the user sets during this questionnaire session.
   // They are merged on top of profileAnswers so stale profile values don't survive
   // when a parent is toggled to false (the child paths are explicitly set to false).
-  const [overrides, setOverrides] = useState<QuestionAnswers>({});
+  // Lazy initializers read localStorage directly on the client; the server always
+  // gets the empty defaults (isBrowser() = false → loadDraft() = null).
+  // This mirrors the useSyncExternalStore pattern used by useStoredProfile.
+  const [overrides, setOverrides] = useState<QuestionAnswers>(() => loadDraft()?.answers ?? {});
 
   const answers = useMemo<QuestionAnswers>(
     () => ({ ...profileAnswers, ...overrides }),
     [profileAnswers, overrides],
   );
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(() => loadDraft()?.currentIndex ?? 0);
   const [liveText, setLiveText] = useState('');
   const questionCardRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +72,9 @@ export default function QuestionnaireFlow() {
     if (currentIndex + 1 >= newVisible.length) {
       finish(newAnswers);
     } else {
-      setCurrentIndex(currentIndex + 1);
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      saveDraft(newOverrides, nextIndex);
     }
   }
 
@@ -78,6 +83,7 @@ export default function QuestionnaireFlow() {
   }
 
   function finish(finalAnswers: QuestionAnswers) {
+    clearDraft();
     const profile = answersToProfile(finalAnswers);
     saveTaxProfile(profile);
     router.push('/dashboard');

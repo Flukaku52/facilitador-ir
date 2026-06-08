@@ -74,6 +74,69 @@ describe('detecção de perfil corrompido — lógica de guarda', () => {
   });
 });
 
+describe('saveDraft / loadDraft / clearDraft', () => {
+  const DRAFT_KEY = 'ir_facilitador_questionnaire_draft';
+
+  beforeEach(() => {
+    vi.resetModules();
+    stubWindow(makeLocalStorageMock());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('salva e recarrega rascunho válido', async () => {
+    const { saveDraft, loadDraft } = await import('./local-profile-storage');
+    const answers = { 'income.hasCltIncome': true, 'assets.hasBankAccounts': false };
+    saveDraft(answers, 3);
+    const loaded = loadDraft();
+    expect(loaded).not.toBeNull();
+    expect(loaded?.answers).toEqual(answers);
+    expect(loaded?.currentIndex).toBe(3);
+  });
+
+  it('loadDraft retorna null quando não há rascunho', async () => {
+    const { loadDraft } = await import('./local-profile-storage');
+    expect(loadDraft()).toBeNull();
+  });
+
+  it('clearDraft remove o rascunho', async () => {
+    const { saveDraft, loadDraft, clearDraft } = await import('./local-profile-storage');
+    saveDraft({ 'income.hasCltIncome': true }, 1);
+    clearDraft();
+    expect(loadDraft()).toBeNull();
+  });
+
+  it('rascunho com JSON inválido não quebra — retorna null', async () => {
+    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: '{json inválido' }));
+    const { loadDraft } = await import('./local-profile-storage');
+    expect(loadDraft()).toBeNull();
+  });
+
+  it('rascunho sem currentIndex retorna null', async () => {
+    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {} }) }));
+    const { loadDraft } = await import('./local-profile-storage');
+    expect(loadDraft()).toBeNull();
+  });
+
+  it('rascunho com currentIndex negativo é corrigido para 0', async () => {
+    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {}, currentIndex: -5, updatedAt: '' }) }));
+    const { loadDraft } = await import('./local-profile-storage');
+    const loaded = loadDraft();
+    expect(loaded?.currentIndex).toBe(0);
+  });
+
+  it('rascunho com answers inválido usa objeto vazio', async () => {
+    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: 'inválido', currentIndex: 2, updatedAt: '' }) }));
+    const { loadDraft } = await import('./local-profile-storage');
+    const loaded = loadDraft();
+    expect(loaded).not.toBeNull();
+    expect(loaded?.answers).toEqual({});
+    expect(loaded?.currentIndex).toBe(2);
+  });
+});
+
 describe('loadTaxProfile — validação defensiva', () => {
   beforeEach(() => {
     vi.resetModules();

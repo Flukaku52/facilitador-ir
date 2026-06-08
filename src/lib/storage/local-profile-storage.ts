@@ -1,8 +1,16 @@
 import { TaxProfile } from '@/types/tax-profile';
 import { ChecklistItem } from '@/types/checklist';
+import { QuestionAnswers } from '@/types/question';
 
 const PROFILE_KEY = 'ir_facilitador_profile';
 const CHECKLIST_KEY = 'ir_facilitador_checklist';
+const DRAFT_KEY = 'ir_facilitador_questionnaire_draft';
+
+type QuestionnaireDraft = {
+  answers: QuestionAnswers;
+  currentIndex: number;
+  updatedAt: string;
+};
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined';
@@ -78,4 +86,38 @@ export function clearChecklistState(): void {
 export function clearAll(): void {
   clearTaxProfile();
   clearChecklistState();
+}
+
+export function saveDraft(answers: QuestionAnswers, currentIndex: number): void {
+  if (!isBrowser()) return;
+  try {
+    const draft: QuestionnaireDraft = { answers, currentIndex, updatedAt: new Date().toISOString() };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch {}
+}
+
+export function loadDraft(): { answers: QuestionAnswers; currentIndex: number } | null {
+  if (!isBrowser()) return null;
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
+    const d = parsed as Record<string, unknown>;
+    if (typeof d.currentIndex !== 'number') return null;
+    const answers: QuestionAnswers =
+      typeof d.answers === 'object' && d.answers !== null && !Array.isArray(d.answers)
+        ? (d.answers as QuestionAnswers)
+        : {};
+    return { answers, currentIndex: Math.max(0, d.currentIndex) };
+  } catch {
+    return null;
+  }
+}
+
+export function clearDraft(): void {
+  if (!isBrowser()) return;
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {}
 }
