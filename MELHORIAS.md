@@ -290,18 +290,15 @@ Dois elementos com `aria-live="polite"` e `className="sr-only"`: um anuncia a re
 
 ---
 
-### 5.3 Verificação de contraste de cores `P2` ⬜
+### 5.3 Verificação de contraste de cores `P2` ✅
 
-Auditar combinações texto/fundo com Chrome DevTools. Focar em `indigo-400`, `yellow-600` e `gray-400` sobre fundos claros/escuros.
+`text-indigo-400` → `text-indigo-600 dark:text-indigo-400` em ✓ e • decorativos (`page.tsx`, `guias/[slug]/page.tsx`). `text-gray-400` → `text-gray-500 dark:text-gray-400` no símbolo ○ do checklist no relatório. Demais usos de `gray-400` são ícones interativos com hover coberto.
 
 ---
 
-### 5.4 Focus management entre perguntas `P2` ⬜
+### 5.4 Focus management entre perguntas `P2` ✅
 
-```tsx
-const questionRef = useRef<HTMLDivElement>(null);
-useEffect(() => { questionRef.current?.focus(); }, [currentIndex]);
-```
+`useRef` + `useEffect` em `QuestionnaireFlow.tsx`: ao avançar pergunta, foco vai automaticamente para o card da pergunta (`tabIndex=-1`, `focus:outline-none`).
 
 ---
 
@@ -319,9 +316,9 @@ Páginas `/privacidade` e `/termos` implementadas e linkadas no footer.
 
 ---
 
-### 6.3 Aviso de dados sensíveis no relatório compartilhado `P2` ⬜
+### 6.3 Aviso de dados sensíveis no relatório compartilhado `P2` ✅
 
-Modal de confirmação antes de gerar o link de compartilhamento, explicando o que está sendo compartilhado.
+Modal de confirmação inline em `/relatorio` antes de gerar link (`?d=base64`). Texto: "Este link pode conter informações pessoais do seu perfil fiscal. Compartilhe apenas com pessoas de confiança." Botões: Cancelar / Gerar link mesmo assim.
 
 ---
 
@@ -403,11 +400,11 @@ export const env = createEnv({
 
 ---
 
-### 9.1 Chaves de localStorage: hífen vs underscore `P2` ⬜
+### 9.1 Chaves de localStorage: hífen vs underscore `P2` 🔄
 
-Investigar se existe (ou existiu) a chave `ir-facilitador-profile` (com hífen) no localStorage de usuários reais, além da chave atual `ir_facilitador_profile` (com underscore). O código atual usa underscore em todos os lugares (`useStoredProfile.ts`, `local-profile-storage.ts`, `useChecklistStore.ts`). Se a chave com hífen existiu em versão anterior e nunca foi migrada, usuários antigos estariam perdendo seus dados silenciosamente.
+**Auditoria concluída (código):** Todas as chaves no código usam underscore consistentemente (`ir_facilitador_profile`, `ir_facilitador_checklist`, `ir_migration_v1_handled`). A chave com hífen (`ir-facilitador-profile`) nunca apareceu em nenhum arquivo versionado.
 
-**Verificar:** abrir DevTools em produção e inspecionar todas as chaves do `localStorage`. Remover a chave órfã (se existir) ou adicionar migração de leitura se houver usuários afetados.
+**Risco residual baixo.** Confirmar abrindo DevTools em produção numa conta de teste e verificando `Object.keys(localStorage)`. Se não aparecer chave com hífen, fechar como ✅ sem código.
 
 ---
 
@@ -447,10 +444,10 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | 3.2 | Múltiplos perfis / anos |
 | 3.3 | Upload de documentos |
 | 4.3 | Service worker / cache offline (PWA completo) |
-| 5.3 | Verificação de contraste |
-| 5.4 | Focus management entre perguntas |
-| 6.3 | Aviso de dados no compartilhamento |
-| 9.1 | Investigar chave `ir-facilitador-profile` (hífen) vs `ir_facilitador_profile` (underscore) — possível órfã |
+| ~~5.3~~ | ~~Verificação de contraste~~ ✅ indigo-400→600 e gray-400→500 corrigidos |
+| ~~5.4~~ | ~~Focus management entre perguntas~~ ✅ QuestionnaireFlow |
+| ~~6.3~~ | ~~Aviso de dados no compartilhamento~~ ✅ Modal de confirmação no relatório |
+| 9.1 | Chave localStorage: auditoria de código concluída — risco baixo; confirmar via DevTools em produção |
 | 9.2 | Toast "dados corrompidos" quando `useStoredProfile` descarta JSON inválido | ✅ |
 
 ### P3 — Exploração futura
