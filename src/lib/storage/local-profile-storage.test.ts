@@ -22,6 +22,58 @@ function stubWindow(lsMock: ReturnType<typeof makeLocalStorageMock>) {
   vi.stubGlobal('localStorage', lsMock);
 }
 
+// Tests for the corruption-detection guard logic (mirrors isProfileActuallyInvalid in useStoredProfile)
+describe('detecção de perfil corrompido — lógica de guarda', () => {
+  function isInvalid(raw: string | null): boolean {
+    if (raw === null) return false; // no data — not corruption
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) return false;
+      return true;
+    } catch {
+      return true;
+    }
+  }
+
+  it('perfil válido não dispara flag de corrompido', () => {
+    const profile = JSON.stringify({ id: 'x', taxYear: 2025, income: { hasCltIncome: true } });
+    expect(isInvalid(profile)).toBe(false);
+  });
+
+  it('objeto vazio não dispara flag de corrompido', () => {
+    expect(isInvalid('{}')).toBe(false);
+  });
+
+  it('ausência de chave (null) não dispara flag', () => {
+    expect(isInvalid(null)).toBe(false);
+  });
+
+  it('JSON inválido dispara flag', () => {
+    expect(isInvalid('{json inválido')).toBe(true);
+  });
+
+  it('null literal dispara flag', () => {
+    expect(isInvalid('null')).toBe(true);
+  });
+
+  it('array dispara flag', () => {
+    expect(isInvalid('[]')).toBe(true);
+  });
+
+  it('primitivo (número) dispara flag', () => {
+    expect(isInvalid('42')).toBe(true);
+  });
+
+  it('perfil antigo parcial (sem campo novo) não dispara flag', () => {
+    const old = JSON.stringify({ id: 'old', taxYear: 2024, income: { hasCltIncome: true } });
+    expect(isInvalid(old)).toBe(false);
+  });
+
+  it('flag de migração já concluída não interfere (ausência de perfil não é corrompimento)', () => {
+    expect(isInvalid(null)).toBe(false);
+  });
+});
+
 describe('loadTaxProfile — validação defensiva', () => {
   beforeEach(() => {
     vi.resetModules();

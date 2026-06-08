@@ -40,14 +40,42 @@ export function useStoredProfile(): TaxProfile | null {
   return useSyncExternalStore(subscribe, getSnapshot, () => null);
 }
 
+function isProfileActuallyInvalid(): boolean {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    if (!raw) return false; // no data — not a corruption case
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+      return false; // valid object in localStorage
+    }
+    return true; // parsed to a non-object (null literal, array, primitive)
+  } catch {
+    return true; // JSON.parse threw — truly invalid
+  }
+}
+
 export function useProfileCorrupted(): boolean {
-  // Lazy initializer reads the flag synchronously during render,
-  // after the parent's useStoredProfile() has already run getSnapshot().
-  const [visible, setVisible] = useState(() =>
-    typeof window !== 'undefined' && corruptionDetected,
-  );
+  // Lazy initializer reads the flag synchronously during render. The flag can be
+  // stale if the user navigated quickly between pages (effect from a previous page
+  // may not have cleared it yet). Re-verify the actual localStorage content before
+  // showing the toast to prevent false positives.
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === 'undefined' || !corruptionDetected) return false;
+    if (!isProfileActuallyInvalid()) {
+      corruptionDetected = false;
+      return false;
+    }
+    return true;
+  });
+
   useEffect(() => {
     if (!corruptionDetected) return;
+    // Re-verify before removing: the flag can be stale, and removing valid data
+    // would cause silent data loss.
+    if (!isProfileActuallyInvalid()) {
+      corruptionDetected = false;
+      return;
+    }
     corruptionDetected = false;
     localStorage.removeItem(PROFILE_KEY);
     const t = setTimeout(() => setVisible(false), 5000);
