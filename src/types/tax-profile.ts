@@ -36,6 +36,7 @@ export interface TaxProfile {
     hasDependents: boolean;
     hasMedicalExpenses: boolean;
     hasEducationExpenses: boolean;
+    hasInformalEducation: boolean;
     hasPrivatePensionContributions: boolean;
     hasAlimony: boolean;
   };
@@ -87,6 +88,7 @@ export function createEmptyProfile(): TaxProfile {
       hasDependents: false,
       hasMedicalExpenses: false,
       hasEducationExpenses: false,
+      hasInformalEducation: false,
       hasPrivatePensionContributions: false,
       hasAlimony: false,
     },

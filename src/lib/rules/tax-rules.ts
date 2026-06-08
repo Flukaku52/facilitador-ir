@@ -402,13 +402,23 @@ export function generateAlerts(
   }
 
   if (deductions.hasEducationExpenses) {
-    alerts.push({
-      id: 'alert_education_limit',
-      severity: 'info',
-      title: 'Atenção ao limite de dedução com educação',
-      message: `O limite de dedução com educação por pessoa para ${taxYear} é R$ ${formatBRL(thresholds.EDUCATION_DEDUCTION_LIMIT_PER_PERSON)}. Apenas ensino formal é dedutível — cursos livres e idiomas geralmente não são.`,
-      relatedGuideSlug: 'despesas-educacao',
-    });
+    if (deductions.hasInformalEducation) {
+      alerts.push({
+        id: 'alert_education_informal',
+        severity: 'warning',
+        title: 'Despesas de educação podem incluir gastos não dedutíveis',
+        message: `Você informou despesas com educação que podem incluir curso livre, idioma, cursinho ou aula particular. Nem todo gasto educacional é dedutível. Separe apenas despesas de ensino formal antes de declarar. O limite de dedução com educação por pessoa para ${taxYear} é R$ ${formatBRL(thresholds.EDUCATION_DEDUCTION_LIMIT_PER_PERSON)}.`,
+        relatedGuideSlug: 'despesas-educacao',
+      });
+    } else {
+      alerts.push({
+        id: 'alert_education_limit',
+        severity: 'info',
+        title: 'Atenção ao limite de dedução com educação',
+        message: `O limite de dedução com educação por pessoa para ${taxYear} é R$ ${formatBRL(thresholds.EDUCATION_DEDUCTION_LIMIT_PER_PERSON)}. Apenas ensino formal é dedutível — cursos livres e idiomas geralmente não são.`,
+        relatedGuideSlug: 'despesas-educacao',
+      });
+    }
   }
 
   return alerts;

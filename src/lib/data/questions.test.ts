@@ -62,6 +62,12 @@ describe('getChildPaths', () => {
       expect(q.showWhen?.equals).toBe(true);
     });
   });
+
+  it('retorna 1 filho de deductions.hasEducationExpenses', () => {
+    expect(getChildPaths('deductions.hasEducationExpenses')).toEqual([
+      'deductions.hasInformalEducation',
+    ]);
+  });
 });
 
 // ─── getVisibleQuestions ──────────────────────────────────────────────────────
@@ -121,6 +127,21 @@ describe('getVisibleQuestions', () => {
     expect(ids).toContain('q_financed_property');
     expect(ids).toContain('q_clt_report');
   });
+
+  it('com hasEducationExpenses=true mostra q_informal_education', () => {
+    const ids = getVisibleQuestions({ 'deductions.hasEducationExpenses': true }).map((q) => q.id);
+    expect(ids).toContain('q_informal_education');
+  });
+
+  it('com hasEducationExpenses=false oculta q_informal_education', () => {
+    const ids = getVisibleQuestions({ 'deductions.hasEducationExpenses': false }).map((q) => q.id);
+    expect(ids).not.toContain('q_informal_education');
+  });
+
+  it('sem resposta para educação, q_informal_education não aparece', () => {
+    const ids = getVisibleQuestions({}).map((q) => q.id);
+    expect(ids).not.toContain('q_informal_education');
+  });
 });
 
 // ─── limpeza de respostas filhas — simulação do comportamento de answer() ─────
@@ -175,5 +196,19 @@ describe('getChildPaths — consistência do perfil ao mudar resposta-pai para f
     // O teste confirma que os filhos permanecem intactos quando o pai é true
     expect(answers['investments.hasStocks']).toBe(true);
     expect(childPaths).toHaveLength(6); // getChildPaths retorna corretamente mas não é aplicado
+  });
+
+  it('limpar filhos de hasEducationExpenses remove hasInformalEducation', () => {
+    const answers = {
+      'deductions.hasEducationExpenses': false,
+      'deductions.hasInformalEducation': true,
+    };
+    const childPaths = getChildPaths('deductions.hasEducationExpenses');
+    const exclude = new Set(childPaths);
+    const cleaned = Object.fromEntries(
+      Object.entries(answers).filter(([k]) => !exclude.has(k)),
+    );
+    expect(cleaned['deductions.hasInformalEducation']).toBeUndefined();
+    expect(cleaned['deductions.hasEducationExpenses']).toBe(false);
   });
 });

@@ -206,6 +206,16 @@ export const QUESTIONS: Question[] = [
     fieldPath: 'deductions.hasEducationExpenses',
   },
   {
+    id: 'q_informal_education',
+    title: 'Essas despesas incluem curso livre, idioma, cursinho, aula particular ou algo fora de escola/faculdade/curso técnico?',
+    description: 'Cursos livres, idiomas e aulas particulares geralmente não são dedutíveis na declaração.',
+    type: 'boolean',
+    section: 'deductions',
+    sectionLabel: 'Despesas e Deduções',
+    fieldPath: 'deductions.hasInformalEducation',
+    showWhen: { fieldPath: 'deductions.hasEducationExpenses', equals: true },
+  },
+  {
     id: 'q_has_pension_plan',
     title: 'Você tinha algum plano de previdência privada (PGBL ou VGBL)?',
     description: 'Mesmo sem contribuições no ano — o saldo do plano precisa ser declarado como bem.',

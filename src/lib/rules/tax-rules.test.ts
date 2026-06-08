@@ -443,6 +443,40 @@ describe('versionamento por taxYear', () => {
     expect(alert?.message).toContain('3.561,50');
   });
 
+  it('createEmptyProfile inicializa hasInformalEducation como false', () => {
+    expect(createEmptyProfile().deductions.hasInformalEducation).toBe(false);
+  });
+
+  it('generateAlerts com hasEducationExpenses=true e hasInformalEducation=false gera alert_education_limit (info)', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    // hasInformalEducation permanece false (padrão)
+    const alerts = generateAlerts(profile);
+    expect(alerts.some((a) => a.id === 'alert_education_limit')).toBe(true);
+    expect(alerts.find((a) => a.id === 'alert_education_limit')?.severity).toBe('info');
+    expect(alerts.some((a) => a.id === 'alert_education_informal')).toBe(false);
+  });
+
+  it('generateAlerts com hasEducationExpenses=true e hasInformalEducation=true gera alert_education_informal (warning)', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    profile.deductions.hasInformalEducation = true;
+    const alerts = generateAlerts(profile);
+    expect(alerts.some((a) => a.id === 'alert_education_informal')).toBe(true);
+    expect(alerts.find((a) => a.id === 'alert_education_informal')?.severity).toBe('warning');
+    expect(alerts.some((a) => a.id === 'alert_education_limit')).toBe(false);
+  });
+
+  it('perfil antigo sem hasInformalEducation (undefined) não quebra e usa alert_education_limit', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasEducationExpenses = true;
+    delete (profile.deductions as unknown as Record<string, unknown>).hasInformalEducation;
+    expect(() => generateAlerts(profile)).not.toThrow();
+    const alerts = generateAlerts(profile);
+    expect(alerts.some((a) => a.id === 'alert_education_limit')).toBe(true);
+    expect(alerts.some((a) => a.id === 'alert_education_informal')).toBe(false);
+  });
+
   it('getApplicableGuideSlugs aceita taxYear sem alterar slugs', () => {
     const profile = createEmptyProfile();
     profile.income.hasCltIncome = true;
