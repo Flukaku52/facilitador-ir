@@ -174,6 +174,8 @@ Filtros Todos / Pendentes / Concluídos com contagens em tempo real.
 
 URL `/relatorio?d=<base64>` com o `TaxProfile` codificado. Ao acessar com o parâmetro, o app lê da URL em vez do `localStorage`. Banner informativo para visualizações compartilhadas.
 
+**Limitação conhecida:** o link codifica apenas o `TaxProfile`. Os toggles explícitos do checklist (`ir_facilitador_checklist`) não são transmitidos. Em modo shared view, apenas os itens auto-marcados pelo perfil (via `profile.documents`) aparecem como concluídos. Isso é esperado — o destinatário vê o estado do diagnóstico, não os toggles manuais.
+
 ---
 
 ## 3. Novas funcionalidades
@@ -470,6 +472,8 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | ~~6.4~~ | ~~Mensagem de link compartilhado inválido~~ ✅ |
 | ~~6.5~~ | ~~Acessibilidade do modal de compartilhamento (Escape + foco inicial)~~ ✅ |
 | ~~9.4~~ | ~~Validação defensiva de shape no localStorage~~ ✅ 9 testes |
+| ~~9.5~~ | ~~Toast falso de dados removidos para perfil válido~~ ✅ isProfileActuallyInvalid guard |
+| ~~9.6~~ | ~~Progresso intermediário do questionário~~ ✅ saveDraft/loadDraft/clearDraft |
 
 ### P3 — Exploração futura
 
