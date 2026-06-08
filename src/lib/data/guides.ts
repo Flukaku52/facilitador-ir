@@ -474,7 +474,7 @@ export const GUIDES: Guide[] = [
   {
     slug: 'cripto-alerta',
     title: 'Criptoativos — requer atenção',
-    shortDescription: 'Bitcoin, Ethereum e outros criptoativos têm regras próprias de declaração e podem gerar obrigações mensais.',
+    shortDescription: 'Bitcoin, Ethereum e outros criptoativos têm regras próprias de declaração e podem exigir apuração específica em alguns casos.',
     category: 'complex_cases',
     appliesTo: ['assets.hasCrypto'],
     isAlert: true,
