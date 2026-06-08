@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChecklistItem, ChecklistCategory, CATEGORY_LABELS } from '@/types/checklist';
 import { saveChecklistStateMap } from '@/lib/storage/local-profile-storage';
@@ -38,6 +38,7 @@ function ChecklistContent() {
   const [categoryFilter, setCategoryFilter] = useState<ChecklistCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── data ──────────────────────────────────────────────────────────────────
   const allItems = useMemo<ChecklistItem[]>(() => {
@@ -72,9 +73,9 @@ function ChecklistContent() {
   function handleToggle(id: string) {
     const newState = { ...checklistState, [id]: !(checklistState[id] ?? false) };
     saveChecklistStateMap(newState);
-    setToastVisible((v) => !v);
-    setTimeout(() => setToastVisible(false), 10);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToastVisible(true);
+    toastTimerRef.current = setTimeout(() => setToastVisible(false), 2000);
   }
 
   // ── empty / loading states ────────────────────────────────────────────────
