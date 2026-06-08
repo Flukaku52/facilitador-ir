@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getChildPaths, getVisibleQuestions } from '@/lib/data/questions';
 import { QuestionAnswers } from '@/types/question';
@@ -37,6 +37,11 @@ export default function QuestionnaireFlow() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [liveText, setLiveText] = useState('');
+  const questionCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    questionCardRef.current?.focus();
+  }, [currentIndex]);
 
   const visibleQuestions = getVisibleQuestions(answers);
   const total = visibleQuestions.length;
@@ -118,7 +123,7 @@ export default function QuestionnaireFlow() {
             </p>
           )}
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <div ref={questionCardRef} tabIndex={-1} className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-900 focus:outline-none">
             <h2 className="text-xl font-semibold text-gray-900 leading-snug dark:text-gray-100">
               {current.title}
             </h2>
