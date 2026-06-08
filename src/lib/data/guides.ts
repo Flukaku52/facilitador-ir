@@ -66,28 +66,35 @@ export const GUIDES: Guide[] = [
   {
     slug: 'contas-bancarias',
     title: 'Contas bancárias',
-    shortDescription: 'Como declarar saldos de contas correntes, poupanças e contas digitais.',
+    shortDescription: 'Como declarar saldos de contas correntes, poupanças, contas digitais e carteiras de pagamento — e como tratar os rendimentos de cada tipo.',
     category: 'bank',
     appliesTo: ['assets.hasBankAccounts'],
     plainLanguageExplanation:
-      'Você precisa declarar o saldo que tinha em cada conta bancária no dia 31 de dezembro do ano passado. Não é quanto entrou e saiu — é apenas o saldo final daquele dia. Os juros da poupança são isentos, mas o saldo precisa ser declarado em Bens e Direitos.',
+      'Na declaração, o foco é o saldo em 31 de dezembro e os rendimentos informados pela instituição. Em geral, contas com saldo acima do limite mínimo da Receita Federal devem entrar em Bens e Direitos — consulte o informe para saber o que declarar. Isso pode incluir conta corrente, poupança, contas digitais (Nubank, Inter, C6 etc.) e contas de pagamento (Mercado Pago, PicPay etc.). O informe de rendimentos de cada instituição é o documento principal: ele mostra o saldo em 31/12 e já separa os rendimentos por tipo — isento, sujeito à tributação exclusiva na fonte ou sujeito à tabela progressiva. Use sempre os valores do informe, não de memória ou estimativa.',
     documentsNeeded: [
-      'Informe de rendimentos de cada banco (disponível no app, internet banking ou agência)',
-      'Extrato de dezembro para confirmar saldo do dia 31',
+      'Informe de rendimentos de cada banco, conta digital ou carteira de pagamento onde você tinha saldo ou rendimentos no ano (disponível no app, internet banking ou agência)',
+      'Extrato de dezembro de cada conta para confirmar o saldo exato em 31/12, caso o informe não liste o saldo',
     ],
     whereToDeclare:
-      'Bens e Direitos, código correspondente ao tipo de conta (conta corrente, poupança, etc.).',
+      'Bens e Direitos, código correspondente ao tipo de conta (conta corrente, poupança etc.). Rendimentos vão nas fichas indicadas no próprio informe da instituição.',
     howToFill: [
-      'Informe o nome do banco, agência, número da conta e saldo em 31/12.',
-      'Use o valor exato do extrato — não arredonde.',
-      'Conta poupança: informe o saldo sem os juros do período (os juros são isentos, mas o saldo é declarado).',
-      'Se tiver conta conjunta, declare sua parte.',
-      'Rendimentos de poupança vão na ficha de Rendimentos Isentos.',
+      'Informe o nome da instituição, agência, número da conta e saldo em 31/12.',
+      'Use o valor exato do informe ou extrato — não arredonde.',
+      'Conta poupança: informe o saldo em 31/12 conforme o informe ou extrato da instituição. Os rendimentos da poupança são isentos e aparecem em Rendimentos Isentos.',
+      'Contas remuneradas (conta corrente com rendimento automático, comum em bancos digitais): declare o saldo em Bens e Direitos e os rendimentos conforme o informe — costumam ser sujeitos a tributação exclusiva na fonte, com imposto já retido.',
+      'Contas de pagamento (Mercado Pago, PicPay etc.): se tinha saldo em 31/12, declare em Bens e Direitos; se houve rendimentos, o informe da plataforma indicará a classificação correta.',
+      'Se tiver conta conjunta, declare apenas a sua parte do saldo.',
     ],
     commonMistakes: [
       'Declarar o saldo do dia 1º de janeiro em vez de 31 de dezembro.',
-      'Não declarar contas digitais (Nubank, Inter, C6, etc.).',
-      'Esquecer de contas que ficaram zeradas ou foram encerradas durante o ano.',
+      'Não declarar contas digitais (Nubank, Inter, C6 etc.) ou carteiras de pagamento (Mercado Pago, PicPay etc.) por achar que não precisam ser informadas.',
+      'Ignorar contas que estavam na declaração anterior, foram encerradas no ano ou tiveram rendimentos informados pela instituição.',
+      'Não declarar os rendimentos de contas remuneradas — o saldo vai em Bens e Direitos, mas os rendimentos têm ficha própria indicada no informe.',
+    ],
+    whenToCallAccountant: [
+      'Conta em instituição estrangeira ou carteira digital com saldo em moeda estrangeira (Wise, Revolut, PayPal com saldo em dólar ou euro) — há obrigações declaratórias adicionais.',
+      'Rendimentos de contas remuneradas com valores expressivos e dúvida sobre a classificação (isento, exclusivo na fonte ou tributável pela tabela).',
+      'Conta conjunta com valores relevantes e divisão do saldo não óbvia entre os titulares.',
     ],
   },
   {
