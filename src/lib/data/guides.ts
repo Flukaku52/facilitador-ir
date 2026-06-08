@@ -111,14 +111,14 @@ export const GUIDES: Guide[] = [
       'Comprovante de resgate antecipado ou encerramento, se vendeu ou resgatou algum produto antes do vencimento',
     ],
     whereToDeclare:
-      'Posição em 31/12: Bens e Direitos (cada produto separado ou agrupado conforme orientação do informe). Rendimentos tributáveis: Rendimentos Sujeitos à Tributação Exclusiva/Definitiva. Rendimentos isentos: Rendimentos Isentos e Não Tributáveis. Fundos: conforme a categoria indicada no informe.',
+      'Posição em 31/12: Bens e Direitos (cada produto separado ou agrupado conforme orientação do informe). Rendimentos de aplicações financeiras tributados na fonte: Rendimentos Sujeitos à Tributação Exclusiva/Definitiva. Rendimentos isentos: Rendimentos Isentos e Não Tributáveis. Fundos: conforme a categoria indicada no informe.',
     howToFill: [
       'Baixe o informe de rendimentos de cada instituição onde tem investimentos — ele é a fonte oficial para o preenchimento.',
       'Declare a posição de cada investimento em 31/12 em Bens e Direitos, usando os valores e descrições do informe.',
       'Para rendimentos que o informe classificar como tributáveis (como CDB e Tesouro Direto), lance na ficha de Rendimentos Sujeitos à Tributação Exclusiva.',
       'Para rendimentos que o informe classificar como isentos (como alguns LCI, LCA, CRI, CRA ou debêntures incentivadas), lance em Rendimentos Isentos e Não Tributáveis.',
       'Para fundos de investimento, o informe indica a categoria do rendimento — siga as instruções do informe sem reclassificar por conta própria.',
-      'Se o informe indicar IR retido na fonte, informe esse valor na declaração para aproveitar o crédito do imposto já pago.',
+      'Se o informe indicar imposto retido na fonte, transcreva os valores conforme o informe, sem tentar recalcular ou compensar por conta própria.',
       'Se resgatou ou venceu algum produto durante o ano, verifique se o valor e o rendimento aparecem no informe e declare conforme indicado.',
     ],
     commonMistakes: [
@@ -545,7 +545,7 @@ export const GUIDES: Guide[] = [
     appliesTo: ['assets.hasForeignAssets'],
     isAlert: true,
     plainLanguageExplanation:
-      'Quem tem conta bancária, imóvel, investimentos, participação em empresa ou qualquer ativo fora do Brasil precisa declará-los na declaração de IR. Dependendo do total de bens no exterior, pode haver também obrigação de entrega de uma declaração separada ao Banco Central (Declaração de Capitais Brasileiros no Exterior — CBE) — com prazo e formulário próprios. Rendimentos recebidos de fontes estrangeiras — salário, aluguéis, dividendos, juros — precisam ser declarados e tributados no Brasil. A conversão de valores em moeda estrangeira para reais deve seguir os critérios orientados pela Receita Federal. Imposto eventualmente pago no exterior pode ser compensado em alguns casos, dependendo do país e de acordos internacionais. Esta é uma das situações que mais justifica o acompanhamento de um contador.',
+      'Quem tem conta bancária, imóvel, investimentos, participação em empresa ou outros ativos fora do Brasil deve avaliar a declaração desses bens no IR, conforme as regras aplicáveis e a obrigatoriedade de entrega. Dependendo do total de bens no exterior, pode haver também obrigação de entrega de uma declaração separada ao Banco Central (Declaração de Capitais Brasileiros no Exterior — CBE) — com prazo e formulário próprios. Rendimentos recebidos de fontes estrangeiras — salário, aluguéis, dividendos, juros — precisam ser declarados e tributados no Brasil. A conversão de valores em moeda estrangeira para reais deve seguir os critérios orientados pela Receita Federal. Imposto eventualmente pago no exterior pode ser compensado em alguns casos, dependendo do país e de acordos internacionais. Esta é uma das situações que mais justifica o acompanhamento de um contador.',
     documentsNeeded: [
       'Extratos de contas bancárias no exterior com saldo em 31/12',
       'Extratos ou relatórios de corretoras estrangeiras com posição dos investimentos em 31/12',
@@ -557,7 +557,7 @@ export const GUIDES: Guide[] = [
     whereToDeclare:
       'Bens e Direitos: bens e contas no exterior (há código específico para cada tipo). Rendimentos do exterior: ficha de Rendimentos Tributáveis Recebidos de Pessoas Físicas/Exterior ou ficha específica conforme o tipo. Rendimentos isentos, quando aplicável: Rendimentos Isentos e Não Tributáveis.',
     howToFill: [
-      'Liste todos os bens, contas e investimentos que você tinha no exterior em 31/12, independentemente do valor.',
+      'Liste os bens, contas e investimentos que você tinha no exterior em 31/12 e avalie a obrigação de declarar conforme as regras aplicáveis.',
       'Os valores em moeda estrangeira precisam ser convertidos para reais — siga a orientação da Receita Federal sobre a cotação a adotar (geralmente a taxa de câmbio de referência do Banco Central na data correspondente).',
       'Informe a origem dos recursos utilizados para adquirir ou manter os bens no exterior.',
       'Declare os rendimentos recebidos do exterior (salário, aluguel, juros, dividendos) na ficha correspondente ao tipo de renda.',
@@ -591,7 +591,7 @@ export const GUIDES: Guide[] = [
     appliesTo: ['income.hasSelfEmploymentIncome'],
     isAlert: true,
     plainLanguageExplanation:
-      'Quem trabalha por conta própria — como autônomo, freelancer ou prestador de serviços — precisa organizar bem as fontes de renda antes de declarar. Pagamentos recebidos de pessoas físicas em geral obrigam ao recolhimento mensal do carnê-leão. Pagamentos de empresas costumam ter IR retido na fonte, mas precisam constar da declaração com base nos informes das contratantes. Deduções de despesas da atividade são permitidas em alguns casos por meio do Livro Caixa, mas as regras são restritas e exigem documentação. O INSS como contribuinte individual pode ser dedutível. Não misture renda autônoma de pessoa física com receita de MEI.',
+      'Quem trabalha por conta própria — como autônomo, freelancer ou prestador de serviços — precisa organizar bem as fontes de renda antes de declarar. Pagamentos recebidos de pessoas físicas podem exigir apuração mensal pelo carnê-leão, conforme os valores recebidos e as regras aplicáveis. Pagamentos de empresas costumam ter IR retido na fonte, mas precisam constar da declaração com base nos informes das contratantes. Deduções de despesas da atividade são permitidas em alguns casos por meio do Livro Caixa, mas as regras são restritas e exigem documentação. O INSS como contribuinte individual pode ser dedutível. Não misture renda autônoma de pessoa física com receita de MEI.',
     documentsNeeded: [
       'Recibos de todos os serviços prestados a pessoas físicas no ano',
       'RPAs (Recibos de Pagamento Autônomo) emitidos pelas empresas contratantes, se disponível',
@@ -602,7 +602,7 @@ export const GUIDES: Guide[] = [
       'Notas fiscais de serviço (NFS-e) emitidas, se houver',
     ],
     whereToDeclare:
-      'Rendimentos Tributáveis — Recebidos de Pessoa Física (carnê-leão) ou Recebidos de Pessoa Jurídica, conforme a fonte pagadora. Deduções do Livro Caixa: ficha Livro Caixa. INSS como contribuinte individual: ficha de Deduções.',
+      'Rendimentos Tributáveis — Recebidos de Pessoa Física (carnê-leão) ou Recebidos de Pessoa Jurídica, conforme a fonte pagadora. Deduções do Livro Caixa: ficha Livro Caixa. INSS como contribuinte individual: deduções/contribuições previdenciárias, conforme orientação do programa e comprovantes.',
     howToFill: [
       'Relacione todas as fontes de renda do ano: empresas (PJ) e pessoas físicas (PF) — cada uma vai em fichas diferentes.',
       'Para rendimentos de empresas: use os informes de rendimentos de cada contratante e lance os valores recebidos e o IR retido.',
