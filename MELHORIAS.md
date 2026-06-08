@@ -402,9 +402,9 @@ export const env = createEnv({
 
 ### 9.1 Chaves de localStorage: hífen vs underscore `P2` 🔄
 
-**Auditoria concluída (código):** Todas as chaves no código usam underscore consistentemente (`ir_facilitador_profile`, `ir_facilitador_checklist`, `ir_migration_v1_handled`). A chave com hífen (`ir-facilitador-profile`) nunca apareceu em nenhum arquivo versionado.
+**Auditoria de código concluída (beta-polish-safety-work):** 6 pontos de uso confirmados — todos usam underscore: `ir_facilitador_profile` e `ir_facilitador_checklist` em `local-profile-storage.ts`, `useStoredProfile.ts`, `useChecklistStore.ts` e `useProfileSync.ts`. Chave com hífen nunca apareceu em nenhum arquivo versionado.
 
-**Risco residual baixo.** Confirmar abrindo DevTools em produção numa conta de teste e verificando `Object.keys(localStorage)`. Se não aparecer chave com hífen, fechar como ✅ sem código.
+**Pendência única:** verificar via DevTools em produção (`Object.keys(localStorage)`) numa conta real ou de teste para confirmar que nenhum dado antigo usa chave com hífen. Se não aparecer, fechar como ✅ sem código.
 
 ---
 
