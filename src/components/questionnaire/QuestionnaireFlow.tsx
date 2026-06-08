@@ -117,6 +117,12 @@ export default function QuestionnaireFlow() {
 
       <div className="flex flex-1 flex-col items-center justify-center px-4 py-10">
         <div className="w-full max-w-xl">
+          {currentIndex === 0 && (
+            <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
+              Este app organiza suas informações e mostra documentos e alertas para facilitar sua declaração. Ele não envia a declaração para a Receita, não substitui contador e não garante cálculo definitivo de imposto.
+            </div>
+          )}
+
           {showSectionHeader && (
             <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-400">
               {current.sectionLabel}
