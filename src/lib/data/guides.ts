@@ -104,9 +104,9 @@ export const GUIDES: Guide[] = [
     category: 'investments',
     appliesTo: ['investments.hasFixedIncome'],
     plainLanguageExplanation:
-      'Investimentos de renda fixa — como CDB, Tesouro Direto, LCI, LCA, CRI, CRA, debêntures e fundos de renda fixa — precisam ser declarados. Cada produto pode ter tratamento diferente: alguns têm rendimentos tributáveis (com IR retido na fonte pelo banco ou corretora), outros podem ter rendimentos isentos ou com regras específicas conforme o tipo e as condições do produto. O informe de rendimentos emitido pela sua instituição financeira ou corretora é o documento principal — ele já traz os valores separados por tipo de rendimento e a posição em 31/12. Siga sempre o informe para saber o que declarar em cada ficha.',
+      'Investimentos de renda fixa — como CDB, Tesouro Direto, LCI, LCA, CRI, CRA, debêntures e fundos de renda fixa — podem precisar ser informados na declaração, conforme o informe da instituição e as regras aplicáveis. Cada produto pode ter tratamento diferente: alguns têm rendimentos tributáveis (com IR retido na fonte pelo banco ou corretora), outros podem ter rendimentos isentos ou com regras específicas conforme o tipo e as condições do produto. O informe de rendimentos emitido pela sua instituição financeira ou corretora é o documento principal — ele já traz os valores separados por tipo de rendimento e a posição em 31/12. Siga sempre o informe para saber o que declarar em cada ficha.',
     documentsNeeded: [
-      'Informe de rendimentos de cada banco ou corretora onde tem investimentos (emitido geralmente até o final de fevereiro)',
+      'Informe de rendimentos de cada banco ou corretora onde tem investimentos, conforme disponibilizado pela instituição.',
       'Extrato ou posição dos investimentos em 31/12, se o informe não detalhar cada produto individualmente',
       'Comprovante de resgate antecipado ou encerramento, se vendeu ou resgatou algum produto antes do vencimento',
     ],
@@ -115,7 +115,7 @@ export const GUIDES: Guide[] = [
     howToFill: [
       'Baixe o informe de rendimentos de cada instituição onde tem investimentos — ele é a fonte oficial para o preenchimento.',
       'Declare a posição de cada investimento em 31/12 em Bens e Direitos, usando os valores e descrições do informe.',
-      'Para rendimentos que o informe classificar como tributáveis (como CDB e Tesouro Direto), lance na ficha de Rendimentos Sujeitos à Tributação Exclusiva.',
+      'Para rendimentos que o informe classificar como tributados na fonte, lance na ficha de Rendimentos Sujeitos à Tributação Exclusiva/Definitiva, conforme indicado no informe.',
       'Para rendimentos que o informe classificar como isentos (como alguns LCI, LCA, CRI, CRA ou debêntures incentivadas), lance em Rendimentos Isentos e Não Tributáveis.',
       'Para fundos de investimento, o informe indica a categoria do rendimento — siga as instruções do informe sem reclassificar por conta própria.',
       'Se o informe indicar imposto retido na fonte, transcreva os valores conforme o informe, sem tentar recalcular ou compensar por conta própria.',
@@ -356,7 +356,7 @@ export const GUIDES: Guide[] = [
   {
     slug: 'veiculo',
     title: 'Veículo',
-    shortDescription: 'Como declarar veículos em Bens e Direitos — compra, manutenção, venda, financiamento e documentos necessários.',
+    shortDescription: 'Como declarar veículos em Bens e Direitos — compra, posse, venda, financiamento e documentos necessários.',
     category: 'assets',
     appliesTo: ['assets.hasVehicle'],
     plainLanguageExplanation:
@@ -545,7 +545,7 @@ export const GUIDES: Guide[] = [
     appliesTo: ['assets.hasForeignAssets'],
     isAlert: true,
     plainLanguageExplanation:
-      'Quem tem conta bancária, imóvel, investimentos, participação em empresa ou outros ativos fora do Brasil deve avaliar a declaração desses bens no IR, conforme as regras aplicáveis e a obrigatoriedade de entrega. Dependendo do total de bens no exterior, pode haver também obrigação de entrega de uma declaração separada ao Banco Central (Declaração de Capitais Brasileiros no Exterior — CBE) — com prazo e formulário próprios. Rendimentos recebidos de fontes estrangeiras — salário, aluguéis, dividendos, juros — precisam ser declarados e tributados no Brasil. A conversão de valores em moeda estrangeira para reais deve seguir os critérios orientados pela Receita Federal. Imposto eventualmente pago no exterior pode ser compensado em alguns casos, dependendo do país e de acordos internacionais. Esta é uma das situações que mais justifica o acompanhamento de um contador.',
+      'Quem tem conta bancária, imóvel, investimentos, participação em empresa ou outros ativos fora do Brasil deve avaliar a declaração desses bens no IR, conforme as regras aplicáveis e a obrigatoriedade de entrega. Dependendo do total de bens no exterior, pode haver também obrigação de entrega de uma declaração separada ao Banco Central (Declaração de Capitais Brasileiros no Exterior — CBE) — com prazo e formulário próprios. Rendimentos recebidos de fontes estrangeiras — salário, aluguéis, dividendos, juros — devem ser avaliados conforme o tipo de renda, pois podem precisar ser declarados e tributados no Brasil. A conversão de valores em moeda estrangeira para reais deve seguir os critérios orientados pela Receita Federal. Imposto eventualmente pago no exterior pode ser compensado em alguns casos, dependendo do país e de acordos internacionais. Esta é uma das situações que mais justifica o acompanhamento de um contador.',
     documentsNeeded: [
       'Extratos de contas bancárias no exterior com saldo em 31/12',
       'Extratos ou relatórios de corretoras estrangeiras com posição dos investimentos em 31/12',
@@ -612,11 +612,11 @@ export const GUIDES: Guide[] = [
       'Não misture rendimentos de autônomo PF com receitas de MEI — são tratamentos separados.',
     ],
     commonMistakes: [
-      'Não recolher o carnê-leão mensalmente sobre rendimentos recebidos de pessoas físicas — o acúmulo gera multa e juros.',
+      'Não apurar o carnê-leão quando aplicável sobre rendimentos recebidos de pessoas físicas — valores em atraso podem gerar multa e juros.',
       'Deixar de declarar serviços prestados por esquecimento ou por não ter recibo — a Receita pode cruzar os dados com as contratantes.',
       'Misturar renda de autônomo pessoa física com receita de MEI na mesma ficha de rendimentos.',
       'Deduzir despesas sem Livro Caixa formalizado ou sem comprovação documental.',
-      'Não incluir informes de rendimentos de contratantes que retiveram IR — o crédito do imposto retido só é aproveitado com a declaração correta.',
+      'Não incluir informes de rendimentos de contratantes que retiveram IR — o imposto retido só aparece corretamente quando o informe é declarado na ficha certa.',
       'Confundir carnê-leão (recolhimento mensal durante o ano) com o ajuste feito na declaração anual.',
     ],
     whenToCallAccountant: [
