@@ -54,6 +54,7 @@ function DashboardContent() {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
         <p className="text-lg text-gray-600 dark:text-gray-400">Você ainda não concluiu o diagnóstico.</p>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Responda as perguntas para ver seu painel e checklist de documentos.</p>
         <Link
           href="/questionario"
           className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
