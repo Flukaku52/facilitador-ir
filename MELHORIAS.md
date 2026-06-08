@@ -322,6 +322,18 @@ Modal de confirmação inline em `/relatorio` antes de gerar link (`?d=base64`).
 
 ---
 
+### 6.4 Mensagem de link compartilhado inválido `P2` ✅
+
+Quando `/relatorio?d=...` recebe base64 inválido, corrompido ou malformado, exibe mensagem amigável: "Este link de relatório parece inválido ou expirado. Peça para a pessoa gerar um novo link." Antes exibia a mensagem genérica de "diagnóstico não concluído", que era confusa.
+
+---
+
+### 6.5 Acessibilidade do modal de compartilhamento `P2` ✅
+
+Modal já tinha `role="dialog"`, `aria-modal`, `aria-labelledby` e fechamento por clique externo. Adicionado: fechamento por tecla Escape e foco inicial no botão Cancelar ao abrir.
+
+---
+
 ## 7. Produto e monetização (longo prazo)
 
 ### 7.1 Modo contador `P3` ⬜
@@ -426,6 +438,12 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 
 ---
 
+### 9.4 Validação defensiva do shape do perfil no localStorage `P2` ✅
+
+`loadTaxProfile()` e `getSnapshot()` (em `useStoredProfile`) agora rejeitam valores claramente inválidos do JSON (`null` literal, array, primitivo) antes de fazer cast para `TaxProfile`. Perfis antigos com campos ausentes continuam funcionando — apenas o shape mínimo (objeto não-null, não-array) é exigido. 9 testes cobrem os casos de borda em `local-profile-storage.test.ts`.
+
+---
+
 ## Resumo de prioridades — pendentes
 
 ### P1 — Antes do próximo release
@@ -448,7 +466,10 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | ~~5.4~~ | ~~Focus management entre perguntas~~ ✅ QuestionnaireFlow |
 | ~~6.3~~ | ~~Aviso de dados no compartilhamento~~ ✅ Modal de confirmação no relatório |
 | 9.1 | Chave localStorage: auditoria de código concluída — risco baixo; confirmar via DevTools em produção |
-| 9.2 | Toast "dados corrompidos" quando `useStoredProfile` descarta JSON inválido | ✅ |
+| ~~9.2~~ | ~~Toast "dados corrompidos"~~ ✅ |
+| ~~6.4~~ | ~~Mensagem de link compartilhado inválido~~ ✅ |
+| ~~6.5~~ | ~~Acessibilidade do modal de compartilhamento (Escape + foco inicial)~~ ✅ |
+| ~~9.4~~ | ~~Validação defensiva de shape no localStorage~~ ✅ 9 testes |
 
 ### P3 — Exploração futura
 
