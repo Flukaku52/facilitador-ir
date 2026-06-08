@@ -408,9 +408,9 @@ export const GUIDES: Guide[] = [
     category: 'investments',
     appliesTo: ['deductions.hasPrivatePensionContributions', 'investments.hasPrivatePension'],
     plainLanguageExplanation:
-      'Existem dois tipos de previdência privada e cada um tem tratamento diferente. O PGBL pode permitir deduzir as contribuições do IR — até o limite legal vigente, conforme o tipo de plano e as regras aplicáveis —, mas você paga IR quando resgatar. O VGBL não dá dedução agora, mas só paga IR sobre os rendimentos no resgate. É importante saber qual tipo você tem.',
+      'Existem dois tipos de previdência privada e cada um tem tratamento diferente. O PGBL pode permitir deduzir as contribuições do IR — até o limite legal vigente, conforme o tipo de plano e as regras aplicáveis —, mas você paga IR quando resgatar. O VGBL normalmente não dá dedução na contribuição; o tratamento no resgate depende do tipo de plano, regime escolhido e informe da instituição. É importante saber qual tipo você tem.',
     documentsNeeded: [
-      'Informe de contribuições e saldo da seguradora ou banco (emitido até fevereiro)',
+      'Informe de contribuições e saldo da seguradora ou banco, conforme disponibilizado pela instituição.',
       'Tipo do plano (PGBL ou VGBL) — consta no contrato',
     ],
     whereToDeclare:
@@ -479,7 +479,7 @@ export const GUIDES: Guide[] = [
     appliesTo: ['assets.hasCrypto'],
     isAlert: true,
     plainLanguageExplanation:
-      'Criptoativos precisam ser declarados, e as regras são específicas e mais detalhadas do que muitos esperam. O saldo em 31/12 vai em Bens e Direitos — pelo custo de aquisição, não pelo valor de mercado atual. Se você vendeu ou trocou criptoativos durante o ano, pode ter apurado ganho de capital sujeito a tributação, dependendo dos valores envolvidos e das regras vigentes. A Receita Federal já recebe informações das exchanges brasileiras — o cruzamento é feito e omissões são detectadas. Operações em carteiras próprias (cold wallet) ou exchanges estrangeiras também devem ser avaliadas.',
+      'Criptoativos podem precisar ser informados na declaração, conforme a obrigatoriedade de entrega, a posição em 31/12 e as regras aplicáveis. As regras são específicas e mais detalhadas do que muitos esperam. O saldo em 31/12 vai em Bens e Direitos — pelo custo de aquisição, não pelo valor de mercado atual. Se você vendeu ou trocou criptoativos durante o ano, pode ter apurado ganho de capital sujeito a tributação, dependendo dos valores envolvidos e das regras vigentes. A Receita Federal já recebe informações das exchanges brasileiras — o cruzamento é feito e omissões são detectadas. Operações em carteiras próprias (cold wallet) ou exchanges estrangeiras também devem ser avaliadas.',
     documentsNeeded: [
       'Extrato de posição em 31/12 de cada exchange ou carteira utilizada',
       'Histórico de transações do ano (compras, vendas, permutas, transferências entre carteiras)',
@@ -491,8 +491,8 @@ export const GUIDES: Guide[] = [
     howToFill: [
       'Declare cada tipo de criptoativo separadamente — Bitcoin, Ethereum e demais ficam em linhas distintas.',
       'Informe o custo de aquisição em reais, não o valor de mercado em 31/12.',
-      'Se vendeu criptoativos durante o ano, some as vendas mês a mês para verificar se houve ganho tributável.',
-      'Permutas (trocar um cripto por outro) podem ser tratadas como venda e recompra — geram ganho de capital se houver valorização.',
+      'Se vendeu criptoativos durante o ano, organize as operações mês a mês e avalie com cuidado se houve ganho sujeito à tributação, sem tentar recalcular de cabeça.',
+      'Permutas (trocar um cripto por outro) podem ter tratamento fiscal semelhante a uma venda e devem ser avaliadas com cuidado, especialmente se houver valorização.',
       'Operações em exchanges estrangeiras podem ter obrigações declaratórias adicionais.',
     ],
     commonMistakes: [
@@ -519,7 +519,7 @@ export const GUIDES: Guide[] = [
     appliesTo: ['income.hasRentIncome'],
     isAlert: true,
     plainLanguageExplanation:
-      'Receber aluguel envolve obrigações que vão além da declaração anual. Quando o inquilino é pessoa física, pode ser necessário apurar e recolher o imposto mensalmente pelo carnê-leão — antes de declarar. Quando o pagador é uma empresa (pessoa jurídica), ela normalmente retém o imposto na fonte. O imóvel alugado também deve ser declarado em Bens e Direitos. A Receita Federal cruza os dados do proprietário com os do inquilino — omissões são detectadas.',
+      'Receber aluguel envolve obrigações que vão além da declaração anual. Quando o inquilino é pessoa física, pode ser necessário apurar e recolher o imposto mensalmente pelo carnê-leão — antes de declarar. Quando o pagador é uma empresa (pessoa jurídica), pode haver informe de rendimentos e retenção na fonte, conforme o caso. O imóvel alugado também deve ser declarado em Bens e Direitos. A Receita Federal cruza os dados do proprietário com os do inquilino — omissões são detectadas.',
     documentsNeeded: [
       'Recibos de aluguel de todos os meses do ano',
       'Contrato de locação vigente',
@@ -537,7 +537,7 @@ export const GUIDES: Guide[] = [
       'Se há despesas dedutíveis do aluguel (como condomínio pago pelo locador, IPTU), verifique com um contador se e como podem ser abatidas.',
     ],
     commonMistakes: [
-      'Não recolher o carnê-leão mensalmente quando o inquilino é pessoa física.',
+      'Não apurar o carnê-leão quando aplicável em aluguéis recebidos de pessoa física.',
       'Omitir meses de aluguel por achar que o valor é baixo.',
       'Não declarar o imóvel alugado em Bens e Direitos.',
       'Declarar o valor do aluguel em campo errado (PF × PJ).',
@@ -659,7 +659,7 @@ export const GUIDES: Guide[] = [
       'Informe de retenção na fonte, se houver',
     ],
     whereToDeclare:
-      'Depende do tipo de renda. Rendimentos isentos (herança, doações dentro do limite, indenizações por rescisão) vão em Rendimentos Isentos. Prêmios de loteria e concursos podem ter tributação exclusiva na fonte. Confirme a classificação correta com um contador.',
+      'Depende do tipo de renda. Alguns valores podem ser informados como Rendimentos Isentos e Não Tributáveis; outros podem ser tributados na fonte ou exigir tratamento específico. Confirme a classificação com o informe, documento oficial ou contador.',
     howToFill: [
       'Identifique a natureza de cada renda recebida.',
       'Verifique se houve retenção de IR na fonte — o comprovante do pagador indicará isso.',
@@ -669,7 +669,7 @@ export const GUIDES: Guide[] = [
     commonMistakes: [
       'Não declarar uma renda por achar que ela é isenta, sem confirmar.',
       'Lançar rendimento tributável como isento.',
-      'Não informar herança ou doação recebida em dinheiro.',
+      'Não guardar documentação de herança, doação ou indenização recebida.',
     ],
     whenToCallAccountant: [
       'Herança ou doação de valor significativo.',
@@ -682,18 +682,18 @@ export const GUIDES: Guide[] = [
   {
     slug: 'pensao-alimenticia',
     title: 'Pensão alimentícia',
-    shortDescription: 'Quem paga pensão judicial pode deduzir. Quem recebe declara como rendimento.',
+    shortDescription: 'Quem paga pensão judicial pode deduzir. Quem recebe informa conforme orientação vigente da Receita.',
     category: 'deductions',
     appliesTo: ['deductions.hasAlimony'],
     plainLanguageExplanation:
-      'A pensão alimentícia tem tratamento diferente para quem paga e para quem recebe. Quem paga pensão fixada por decisão judicial pode deduzir o valor integral da base de cálculo do IR. Quem recebe a pensão deve declará-la como rendimento — com tratamento fiscal específico conforme as regras vigentes. Acordos extrajudiciais têm tratamento diferente; confirme com um contador.',
+      'A pensão alimentícia tem tratamento diferente para quem paga e para quem recebe. Quem paga pensão fixada por decisão judicial pode deduzir o valor integral da base de cálculo do IR. Quem recebe pensão alimentícia deve informar os valores conforme a orientação vigente do programa da Receita, em geral em Rendimentos Isentos e Não Tributáveis. Quem paga deve observar se há decisão judicial, acordo homologado ou escritura pública que permita a dedução. Acordos extrajudiciais têm tratamento diferente; confirme com um contador.',
     documentsNeeded: [
       'Decisão judicial ou acordo homologado judicialmente que estabelece a pensão',
       'Comprovantes de pagamento ao longo do ano (transferências, recibos)',
       'CPF do alimentando (quem recebe)',
     ],
     whereToDeclare:
-      'Quem paga: valor total pago no ano em Pagamentos Efetuados (Pensão Alimentícia). Quem recebe: valor recebido em Rendimentos Tributáveis (ou conforme orientação do programa conforme regras vigentes).',
+      'Quem paga: Pagamentos Efetuados, quando houver decisão judicial, acordo homologado ou escritura pública. Quem recebe: Rendimentos Isentos e Não Tributáveis, conforme orientação vigente do programa da Receita.',
     howToFill: [
       'Separe os comprovantes de todos os pagamentos realizados no ano.',
       'Informe o CPF do alimentando — é obrigatório para a dedução ser aceita.',
@@ -720,7 +720,7 @@ export const GUIDES: Guide[] = [
     appliesTo: ['income.hasBusinessIncome'],
     isAlert: true,
     plainLanguageExplanation:
-      'Se você é sócio de empresa, MEI, empresário individual ou recebeu dividendos ou pró-labore, a declaração tem especificidades que vão além da renda CLT. É importante separar o que veio da empresa como distribuição de lucros, pró-labore ou retirada, e entender como cada tipo é tributado (ou não). Erros nessa área são frequentes e podem gerar questionamentos.',
+      'Se você é sócio de empresa, MEI, empresário individual ou recebeu dividendos ou pró-labore, a declaração tem especificidades que vão além da renda CLT. É importante separar o que veio da empresa como distribuição de lucros, pró-labore ou retirada, e entender o tratamento fiscal indicado pela contabilidade para cada tipo de recebimento. Erros nessa área são frequentes e podem gerar questionamentos.',
     documentsNeeded: [
       'Informe de rendimentos da empresa ou contabilidade (pró-labore, distribuição de lucros)',
       'Declaração do MEI (DASN-SIMEI) se for MEI',
@@ -745,7 +745,7 @@ export const GUIDES: Guide[] = [
     whenToCallAccountant: [
       'Qualquer dúvida sobre como declarar renda vinda de empresa própria.',
       'Se há mais de uma empresa ou participação em diferentes sociedades.',
-      'Se houve distribuição de lucros acima dos limites isentos.',
+      'Se houve distribuição de lucros sem escrituração, comprovação adequada ou orientação clara da contabilidade.',
       'Se o MEI teve faturamento próximo ou acima do limite do regime.',
       'Se há dívidas da empresa que afetam o patrimônio pessoal.',
     ],
