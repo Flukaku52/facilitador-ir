@@ -46,7 +46,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         <ul className="space-y-2">
           {guide.documentsNeeded.map((doc, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <span className="mt-0.5 text-indigo-400 shrink-0">•</span>
+              <span className="mt-0.5 text-indigo-600 dark:text-indigo-400 shrink-0">•</span>
               {doc}
             </li>
           ))}

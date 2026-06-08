@@ -307,7 +307,7 @@ function ReportContent() {
             <ul className="space-y-1.5 text-sm">
               {checklist.map((item) => (
                 <li key={item.id} className={`flex items-start gap-2 ${item.completed ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-300'}`}>
-                  <span className={item.completed ? 'text-green-500' : 'text-gray-400'}>{item.completed ? '✓' : '○'}</span>
+                  <span className={item.completed ? 'text-green-500' : 'text-gray-500 dark:text-gray-400'}>{item.completed ? '✓' : '○'}</span>
                   <span className={item.completed ? 'line-through' : ''}>{item.title}</span>
                 </li>
               ))}

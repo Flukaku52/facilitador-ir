@@ -46,7 +46,7 @@ export default function LandingPage() {
             'Ações, FIIs e criptoativos',
           ].map((item) => (
             <li key={item} className="flex items-center gap-2">
-              <span className="text-indigo-400">✓</span> {item}
+              <span className="text-indigo-600 dark:text-indigo-400">✓</span> {item}
             </li>
           ))}
         </ul>
