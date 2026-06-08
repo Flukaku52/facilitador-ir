@@ -183,31 +183,36 @@ export const GUIDES: Guide[] = [
   {
     slug: 'despesas-educacao',
     title: 'Despesas com educação',
-    shortDescription: 'Escola, faculdade e cursos técnicos têm limite de dedução anual.',
+    shortDescription: 'Ensino formal é dedutível até um limite anual por pessoa. Cursos livres, idiomas, material escolar e transporte não entram como dedução.',
     category: 'deductions',
     appliesTo: ['deductions.hasEducationExpenses'],
     plainLanguageExplanation:
-      'Diferente das despesas médicas, educação tem um limite anual de dedução (o limite muda cada ano). Só podem ser deduzidos: educação infantil, ensino fundamental, médio, técnico e superior. Cursos livres, idiomas e cursos de extensão em geral não são dedutíveis.',
+      'Educação tem regras mais restritas do que despesas médicas: só parte dos gastos é dedutível e existe um limite anual por pessoa (o valor do limite é divulgado pela Receita Federal a cada ano). O ponto mais importante é saber o que entra e o que não entra. Apenas ensino formal é dedutível — educação infantil, ensino fundamental, médio, técnico ou profissionalizante e superior. Se você teve gastos formais e informais juntos, precisa separar os comprovantes antes de declarar.',
     documentsNeeded: [
-      'Informe de pagamentos da instituição de ensino (emitido pela escola/faculdade)',
-      'Comprovantes de pagamento das mensalidades',
+      'Informe de pagamentos emitido pela escola, faculdade ou curso técnico',
+      'Comprovantes de pagamento das mensalidades do ano',
+      'Comprovantes de despesas educacionais dos dependentes, se houver',
     ],
     whereToDeclare:
       'Ficha de Pagamentos Efetuados — Instrução.',
     howToFill: [
-      'Lance o valor anual pago, respeitando o limite de dedução vigente.',
-      'Inclua o CNPJ da instituição de ensino.',
-      'Despesas educacionais dos dependentes também são dedutíveis.',
-      'Cursos livres, idiomas e pós-graduação tipo MBA podem não ser dedutíveis — verifique cada caso.',
+      'Separe antes quais despesas são de ensino formal e quais são de cursos livres, idiomas ou aulas particulares — apenas as formais entram na dedução.',
+      'Lance somente o total das despesas de ensino formal, respeitando o limite anual por pessoa vigente para o ano-base da declaração.',
+      'Inclua o CNPJ da instituição de ensino em cada lançamento.',
+      'Despesas educacionais dos dependentes também são dedutíveis — declare cada um separadamente, dentro do limite por pessoa.',
+      'Em caso de dúvida sobre a dedutibilidade de um curso, prefira não declarar a arriscar cair em malha fina.',
     ],
     commonMistakes: [
-      'Incluir cursos livres ou de idiomas que não são dedutíveis.',
-      'Não respeitar o limite anual de dedução.',
+      'Incluir curso livre, idioma, cursinho preparatório, aula particular, material escolar, uniforme ou transporte — nenhum desses é dedutível.',
+      'Lançar o valor total gasto sem respeitar o limite anual por pessoa.',
+      'Não ter o informe da instituição de ensino — a Receita cruza os dados com as escolas e faculdades.',
       'Esquecer de declarar despesas educacionais dos dependentes.',
     ],
-    // TODO: versionar limite anual por ano-base e validar com fontes oficiais
     whenToCallAccountant: [
-      'Pós-graduação, MBA ou especializações — a dedutibilidade depende do tipo de curso.',
+      'Pós-graduação, especialização, mestrado e doutorado podem ser dedutíveis quando a instituição é autorizada pelo Poder Público — verifique se tem o informe correto de pagamentos antes de declarar.',
+      'MBA — o enquadramento depende da instituição e do tipo de curso; consulte um contador para confirmar se é dedutível no seu caso.',
+      'Mistura de despesas formais e informais sem comprovantes separados.',
+      'Despesas educacionais elevadas, próximas ou acima do limite anual.',
     ],
   },
   {
