@@ -396,7 +396,7 @@ export function generateAlerts(
       severity: 'warning',
       title: 'Renda autônoma pode exigir carnê-leão',
       message:
-        'Renda recebida de pessoas físicas como autônomo ou freelancer exige carnê-leão mensal. Verifique se todos os meses foram pagos corretamente.',
+        'Renda recebida de pessoas físicas como autônomo ou freelancer pode exigir apuração mensal pelo carnê-leão, conforme os valores recebidos e as regras aplicáveis. Verifique sua situação antes de declarar.',
       relatedGuideSlug: 'autonomo-freelancer-alerta',
     });
   }
