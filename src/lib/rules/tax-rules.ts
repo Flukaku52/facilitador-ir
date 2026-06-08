@@ -109,6 +109,18 @@ export function generateChecklist(
     });
   }
 
+  if (income.hasBusinessIncome) {
+    items.push({
+      id: 'cl_business_income',
+      title: 'Informe de rendimentos da empresa (pró-labore, distribuição de lucros)',
+      description: 'Solicite ao contador ou à empresa o informe com a separação de cada tipo de renda.',
+      category: 'income',
+      required: true,
+      completed: false,
+      relatedGuideSlug: 'empresa-mei-dividendos-alerta',
+    });
+  }
+
   if (income.hasOtherIncome) {
     items.push({
       id: 'cl_other_income',
@@ -117,6 +129,7 @@ export function generateChecklist(
       category: 'income',
       required: true,
       completed: false,
+      relatedGuideSlug: 'outras-rendas-alerta',
     });
   }
 
@@ -291,6 +304,7 @@ export function generateChecklist(
       category: 'deductions',
       required: true,
       completed: false,
+      relatedGuideSlug: 'pensao-alimenticia',
     });
   }
 
