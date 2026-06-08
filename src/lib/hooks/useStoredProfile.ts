@@ -17,7 +17,11 @@ function getSnapshot(): TaxProfile | null {
     raw = localStorage.getItem(PROFILE_KEY);
     if (raw === cachedRaw) return cachedValue;
     cachedRaw = raw;
-    cachedValue = raw ? (JSON.parse(raw) as TaxProfile) : null;
+    if (!raw) { cachedValue = null; return null; }
+    const parsed: unknown = JSON.parse(raw);
+    cachedValue = (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed))
+      ? (parsed as TaxProfile)
+      : null;
     return cachedValue;
   } catch {
     corruptionDetected = true;

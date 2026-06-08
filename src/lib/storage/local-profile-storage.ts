@@ -26,7 +26,9 @@ export function loadTaxProfile(): TaxProfile | null {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as TaxProfile;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
+    return parsed as TaxProfile;
   } catch {
     return null;
   }
