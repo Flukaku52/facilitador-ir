@@ -124,6 +124,7 @@ function ReportContent() {
   const reportRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
+  const [showShareConfirm, setShowShareConfirm] = useState(false);
 
   // 2.8 — Shared profile from URL ?d= param
   const sharedData = searchParams.get('d');
@@ -181,7 +182,7 @@ function ReportContent() {
   }
 
   // 2.8 — Share via URL
-  async function shareReport() {
+  async function confirmAndShare() {
     const encoded = btoa(encodeURIComponent(JSON.stringify(profile)));
     const url = `${window.location.origin}/relatorio?d=${encoded}`;
     try {
@@ -189,6 +190,7 @@ function ReportContent() {
       setShared(true);
       setTimeout(() => setShared(false), 2500);
     } catch {}
+    setShowShareConfirm(false);
   }
 
   return (
@@ -205,7 +207,7 @@ function ReportContent() {
             {copied ? '✓ Copiado!' : 'Copiar texto'}
           </button>
           {!isSharedView && (
-            <button onClick={shareReport} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600">
+            <button onClick={() => setShowShareConfirm(true)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600">
               {shared ? '✓ Link copiado!' : 'Compartilhar link'}
             </button>
           )}
@@ -221,6 +223,39 @@ function ReportContent() {
           </button>
         </div>
       </div>
+
+      {showShareConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 print:hidden"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowShareConfirm(false); }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="share-confirm-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl dark:bg-gray-900 overflow-hidden">
+            <div className="px-5 py-5 space-y-4">
+              <h2 id="share-confirm-title" className="font-semibold text-gray-900 dark:text-gray-100">Compartilhar relatório</h2>
+              <p className="text-sm text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+                ⚠️ Este link pode conter informações pessoais do seu perfil fiscal. Compartilhe apenas com pessoas de confiança.
+              </p>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setShowShareConfirm(false)}
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmAndShare}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                >
+                  Gerar link mesmo assim
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isSharedView && (
         <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 text-sm text-indigo-700 dark:bg-indigo-950 dark:border-indigo-900 dark:text-indigo-300 print:hidden">
