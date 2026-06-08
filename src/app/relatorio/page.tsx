@@ -128,8 +128,10 @@ function ReportContent() {
 
   // 2.8 — Shared profile from URL ?d= param
   const sharedData = searchParams.get('d');
-  const profile = sharedData ? decodeSharedProfile(sharedData) : storedProfile;
+  const decodedSharedProfile = sharedData ? decodeSharedProfile(sharedData) : null;
   const isSharedView = !!sharedData;
+  const isInvalidSharedLink = isSharedView && decodedSharedProfile === null;
+  const profile = isSharedView ? decodedSharedProfile : storedProfile;
 
   const checklist = useMemo(() => {
     if (!profile) return [];
@@ -145,6 +147,18 @@ function ReportContent() {
     const slugs = getApplicableGuideSlugs(profile, profile.taxYear);
     return GUIDES.filter((g) => slugs.includes(g.slug));
   }, [profile]);
+
+  if (isInvalidSharedLink) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+        <p className="text-lg text-gray-700 dark:text-gray-300">Este link de relatório parece inválido ou expirado.</p>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Peça para a pessoa gerar um novo link pelo relatório dela.</p>
+        <Link href="/" className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600">
+          Ir para o início
+        </Link>
+      </div>
+    );
+  }
 
   if (!profile) {
     return (
