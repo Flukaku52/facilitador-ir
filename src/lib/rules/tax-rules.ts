@@ -101,7 +101,7 @@ export function generateChecklist(
     items.push({
       id: 'cl_carne_leao',
       title: 'Comprovantes de pagamento do carnê-leão (se aplicável)',
-      description: 'Aluguel pago por pessoa física exige carnê-leão mensal.',
+      description: 'Aluguel recebido de pessoa física pode exigir apuração de carnê-leão, conforme o caso.',
       category: 'income',
       required: true,
       completed: false,
@@ -388,7 +388,7 @@ export function generateAlerts(
       severity: 'warning',
       title: 'Aluguel recebido pode exigir carnê-leão',
       message:
-        'Aluguel recebido de pessoa física exige carnê-leão mensal, pago ao longo do ano. Se não foi pago, há multa e juros. Verifique sua situação antes de declarar.',
+        'Aluguel recebido de pessoa física pode exigir apuração mensal pelo carnê-leão, conforme os valores recebidos e as regras aplicáveis. Verifique sua situação antes de declarar.',
       relatedGuideSlug: 'aluguel-recebido-alerta',
     });
   }
