@@ -51,8 +51,9 @@ export function useProfileSync(): UseProfileSyncResult {
     prevUserId.current = user.id;
     if (!isNewLogin) return;
 
-    // Already handled for this user — skip
-    if (localStorage.getItem(MIGRATION_FLAG) === user.id) return;
+    // Already handled for this browser — skip (truthy check is backward-compatible
+    // with old sessions that stored user.id instead of the 'v1' marker).
+    if (localStorage.getItem(MIGRATION_FLAG)) return;
 
     let mounted = true;
 
@@ -68,14 +69,14 @@ export function useProfileSync(): UseProfileSyncResult {
         const decision = decideMigration(localProfile, fetchedCloud);
 
         if (decision === 'none') {
-          localStorage.setItem(MIGRATION_FLAG, user.id);
+          localStorage.setItem(MIGRATION_FLAG, 'v1');
         } else if (decision === 'load-cloud') {
           // Silently hydrate localStorage from Supabase
           saveTaxProfile(fetchedCloud!);
           loadCloudChecklist(user.id, fetchedCloud!.taxYear).then((cloudChecklist) => {
             if (mounted) saveChecklistStateMap(cloudChecklist);
           });
-          localStorage.setItem(MIGRATION_FLAG, user.id);
+          localStorage.setItem(MIGRATION_FLAG, 'v1');
         } else {
           // 'prompt': local data exists — ask the user
           setCloudProfile(fetchedCloud);
@@ -120,7 +121,7 @@ export function useProfileSync(): UseProfileSyncResult {
     if (profile) await saveCloudProfile(user.id, profile);
     if (Object.keys(checklist).length > 0)
       await saveCloudChecklist(user.id, checklist, profile?.taxYear ?? getCurrentTaxYear());
-    localStorage.setItem(MIGRATION_FLAG, user.id);
+    localStorage.setItem(MIGRATION_FLAG, 'v1');
     setSyncState('idle');
   }, [user]);
 
@@ -134,13 +135,13 @@ export function useProfileSync(): UseProfileSyncResult {
     ]);
     if (fetchedCloud) saveTaxProfile(fetchedCloud);
     saveChecklistStateMap(cloudChecklist);
-    localStorage.setItem(MIGRATION_FLAG, user.id);
+    localStorage.setItem(MIGRATION_FLAG, 'v1');
     setSyncState('idle');
   }, [user]);
 
   const cancelMigration = useCallback(() => {
     if (!user) return;
-    localStorage.setItem(MIGRATION_FLAG, user.id);
+    localStorage.setItem(MIGRATION_FLAG, 'v1');
     setSyncState('idle');
   }, [user]);
 
