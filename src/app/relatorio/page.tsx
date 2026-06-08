@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -122,9 +122,25 @@ function ReportContent() {
   const storedProfile = useStoredProfile();
   const checklistState = useChecklistStore();
   const reportRef = useRef<HTMLDivElement>(null);
+  const cancelShareRef = useRef<HTMLButtonElement>(null);
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
   const [showShareConfirm, setShowShareConfirm] = useState(false);
+
+  useEffect(() => {
+    if (showShareConfirm) {
+      cancelShareRef.current?.focus();
+    }
+  }, [showShareConfirm]);
+
+  useEffect(() => {
+    if (!showShareConfirm) return;
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setShowShareConfirm(false);
+    }
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showShareConfirm]);
 
   // 2.8 — Shared profile from URL ?d= param
   const sharedData = searchParams.get('d');
@@ -254,6 +270,7 @@ function ReportContent() {
               </p>
               <div className="flex gap-2 justify-end">
                 <button
+                  ref={cancelShareRef}
                   onClick={() => setShowShareConfirm(false)}
                   className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
                 >
