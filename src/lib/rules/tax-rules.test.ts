@@ -8,6 +8,7 @@ import {
   calculateChecklistProgress,
   getApplicableGuideSlugs,
 } from './tax-rules';
+import { GUIDES } from '@/lib/data/guides';
 
 // ─── classifyComplexity ───────────────────────────────────────────────────────
 
@@ -675,5 +676,94 @@ describe('beta hardening — novos guias', () => {
     const alert = alerts.find((a) => a.id === 'alert_self_employment');
     expect(alert).toBeDefined();
     expect(alert?.message).toContain('pode exigir');
+  });
+});
+
+// ─── Regressões de texto fiscal sensível ─────────────────────────────────────
+// Esses testes garantem que strings perigosas ou aprovadas não regridam.
+
+describe('regressões de texto — guia pensao-alimenticia', () => {
+  const guide = GUIDES.find((g) => g.slug === 'pensao-alimenticia');
+
+  it('guia existe', () => {
+    expect(guide).toBeDefined();
+  });
+
+  it('whereToDeclare não contém "Rendimentos Tributáveis" para quem recebe pensão', () => {
+    // Receber pensão alimentícia vai em Isentos, não Tributáveis
+    expect(guide?.whereToDeclare).not.toContain('Quem recebe: Rendimentos Tributáveis');
+  });
+
+  it('whereToDeclare contém "Rendimentos Isentos" para quem recebe', () => {
+    expect(guide?.whereToDeclare).toContain('Rendimentos Isentos');
+  });
+});
+
+describe('regressões de texto — guia previdencia-privada', () => {
+  const guide = GUIDES.find((g) => g.slug === 'previdencia-privada');
+
+  it('guia existe', () => {
+    expect(guide).toBeDefined();
+  });
+
+  it('não contém "12%" (alíquota hardcoded)', () => {
+    const fullText = JSON.stringify(guide);
+    expect(fullText).not.toContain('12%');
+  });
+
+  it('não contém "emitido até fevereiro" (prazo hardcoded)', () => {
+    const fullText = JSON.stringify(guide);
+    expect(fullText).not.toContain('emitido até fevereiro');
+  });
+});
+
+describe('regressões de texto — guia aluguel-recebido-alerta', () => {
+  const guide = GUIDES.find((g) => g.slug === 'aluguel-recebido-alerta');
+
+  it('guia existe', () => {
+    expect(guide).toBeDefined();
+  });
+
+  it('não contém "exige carnê-leão mensal" (linguagem absoluta proibida)', () => {
+    const fullText = JSON.stringify(guide);
+    expect(fullText).not.toContain('exige carnê-leão mensal');
+  });
+});
+
+describe('regressões de texto — guia cripto-alerta', () => {
+  const guide = GUIDES.find((g) => g.slug === 'cripto-alerta');
+
+  it('guia existe', () => {
+    expect(guide).toBeDefined();
+  });
+
+  it('shortDescription não contém "obrigações mensais"', () => {
+    expect(guide?.shortDescription).not.toContain('obrigações mensais');
+  });
+});
+
+describe('regressões de texto — guia empresa-mei-dividendos-alerta', () => {
+  const guide = GUIDES.find((g) => g.slug === 'empresa-mei-dividendos-alerta');
+
+  it('guia existe', () => {
+    expect(guide).toBeDefined();
+  });
+
+  it('não contém "limites isentos"', () => {
+    const fullText = JSON.stringify(guide);
+    expect(fullText).not.toContain('limites isentos');
+  });
+});
+
+describe('regressões de texto — guia outras-rendas-alerta', () => {
+  const guide = GUIDES.find((g) => g.slug === 'outras-rendas-alerta');
+
+  it('guia existe', () => {
+    expect(guide).toBeDefined();
+  });
+
+  it('contém "Confirme a classificação com o informe, documento oficial ou contador"', () => {
+    const fullText = JSON.stringify(guide);
+    expect(fullText).toContain('Confirme a classificação com o informe, documento oficial ou contador');
   });
 });
