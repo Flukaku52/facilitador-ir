@@ -570,6 +570,8 @@ describe('getApplicableGuideSlugs', () => {
     profile.income.hasSelfEmploymentIncome = true;
     profile.income.hasRentIncome = true;
     profile.income.hasPensionOrRetirement = true;
+    profile.income.hasBusinessIncome = true;
+    profile.income.hasOtherIncome = true;
     profile.assets.hasBankAccounts = true;
     profile.assets.hasInvestments = true;
     profile.assets.hasProperty = true;
@@ -581,11 +583,97 @@ describe('getApplicableGuideSlugs', () => {
     profile.investments.hasStocks = true;
     profile.investments.hasFiis = true;
     profile.investments.soldVariableIncome = true;
+    profile.investments.hasPrivatePension = true;
     profile.deductions.hasDependents = true;
     profile.deductions.hasMedicalExpenses = true;
     profile.deductions.hasEducationExpenses = true;
     profile.deductions.hasPrivatePensionContributions = true;
+    profile.deductions.hasAlimony = true;
     const slugs = getApplicableGuideSlugs(profile);
-    expect(slugs.length).toBe(17);
+    expect(slugs.length).toBe(20);
+  });
+});
+
+// ─── beta hardening — novos guias e checklist items ──────────────────────────
+
+describe('beta hardening — novos guias', () => {
+  it('income.hasBusinessIncome inclui empresa-mei-dividendos-alerta em getApplicableGuideSlugs', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasBusinessIncome = true;
+    expect(getApplicableGuideSlugs(profile)).toContain('empresa-mei-dividendos-alerta');
+  });
+
+  it('income.hasBusinessIncome gera checklist cl_business_income com relatedGuideSlug correto', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasBusinessIncome = true;
+    const items = generateChecklist(profile);
+    const item = items.find((i) => i.id === 'cl_business_income');
+    expect(item).toBeDefined();
+    expect(item?.relatedGuideSlug).toBe('empresa-mei-dividendos-alerta');
+  });
+
+  it('deductions.hasAlimony inclui pensao-alimenticia em getApplicableGuideSlugs', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasAlimony = true;
+    expect(getApplicableGuideSlugs(profile)).toContain('pensao-alimenticia');
+  });
+
+  it('deductions.hasAlimony gera checklist cl_alimony com relatedGuideSlug pensao-alimenticia', () => {
+    const profile = createEmptyProfile();
+    profile.deductions.hasAlimony = true;
+    const items = generateChecklist(profile);
+    const item = items.find((i) => i.id === 'cl_alimony');
+    expect(item).toBeDefined();
+    expect(item?.relatedGuideSlug).toBe('pensao-alimenticia');
+  });
+
+  it('income.hasOtherIncome inclui outras-rendas-alerta em getApplicableGuideSlugs', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasOtherIncome = true;
+    expect(getApplicableGuideSlugs(profile)).toContain('outras-rendas-alerta');
+  });
+
+  it('income.hasOtherIncome gera checklist cl_other_income com relatedGuideSlug outras-rendas-alerta', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasOtherIncome = true;
+    const items = generateChecklist(profile);
+    const item = items.find((i) => i.id === 'cl_other_income');
+    expect(item).toBeDefined();
+    expect(item?.relatedGuideSlug).toBe('outras-rendas-alerta');
+  });
+
+  it('investments.hasPrivatePension inclui previdencia-privada mesmo sem contribuição no ano', () => {
+    const profile = createEmptyProfile();
+    profile.investments.hasPrivatePension = true;
+    // deductions.hasPrivatePensionContributions permanece false
+    expect(getApplicableGuideSlugs(profile)).toContain('previdencia-privada');
+  });
+
+  it('assets.hasCrypto gera alerta com linguagem condicional (pode exigir)', () => {
+    const profile = createEmptyProfile();
+    profile.assets.hasCrypto = true;
+    const alerts = generateAlerts(profile);
+    const alert = alerts.find((a) => a.id === 'alert_crypto');
+    expect(alert).toBeDefined();
+    expect(alert?.relatedGuideSlug).toBe('cripto-alerta');
+  });
+
+  it('income.hasRentIncome gera alerta com linguagem condicional (pode exigir)', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasRentIncome = true;
+    const alerts = generateAlerts(profile);
+    const alert = alerts.find((a) => a.id === 'alert_rent');
+    expect(alert).toBeDefined();
+    expect(alert?.message).toContain('pode exigir');
+    expect(alert?.message).not.toContain('exige carnê-leão mensal');
+  });
+
+  it('income.hasSelfEmploymentIncome gera alerta com linguagem condicional (pode exigir)', () => {
+    const profile = createEmptyProfile();
+    profile.income.hasSelfEmploymentIncome = true;
+    const alerts = generateAlerts(profile);
+    const alert = alerts.find((a) => a.id === 'alert_self_employment');
+    expect(alert).toBeDefined();
+    expect(alert?.message).toContain('pode exigir');
   });
 });
