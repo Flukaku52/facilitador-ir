@@ -112,15 +112,15 @@ export class ErrorBoundary extends Component<
 
 ---
 
-### 1.6 Validar thresholds de 2026 com fonte oficial `P1` ⬜
+### 1.6 Validar thresholds de 2026 com fonte oficial `P1` ✅
 
-Os valores em `src/lib/tax-years/2026/thresholds.ts` foram inseridos como estimativa para viabilizar testes de versionamento. **Devem ser confirmados com a publicação oficial da Receita Federal antes de qualquer deploy em produção** que exiba esses valores ao usuário.
+Valores IRPF 2026 confirmados com fonte oficial da Receita Federal. Limite de educação, dependente, desconto simplificado e prazo de entrega já estão corrigidos no código.
 
-Campos a validar:
-- `EDUCATION_DEDUCTION_LIMIT_PER_PERSON` (atualmente R$ 3.800,00 — estimado)
-- `DEPENDENT_ANNUAL_DEDUCTION` (atualmente R$ 2.375,08 — estimado)
-- `SIMPLIFIED_DEDUCTION_LIMIT` (atualmente R$ 17.000,00 — estimado)
-- `FILING_DEADLINE` (atualmente 2026-05-29 — estimado)
+Campos corrigidos em `src/lib/tax-years/2026/thresholds.ts`:
+- `EDUCATION_DEDUCTION_LIMIT_PER_PERSON` = R$ 3.561,50 — confirmado (P&R IRPF 2026, versão 23/04/2026)
+- `DEPENDENT_ANNUAL_DEDUCTION` = R$ 2.275,08 — confirmado (mesmos limites IRPF 2025, sem alteração legislativa)
+- `SIMPLIFIED_DEDUCTION_LIMIT` = R$ 16.754,34 — confirmado (mesmos limites IRPF 2025, sem alteração legislativa)
+- `FILING_DEADLINE` = 2026-05-29 — confirmado (Instrução Normativa de abertura do IRPF 2026)
 
 ---
 
@@ -435,7 +435,7 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 
 | # | Melhoria |
 |---|----------|
-| 1.6 | Validar valores em `2026/thresholds.ts` com fonte oficial da Receita Federal antes de produção |
+| ~~1.6~~ | ~~Validar valores em `2026/thresholds.ts` com fonte oficial~~ ✅ Corrigido com fonte oficial (P&R IRPF 2026) |
 | ~~3.4~~ | ~~Autenticação + persistência na nuvem~~ ✅ Sprint 1 |
 
 ### P2 — Próxima versão
