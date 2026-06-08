@@ -73,9 +73,15 @@ function ChecklistContent() {
   function handleToggle(id: string) {
     const newState = { ...checklistState, [id]: !(checklistState[id] ?? false) };
     saveChecklistStateMap(newState);
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToastVisible(true);
-    toastTimerRef.current = setTimeout(() => setToastVisible(false), 2000);
+    // Defer toast to a macrotask so it runs after React's SyncLane microtask
+    // (triggered by the synchronous StorageEvent dispatch inside saveChecklistStateMap)
+    // finishes. Without this, the toast setState can get lost in the same SyncLane
+    // batch and never commit to the DOM in production React 18 concurrent mode.
+    setTimeout(() => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      setToastVisible(true);
+      toastTimerRef.current = setTimeout(() => setToastVisible(false), 2000);
+    }, 0);
   }
 
   // ── empty / loading states ────────────────────────────────────────────────
