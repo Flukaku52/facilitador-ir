@@ -94,7 +94,7 @@ export default function AskDialog({ profile }: AskDialogProps) {
             <div className="px-5 py-4 space-y-4">
               {/* Disclaimer */}
               <p className="text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
-                ⚠️ Orientação educacional apenas. Não substitui contador, advogado ou a Receita Federal.
+                ⚠️ Este assistente pode ajudar a interpretar suas respostas, mas pode cometer erros. Não use as respostas como orientação fiscal definitiva. Em caso de dúvida, confirme com um contador ou com a Receita Federal.
               </p>
 
               {/* Form */}
