@@ -187,8 +187,10 @@ export default function ReportPDF({ profile, complexity, checklist, guides, aler
     'Separe todos os documentos marcados no checklist.',
     'Leia os guias para cada situação do seu perfil.',
     'Confira os pontos de atenção antes de preencher.',
-    ...(complexity === 'complex'
-      ? ['Declaração complexa — considere revisão com contador antes do envio.']
+    ...(complexity === 'medium'
+      ? ['Sua declaração tem situações que merecem atenção extra — leia os guias com cuidado antes de preencher.']
+      : complexity === 'complex'
+      ? ['Declaração complexa — considere revisão com contador ou especialista tributário antes do envio.']
       : []),
   ];
 

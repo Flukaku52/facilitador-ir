@@ -100,8 +100,10 @@ function buildReportText(
     '1. Separe os documentos marcados no checklist.',
     '2. Leia os guias para cada situação do seu perfil.',
     '3. Confira os pontos de atenção antes de preencher.',
-    ...(complexity === 'complex'
-      ? ['4. Declaração complexa — recomendamos revisão com contador antes do envio.']
+    ...(complexity === 'medium'
+      ? ['4. Sua declaração tem situações que merecem atenção extra — leia os guias com cuidado antes de preencher.']
+      : complexity === 'complex'
+      ? ['4. Declaração complexa — recomendamos revisão com contador ou especialista tributário antes do envio.']
       : []),
     '',
     'AVISO:',
