@@ -13,11 +13,9 @@ CREATE TABLE IF NOT EXISTS ask_usage (
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT ask_usage_unique_window
     UNIQUE (identifier, identifier_type, window_type, window_start)
+  -- O UNIQUE constraint já cria um índice B-tree implícito nas mesmas colunas.
+  -- Não há índice separado para lookup: o índice da constraint é suficiente.
 );
-
--- Índice para buscas rápidas por identificador+janela
-CREATE INDEX IF NOT EXISTS idx_ask_usage_lookup
-  ON ask_usage (identifier, identifier_type, window_type, window_start);
 
 -- Índice para facilitar limpeza de registros antigos (uso futuro)
 CREATE INDEX IF NOT EXISTS idx_ask_usage_window_start
@@ -88,10 +86,15 @@ BEGIN
 END;
 $$;
 
--- Restringe execução direta pelos roles de cliente
--- (o service_role é superuser e não precisa de GRANT explícito)
+-- Restringe execução direta pelos roles de cliente.
+-- service_role NÃO é superuser no Supabase (tem apenas BYPASSRLS), portanto
+-- precisa de GRANT explícito após o REVOKE FROM PUBLIC.
 REVOKE EXECUTE
   ON FUNCTION check_and_increment_ask_usage(text, text, integer, integer)
   FROM PUBLIC;
+
+GRANT EXECUTE
+  ON FUNCTION check_and_increment_ask_usage(text, text, integer, integer)
+  TO service_role;
 
 -- TODO: adicionar job de limpeza de registros com window_start < now() - interval '7 days'
