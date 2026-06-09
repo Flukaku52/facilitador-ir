@@ -18,6 +18,7 @@ import {
   getApplicableGuideSlugs,
 } from '@/lib/rules/tax-rules';
 import { GUIDES } from '@/lib/data/guides';
+import { decodeSharedProfile, encodeSharedProfile } from '@/lib/utils/share-link';
 import { ComplexityBadge } from '@/components/ui/Badge';
 import AlertBox from '@/components/ui/AlertBox';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer';
@@ -109,13 +110,6 @@ function buildReportText(
   return lines.join('\n');
 }
 
-function decodeSharedProfile(encoded: string): TaxProfile | null {
-  try {
-    return JSON.parse(decodeURIComponent(atob(encoded))) as TaxProfile;
-  } catch {
-    return null;
-  }
-}
 
 function ReportContent() {
   const searchParams = useSearchParams();
@@ -214,7 +208,7 @@ function ReportContent() {
 
   // 2.8 — Share via URL
   async function confirmAndShare() {
-    const encoded = btoa(encodeURIComponent(JSON.stringify(profile)));
+    const encoded = encodeSharedProfile(profile!);
     const url = `${window.location.origin}/relatorio?d=${encoded}`;
     try {
       await navigator.clipboard.writeText(url);
