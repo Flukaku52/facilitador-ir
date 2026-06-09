@@ -52,6 +52,24 @@ export default function LandingPage() {
         </ul>
       </div>
 
+      <div className="mt-10 rounded-xl border border-amber-100 bg-amber-50 p-6 dark:border-amber-900 dark:bg-amber-950">
+        <h2 className="font-semibold text-amber-900 mb-3 dark:text-amber-100">O que o app não faz</h2>
+        <ul className="space-y-1.5 text-sm text-amber-800 dark:text-amber-200">
+          {[
+            'Não envia sua declaração à Receita Federal.',
+            'Não calcula imposto a pagar ou restituição exata.',
+            'Não substitui orientação de contador ou advogado tributarista.',
+            'Não acessa, lê ou importa seus documentos diretamente.',
+            'Não garante isenção, deduções ou resultados fiscais específicos.',
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className="mt-0.5 text-amber-500">✕</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="mt-10">
         <LegalDisclaimer />
       </div>

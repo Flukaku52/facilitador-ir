@@ -389,8 +389,11 @@ function ReportContent() {
             <li className="flex gap-2"><span className="font-bold">1.</span> Separe todos os documentos marcados no checklist.</li>
             <li className="flex gap-2"><span className="font-bold">2.</span> Leia os guias para cada situação do seu perfil.</li>
             <li className="flex gap-2"><span className="font-bold">3.</span> Confira os pontos de atenção antes de preencher.</li>
+            {complexity === 'medium' && (
+              <li className="flex gap-2"><span className="font-bold">4.</span> Sua declaração tem situações que merecem atenção extra — leia os guias com cuidado antes de preencher.</li>
+            )}
             {complexity === 'complex' && (
-              <li className="flex gap-2 font-medium"><span className="font-bold">4.</span> Declaração complexa — considere revisão com contador.</li>
+              <li className="flex gap-2 font-medium"><span className="font-bold">4.</span> Declaração complexa — considere revisão com contador ou especialista tributário.</li>
             )}
           </ol>
         </section>

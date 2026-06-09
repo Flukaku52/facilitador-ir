@@ -260,6 +260,33 @@ function ChecklistContent() {
         <p className="text-gray-500 dark:text-gray-400 text-center py-8">{emptyMessage}</p>
       )}
 
+      {/* Completion banner — shown only when all required items are checked */}
+      {progress === 100 && allItems.length > 0 && (
+        <div className="rounded-xl border border-green-200 bg-green-50 p-6 dark:border-green-900 dark:bg-green-950">
+          <h2 className="font-semibold text-green-900 mb-2 dark:text-green-100">
+            Checklist completo!
+          </h2>
+          <p className="text-sm text-green-800 dark:text-green-200 mb-4">
+            Todos os documentos obrigatórios estão reunidos. O próximo passo é revisar o
+            relatório do seu perfil e conferir os pontos de atenção antes de preencher.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/relatorio"
+              className="inline-flex items-center justify-center rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors dark:bg-green-600 dark:hover:bg-green-700"
+            >
+              Ver relatório completo →
+            </Link>
+            <Link
+              href="/guias"
+              className="inline-flex items-center justify-center rounded-lg border border-green-700 px-5 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-100 transition-colors dark:border-green-500 dark:text-green-400 dark:hover:bg-green-900/30"
+            >
+              Ler guias de preenchimento
+            </Link>
+          </div>
+        </div>
+      )}
+
       <Toast message="Salvo automaticamente" show={toastVisible} />
       <CorruptedDataToast />
     </div>
