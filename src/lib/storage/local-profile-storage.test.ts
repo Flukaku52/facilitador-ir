@@ -208,3 +208,57 @@ describe('loadTaxProfile — validação defensiva', () => {
     expect((result as Record<string, unknown>)?.['id']).toBe('old');
   });
 });
+
+describe('loadChecklistNotes / saveChecklistNote', () => {
+  const NOTES_KEY = 'ir_facilitador_checklist_notes';
+
+  beforeEach(() => {
+    vi.resetModules();
+    stubWindow(makeLocalStorageMock());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('retorna {} quando não há notas salvas', async () => {
+    const { loadChecklistNotes } = await import('./local-profile-storage');
+    expect(loadChecklistNotes()).toEqual({});
+  });
+
+  it('salva e carrega nota para um item', async () => {
+    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
+    saveChecklistNote('cl_clt_report', 'Peguei no RH');
+    const notes = loadChecklistNotes();
+    expect(notes['cl_clt_report']).toBe('Peguei no RH');
+  });
+
+  it('nota vazia remove a chave', async () => {
+    const mock = makeLocalStorageMock({ [NOTES_KEY]: JSON.stringify({ cl_clt_report: 'existente' }) });
+    stubWindow(mock);
+    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
+    saveChecklistNote('cl_clt_report', '');
+    expect(loadChecklistNotes()['cl_clt_report']).toBeUndefined();
+  });
+
+  it('nota com apenas espaços é tratada como vazia', async () => {
+    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
+    saveChecklistNote('cl_bank_reports', '   ');
+    expect(loadChecklistNotes()['cl_bank_reports']).toBeUndefined();
+  });
+
+  it('múltiplas notas coexistem sem se sobrescrever', async () => {
+    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
+    saveChecklistNote('item_a', 'Nota A');
+    saveChecklistNote('item_b', 'Nota B');
+    const notes = loadChecklistNotes();
+    expect(notes['item_a']).toBe('Nota A');
+    expect(notes['item_b']).toBe('Nota B');
+  });
+
+  it('JSON inválido em notes retorna {} sem quebrar', async () => {
+    stubWindow(makeLocalStorageMock({ [NOTES_KEY]: '{inválido' }));
+    const { loadChecklistNotes } = await import('./local-profile-storage');
+    expect(loadChecklistNotes()).toEqual({});
+  });
+});

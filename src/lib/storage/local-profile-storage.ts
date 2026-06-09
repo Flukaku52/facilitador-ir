@@ -5,6 +5,7 @@ import { QuestionAnswers } from '@/types/question';
 const PROFILE_KEY = 'ir_facilitador_profile';
 const CHECKLIST_KEY = 'ir_facilitador_checklist';
 const DRAFT_KEY = 'ir_facilitador_questionnaire_draft';
+export const NOTES_KEY = 'ir_facilitador_checklist_notes';
 
 type QuestionnaireDraft = {
   answers: QuestionAnswers;
@@ -119,5 +120,32 @@ export function clearDraft(): void {
   if (!isBrowser()) return;
   try {
     localStorage.removeItem(DRAFT_KEY);
+  } catch {}
+}
+
+export function loadChecklistNotes(): Record<string, string> {
+  if (!isBrowser()) return {};
+  try {
+    const raw = localStorage.getItem(NOTES_KEY);
+    if (!raw) return {};
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+    return parsed as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+export function saveChecklistNote(id: string, note: string): void {
+  if (!isBrowser()) return;
+  try {
+    const current = loadChecklistNotes();
+    if (note.trim()) {
+      current[id] = note.trim();
+    } else {
+      delete current[id];
+    }
+    localStorage.setItem(NOTES_KEY, JSON.stringify(current));
+    notify(NOTES_KEY);
   } catch {}
 }

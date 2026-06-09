@@ -4,9 +4,10 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChecklistItem, ChecklistCategory, CATEGORY_LABELS } from '@/types/checklist';
-import { clearDraft, saveChecklistStateMap } from '@/lib/storage/local-profile-storage';
+import { clearDraft, saveChecklistStateMap, saveChecklistNote } from '@/lib/storage/local-profile-storage';
 import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { useChecklistStore } from '@/lib/hooks/useChecklistStore';
+import { useChecklistNotes } from '@/lib/hooks/useChecklistNotes';
 import { generateChecklist, calculateChecklistProgress } from '@/lib/rules/tax-rules';
 import {
   applyChecklistFilters,
@@ -33,11 +34,16 @@ function ChecklistContent() {
   const router = useRouter();
   const profile = useStoredProfile();
   const checklistState = useChecklistStore();
+  const notes = useChecklistNotes();
 
   const handleRestartQuestionnaire = useCallback(() => {
     clearDraft();
     router.push('/questionario');
   }, [router]);
+
+  const handleNoteChange = useCallback((id: string, note: string) => {
+    saveChecklistNote(id, note);
+  }, []);
 
   // ── filter state ──────────────────────────────────────────────────────────
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -246,7 +252,7 @@ function ChecklistContent() {
       {/* Checklist groups */}
       {CHECKLIST_CATEGORY_ORDER.map((cat) => {
         const group = filteredItems.filter((i) => i.category === cat);
-        return <ChecklistGroup key={cat} category={cat} items={group} onToggle={handleToggle} />;
+        return <ChecklistGroup key={cat} category={cat} items={group} notes={notes} onToggle={handleToggle} onNoteChange={handleNoteChange} />;
       })}
 
       {/* Empty state when filters yield no results */}
