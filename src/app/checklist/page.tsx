@@ -17,7 +17,6 @@ import ChecklistGroup from '@/components/checklist/ChecklistGroup';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Toast from '@/components/ui/Toast';
 import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
-import { ChecklistSkeleton } from '@/components/ui/Skeleton';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
 
@@ -101,7 +100,38 @@ function ChecklistContent() {
     );
   }
 
-  if (allItems.length === 0) return <ChecklistSkeleton />;
+  if (allItems.length === 0) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center space-y-4">
+        <p className="text-lg text-gray-700 dark:text-gray-300">
+          Nenhum documento principal foi identificado com as respostas atuais.
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Se suas informações mudaram, você pode revisar suas respostas.
+        </p>
+        <div className="flex flex-col items-center gap-3 pt-2">
+          <Link
+            href="/questionario/editar"
+            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          >
+            Editar respostas
+          </Link>
+          <Link
+            href="/relatorio"
+            className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            Ver relatório
+          </Link>
+          <Link
+            href="/questionario"
+            className="text-sm text-gray-500 hover:underline dark:text-gray-400"
+          >
+            Refazer questionário
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // ── empty message when filters produce zero results ───────────────────────
   const emptyMessage = searchQuery.trim()
