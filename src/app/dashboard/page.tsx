@@ -1,10 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { useChecklistStore } from '@/lib/hooks/useChecklistStore';
+import { clearDraft } from '@/lib/storage/local-profile-storage';
 import {
   classifyComplexity,
   generateChecklist,
@@ -35,8 +37,14 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
+  const router = useRouter();
   const profile = useStoredProfile();
   const checklistState = useChecklistStore();
+
+  const handleRestartQuestionnaire = useCallback(() => {
+    clearDraft();
+    router.push('/questionario');
+  }, [router]);
 
   const checklist = useMemo(() => {
     if (!profile) return [];
@@ -155,13 +163,13 @@ function DashboardContent() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">Resumo do seu diagnóstico</p>
               </div>
             </Link>
-            <Link href="/questionario" className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition sm:col-span-2 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600">
+            <button onClick={handleRestartQuestionnaire} className="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition sm:col-span-2 text-left dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">↩️</div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-gray-100">Refazer questionário</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Responder tudo novamente do início</p>
               </div>
-            </Link>
+            </button>
           </>
         ) : (
           <>

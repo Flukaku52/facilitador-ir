@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChecklistItem, ChecklistCategory, CATEGORY_LABELS } from '@/types/checklist';
-import { saveChecklistStateMap } from '@/lib/storage/local-profile-storage';
+import { clearDraft, saveChecklistStateMap } from '@/lib/storage/local-profile-storage';
 import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
 import { useChecklistStore } from '@/lib/hooks/useChecklistStore';
 import { generateChecklist, calculateChecklistProgress } from '@/lib/rules/tax-rules';
@@ -29,8 +30,14 @@ export default function ChecklistPage() {
 }
 
 function ChecklistContent() {
+  const router = useRouter();
   const profile = useStoredProfile();
   const checklistState = useChecklistStore();
+
+  const handleRestartQuestionnaire = useCallback(() => {
+    clearDraft();
+    router.push('/questionario');
+  }, [router]);
 
   // ── filter state ──────────────────────────────────────────────────────────
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -122,12 +129,12 @@ function ChecklistContent() {
           >
             Ver relatório
           </Link>
-          <Link
-            href="/questionario"
+          <button
+            onClick={handleRestartQuestionnaire}
             className="text-sm text-gray-500 hover:underline dark:text-gray-400"
           >
             Refazer questionário
-          </Link>
+          </button>
         </div>
       </div>
     );
