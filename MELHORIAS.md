@@ -697,3 +697,185 @@ Fase 3 — UI completa
 7. **Comparação:** Implementar item 3.8 (side-by-side).
 
 > **Critério de conclusão mínimo:** usuário pode declarar IRPF 2025 e IRPF 2026 no mesmo app sem que os dados se sobrescrevam.
+
+---
+
+## Apêndice B — Auditoria técnica: upload seguro de documentos
+
+> Gerado em: overnight-deep-work · Branch: `overnight-deep-work`
+> Objetivo: documentar UX, modelo de dados, infra e riscos **sem implementar**. Nenhum código funcional alterado.
+
+---
+
+### B.1 Estado atual
+
+Upload de documentos **não existe** no codebase. `ChecklistItem` (`src/types/checklist.ts`) tem campo `relatedGuideSlug?: string` mas não tem `attachmentUrl` ou equivalente. `MELHORIAS.md` item 3.3 registra o requisito com uma linha: _"Requer Supabase Storage. Cada `ChecklistItem` passaria a ter `attachmentUrl?: string`."_
+
+---
+
+### B.2 Proposta de UX
+
+**Fluxo mínimo viável:**
+1. Na `/checklist`, cada item pode ter um botão "Anexar" (ícone de clipe).
+2. Ao clicar → `<input type="file" accept=".pdf,.jpg,.jpeg,.png">` abre seletor de arquivo.
+3. Upload vai para Supabase Storage; ao concluir, `attachmentUrl` é salvo no `checklist_state` (coluna `attachment_url`).
+4. Ícone do clipe fica colorido/preenchido para indicar que há anexo; hover mostra nome do arquivo.
+5. Clique no ícone preenchido → preview inline (PDF em iframe, imagem direta) ou botão "Baixar".
+6. Botão de remoção com confirmação.
+
+**Estados do fluxo:**
+- Idle → seletor fechado, ícone cinza.
+- Uploading → spinner substituindo ícone; progress bar ou porcentagem.
+- Success → ícone colorido; nome do arquivo truncado.
+- Error → ícone vermelho; mensagem "Falha ao enviar. Tente novamente." sem bloquear o item.
+
+**Considerações de acessibilidade:**
+- `aria-label="Anexar documento para {item.title}"` no botão de upload.
+- Feedback de progresso via `aria-live="polite"`.
+- Limite de tamanho exibido antes do upload (`Máximo: 5 MB`).
+
+---
+
+### B.3 Modelo de dados
+
+**Extensão de `ChecklistItem`:**
+```typescript
+// src/types/checklist.ts
+export interface ChecklistItem {
+  // … campos existentes …
+  attachmentUrl?: string;   // URL pública ou signed URL do Supabase Storage
+  attachmentName?: string;  // nome original do arquivo (exibição)
+}
+```
+
+**Schema Supabase (extensão de `checklist_state`):**
+```sql
+ALTER TABLE checklist_state
+  ADD COLUMN attachment_url   text,
+  ADD COLUMN attachment_name  text,
+  ADD COLUMN attachment_size  integer;   -- bytes, para auditoria de cota
+```
+
+**Bucket Supabase Storage:**
+```
+bucket: "user-documents"   (privado — sem acesso público)
+path:   {user_id}/{tax_year}/{item_id}/{filename}
+```
+
+**Por que path estruturado:**
+- Facilita listagem de todos os arquivos de um ano (`{user_id}/{tax_year}/*`).
+- RLS pode usar o prefixo `auth.uid()` para garantir que cada usuário só acessa o próprio diretório.
+- Delete em cascata por ano: `storage.deleteObject("user-documents", "{user_id}/{tax_year}/*")`.
+
+---
+
+### B.4 Supabase Storage — configuração e RLS
+
+**Políticas necessárias:**
+```sql
+-- Leitura: usuário só lê seus próprios arquivos
+CREATE POLICY "user can read own documents"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'user-documents' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Escrita: usuário só insere no próprio diretório
+CREATE POLICY "user can upload own documents"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'user-documents' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Delete: usuário só deleta seus próprios arquivos
+CREATE POLICY "user can delete own documents"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'user-documents' AND (storage.foldername(name))[1] = auth.uid()::text);
+```
+
+**Signed URLs:** para documentos sensíveis, usar `supabase.storage.from('user-documents').createSignedUrl(path, 3600)` (expira em 1h) em vez de URLs públicas permanentes.
+
+**Limite de tamanho:** configurar no bucket (`maxFileSize: 5MB`) e validar no cliente antes de iniciar o upload para UX imediata.
+
+---
+
+### B.5 Limites e cotas
+
+| Plano Supabase | Storage incluído | Transferência/mês |
+|----------------|-----------------|-------------------|
+| Free           | 1 GB            | 2 GB              |
+| Pro            | 100 GB          | 200 GB            |
+
+**Estimativa de uso:** se cada usuário fizer upload de 10 documentos × 500 KB = 5 MB/usuário. Com 1.000 usuários ativos = 5 GB → exige plano Pro.
+
+**Risco de abuso:** sem validação server-side de tipo MIME, usuário pode renomear `.exe` para `.pdf`. Usar `file.type` no cliente (não confiável sozinho) + validação de magic bytes via Edge Function ou Content-Type retornado pelo Supabase após upload.
+
+---
+
+### B.6 Privacidade e conformidade
+
+**Riscos:**
+1. Documentos fiscais (CPF, CNPJ, valores de renda) são dados pessoais sensíveis — escopo da LGPD.
+2. Armazenamento em nuvem estrangeira (AWS us-east-1 por padrão no Supabase) pode ser questão para usuários preocupados com soberania de dados.
+3. Acesso de suporte (service role) pode ler qualquer arquivo — deve ser controlado por política organizacional, não apenas RLS.
+
+**Mitigações:**
+- Criptografia client-side antes do upload (ex.: Web Crypto API AES-GCM com chave derivada da senha do usuário) elimina exposição no servidor. Custo: preview inline não funciona no navegador — arquivo deve ser descriptografado antes de exibir.
+- Política de retenção: deletar arquivos automaticamente N dias após o prazo de entrega do IRPF.
+- Aviso na UI: "Seus documentos são armazenados com segurança. Não compartilhe seu acesso com terceiros."
+- Deletar todos os arquivos ao "Limpar todos os dados" (`ClearDataModal`).
+
+---
+
+### B.7 Impacto no app existente
+
+| Componente | Mudança necessária |
+|------------|-------------------|
+| `ChecklistItem` type | + `attachmentUrl?`, `attachmentName?` |
+| `ChecklistItemRow` | + botão Anexar, estado de upload, preview |
+| `ChecklistGroup` | Passar `onAttach` callback |
+| `checklist/page.tsx` | Callback de upload → Supabase Storage |
+| `local-profile-storage.ts` | Sem mudança (upload só existe no modo cloud) |
+| `cloud-profile-storage.ts` | + `saveAttachmentUrl(userId, taxYear, itemId, url, name)` |
+| `checklist_state` (Supabase) | + colunas `attachment_url`, `attachment_name`, `attachment_size` |
+| `ClearDataModal` | + deletar arquivos do Storage ao limpar dados |
+| `ReportPDF` | Opcional: listar documentos com "✓ Anexado" |
+
+**Escopo fora do app:** bucket Supabase, políticas RLS de Storage, Edge Function de validação de MIME (opcional).
+
+---
+
+### B.8 Riscos identificados
+
+| Risco | Probabilidade | Impacto | Mitigação |
+|-------|---------------|---------|-----------|
+| Upload de arquivo malicioso | Baixa | Alto | Whitelist de MIME types no cliente + validação server-side |
+| Cota Supabase esgotada | Média (com crescimento) | Médio | Monitorar uso; alertar usuário ao aproximar cota pessoal |
+| URL expirada em link compartilhado | Alta (signed URLs expiram) | Médio | Não incluir anexos no link compartilhado (`?d=base64`) |
+| Dados orphãos no Storage após delete do perfil | Média | Baixo | Trigger de delete em cascata ou job de limpeza |
+| Upload falho sem rollback | Média | Médio | Transação: gravar URL no DB só após upload confirmado |
+| Regressão no modo offline/guest | Alta | Alto | Funcionalidade disponível apenas para usuários autenticados; desabilitar UI graciosamente |
+
+---
+
+### B.9 Estratégia incremental recomendada
+
+```
+Fase 1 — Infraestrutura (sem UI)
+  1. Criar bucket "user-documents" com RLS.
+  2. Adicionar colunas em checklist_state.
+  3. Implementar funções em cloud-profile-storage.ts (uploadDocument, deleteDocument, loadAttachments).
+  4. Testes de integração com Supabase local (supabase start).
+  Commit tag: feat(storage): bucket e funções de upload de documentos
+
+Fase 2 — UI mínima
+  5. Botão "Anexar" em ChecklistItemRow (apenas para usuários autenticados).
+  6. Fluxo completo: selecionar → upload → feedback → preview.
+  7. Remoção com confirmação.
+  Commit tag: feat(checklist): upload e visualização de documentos
+
+Fase 3 — Hardening
+  8. Validação de MIME type e tamanho.
+  9. Signed URLs com renovação automática.
+  10. Integração com ClearDataModal.
+  11. Aviso de privacidade antes do primeiro upload.
+  Commit tag: feat(checklist): hardening e privacidade no upload
+```
+
+> **Critério de conclusão mínimo:** usuário autenticado pode anexar um PDF a um item do checklist, visualizá-lo na mesma sessão, e deletá-lo. Usuário não autenticado não vê o botão de upload.
