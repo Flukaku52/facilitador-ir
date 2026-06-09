@@ -53,6 +53,16 @@ export function translateAuthError(error: { message: string }): AuthError {
   if (msg.includes('new password should be different')) {
     return { message: 'A nova senha deve ser diferente da senha atual.' };
   }
+  if (
+    msg.includes('otp_expired') ||
+    msg.includes('token has expired') ||
+    (msg.includes('token') && msg.includes('expired'))
+  ) {
+    return { message: 'O link expirou. Solicite um novo link de acesso.' };
+  }
+  if (msg.includes('signup_disabled')) {
+    return { message: 'O cadastro está temporariamente desativado. Tente novamente mais tarde.' };
+  }
 
   return { message: 'Ocorreu um erro inesperado. Tente novamente.' };
 }
