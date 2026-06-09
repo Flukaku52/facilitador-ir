@@ -4,7 +4,12 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { env } from '@/env';
-import { checkAskRateLimit, extractIdentifier, validateQuestion } from '@/lib/rate-limit/ask-rate-limit';
+import {
+  checkAskRateLimit,
+  extractIdentifier,
+  validateQuestion,
+  shouldBlockWithoutRateLimit,
+} from '@/lib/rate-limit/ask-rate-limit';
 
 export async function POST(request: Request) {
   const apiKey = env.ANTHROPIC_API_KEY;
@@ -33,12 +38,22 @@ export async function POST(request: Request) {
   const supabaseUrl      = env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey  = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const supabaseAdminKey = env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey && supabaseAdminKey);
 
-  if (supabaseUrl && supabaseAnonKey && supabaseAdminKey) {
+  // Em produção sem Supabase configurado: bloqueia com erro controlado.
+  // Em dev local sem Supabase: permite continuar sem rate limit.
+  if (shouldBlockWithoutRateLimit(env.NODE_ENV, supabaseConfigured)) {
+    return NextResponse.json(
+      { error: 'O assistente IA está temporariamente indisponível. Tente novamente mais tarde.' },
+      { status: 503 },
+    );
+  }
+
+  if (supabaseConfigured) {
     let userId: string | null = null;
     try {
       const cookieStore = await cookies();
-      const supabaseAuth = createServerClient(supabaseUrl, supabaseAnonKey, {
+      const supabaseAuth = createServerClient(supabaseUrl!, supabaseAnonKey!, {
         cookies: {
           getAll: () => cookieStore.getAll(),
           setAll: (cookiesToSet) =>
@@ -50,11 +65,11 @@ export async function POST(request: Request) {
       const { data: { user } } = await supabaseAuth.auth.getUser();
       userId = user?.id ?? null;
     } catch {
-      // Auth check failed — trata como convidado e continua
+      // Auth check failed — trata como convidado e continua com limites de IP
     }
 
     const { identifier, identifierType } = extractIdentifier(request, userId);
-    const admin = createSupabaseAdmin(supabaseUrl, supabaseAdminKey);
+    const admin = createSupabaseAdmin(supabaseUrl!, supabaseAdminKey!);
     const result = await checkAskRateLimit(admin, identifier, identifierType);
 
     if (!result.allowed) {
