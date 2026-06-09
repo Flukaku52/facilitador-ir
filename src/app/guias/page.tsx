@@ -73,7 +73,16 @@ function GuidesContent() {
       )}
 
       {guides.length === 0 && (
-        <p className="text-gray-500 dark:text-gray-400 text-center py-8">Nenhum guia aplicável encontrado.</p>
+        <div className="text-center py-8 space-y-3">
+          <p className="text-gray-500 dark:text-gray-400">Nenhum guia aplicável foi identificado com as respostas atuais.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-600">Se suas informações mudaram, revise suas respostas.</p>
+          <Link
+            href="/questionario/editar"
+            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          >
+            Editar respostas
+          </Link>
+        </div>
       )}
       <CorruptedDataToast />
     </div>
