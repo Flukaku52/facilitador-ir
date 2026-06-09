@@ -28,9 +28,9 @@ export default function QuestionnaireFlow() {
   // Overrides track only the answers the user sets during this questionnaire session.
   // They are merged on top of profileAnswers so stale profile values don't survive
   // when a parent is toggled to false (the child paths are explicitly set to false).
-  // Lazy initializers read localStorage directly on the client; the server always
-  // gets the empty defaults (isBrowser() = false → loadDraft() = null).
-  // This mirrors the useSyncExternalStore pattern used by useStoredProfile.
+  // Lazy initializers read localStorage directly on the client. The parent page imports
+  // this component with { ssr: false } so it is never server-rendered — no hydration
+  // mismatch is possible, and localStorage is always available when the initializer runs.
   const [overrides, setOverrides] = useState<QuestionAnswers>(() => loadDraft()?.answers ?? {});
 
   const answers = useMemo<QuestionAnswers>(

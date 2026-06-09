@@ -1,9 +1,9 @@
-import QuestionnaireFlow from '@/components/questionnaire/QuestionnaireFlow';
+import QuestionnaireFlowNoSSR from './QuestionnaireFlowNoSSR';
 
 export const metadata = {
   title: 'Diagnóstico — IR Facilitador',
 };
 
 export default function QuestionnairePage() {
-  return <QuestionnaireFlow />;
+  return <QuestionnaireFlowNoSSR />;
 }
