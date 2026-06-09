@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 import { env } from '@/env';
+import { checkAskRateLimit, extractIdentifier, validateQuestion } from '@/lib/rate-limit/ask-rate-limit';
 
 export async function POST(request: Request) {
   const apiKey = env.ANTHROPIC_API_KEY;
@@ -11,19 +15,66 @@ export async function POST(request: Request) {
     );
   }
 
+  // ── parse e valida o corpo ─────────────────────────────────────────────────
+  let body: unknown;
   try {
-    const body = await request.json();
-    const { question, profile } = body as { question: string; profile: unknown };
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Requisição inválida.' }, { status: 400 });
+  }
 
-    if (!question || typeof question !== 'string' || question.trim().length === 0) {
-      return NextResponse.json({ error: 'Pergunta inválida.' }, { status: 400 });
+  const { question, profile } = body as { question: unknown; profile: unknown };
+  const validation = validateQuestion(question);
+  if (!validation.valid) {
+    return NextResponse.json({ error: validation.message }, { status: 400 });
+  }
+
+  // ── rate limiting via Supabase ─────────────────────────────────────────────
+  const supabaseUrl      = env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey  = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseAdminKey = env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (supabaseUrl && supabaseAnonKey && supabaseAdminKey) {
+    let userId: string | null = null;
+    try {
+      const cookieStore = await cookies();
+      const supabaseAuth = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+          getAll: () => cookieStore.getAll(),
+          setAll: (cookiesToSet) =>
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options),
+            ),
+        },
+      });
+      const { data: { user } } = await supabaseAuth.auth.getUser();
+      userId = user?.id ?? null;
+    } catch {
+      // Auth check failed — trata como convidado e continua
     }
 
-    const client = new Anthropic({ apiKey });
+    const { identifier, identifierType } = extractIdentifier(request, userId);
+    const admin = createSupabaseAdmin(supabaseUrl, supabaseAdminKey);
+    const result = await checkAskRateLimit(admin, identifier, identifierType);
 
-    const profileSummary = profile
-      ? JSON.stringify(profile)
-      : 'Perfil não disponível';
+    if (!result.allowed) {
+      if (result.reason === 'db_error') {
+        return NextResponse.json(
+          { error: 'O assistente IA está temporariamente indisponível. Tente novamente em alguns minutos.' },
+          { status: 503 },
+        );
+      }
+      return NextResponse.json(
+        { error: 'Você atingiu o limite de perguntas por enquanto. Tente novamente mais tarde.' },
+        { status: 429 },
+      );
+    }
+  }
+
+  // ── chama a API da Anthropic ───────────────────────────────────────────────
+  try {
+    const client = new Anthropic({ apiKey });
+    const profileSummary = profile ? JSON.stringify(profile) : 'Perfil não disponível';
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
@@ -42,7 +93,7 @@ Diretrizes:
 - Se não souber a resposta com segurança, diga isso claramente
 
 AVISO LEGAL: Você fornece apenas orientação educacional. Não substitui contador, advogado ou a Receita Federal. A responsabilidade final é sempre do contribuinte.`,
-      messages: [{ role: 'user', content: question.trim() }],
+      messages: [{ role: 'user', content: validation.value }],
     });
 
     const textBlock = message.content.find((b) => b.type === 'text');
