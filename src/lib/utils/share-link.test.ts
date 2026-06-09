@@ -53,6 +53,27 @@ describe('encodeSharedPayload / decodeSharedPayload', () => {
     const encoded = btoa(encodeURIComponent(JSON.stringify([])));
     expect(decodeSharedPayload(encoded)).toBeNull();
   });
+
+  it('checklist ausente no novo formato retorna {} por padrão', () => {
+    const profile = createEmptyProfile();
+    const encoded = btoa(encodeURIComponent(JSON.stringify({ profile })));
+    const decoded = decodeSharedPayload(encoded);
+    expect(decoded).not.toBeNull();
+    expect(decoded!.checklistState).toEqual({});
+  });
+
+  it('checklist com valores booleanos corretos é preservado', () => {
+    const profile = createEmptyProfile();
+    const checklistState = { item_a: true, item_b: false, item_c: true };
+    const encoded = encodeSharedPayload(profile, checklistState);
+    const decoded = decodeSharedPayload(encoded);
+    expect(decoded!.checklistState).toEqual(checklistState);
+  });
+
+  it('payload null literal retorna null', () => {
+    const encoded = btoa(encodeURIComponent('null'));
+    expect(decodeSharedPayload(encoded)).toBeNull();
+  });
 });
 
 describe('calculateChecklistProgress — consistência com itens concluídos', () => {

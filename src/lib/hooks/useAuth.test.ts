@@ -92,6 +92,24 @@ describe('translateAuthError', () => {
     ).toBe('A nova senha deve ser diferente da senha atual.');
   });
 
+  it('handles otp_expired (magic link / reset link expirado)', () => {
+    expect(translateAuthError({ message: 'otp_expired' }).message).toBe(
+      'O link expirou. Solicite um novo link de acesso.',
+    );
+  });
+
+  it('handles token has expired (variante de OTP)', () => {
+    expect(translateAuthError({ message: 'Token has expired' }).message).toBe(
+      'O link expirou. Solicite um novo link de acesso.',
+    );
+  });
+
+  it('handles signup_disabled', () => {
+    expect(translateAuthError({ message: 'signup_disabled' }).message).toBe(
+      'O cadastro está temporariamente desativado. Tente novamente mais tarde.',
+    );
+  });
+
   it('returns generic message for unknown errors', () => {
     expect(translateAuthError({ message: 'some_unknown_supabase_error_code' }).message).toBe(
       'Ocorreu um erro inesperado. Tente novamente.',
