@@ -1,9 +1,12 @@
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   validateQuestion,
   checkAskRateLimit,
   extractIdentifier,
+  shouldBlockWithoutRateLimit,
   RATE_LIMITS,
   MAX_QUESTION_LENGTH,
 } from './ask-rate-limit';
@@ -145,8 +148,39 @@ describe('checkAskRateLimit', () => {
   it('does NOT allow requests through on DB error (never fail-open)', async () => {
     const supabase = mockSupabase({ data: null, error: { message: 'timeout' } });
     const result = await checkAskRateLimit(supabase, 'any', 'ip');
-    // Fail-safe: DB error must block, never allow
     expect(result.allowed).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// shouldBlockWithoutRateLimit — comportamento em produção vs. dev
+// ---------------------------------------------------------------------------
+
+describe('shouldBlockWithoutRateLimit', () => {
+  it('blocks in production when Supabase is not configured', () => {
+    expect(shouldBlockWithoutRateLimit('production', false)).toBe(true);
+  });
+
+  it('does not block in development when Supabase is not configured', () => {
+    expect(shouldBlockWithoutRateLimit('development', false)).toBe(false);
+  });
+
+  it('does not block in test env when Supabase is not configured', () => {
+    expect(shouldBlockWithoutRateLimit('test', false)).toBe(false);
+  });
+
+  it('does not block in production when Supabase IS configured', () => {
+    expect(shouldBlockWithoutRateLimit('production', true)).toBe(false);
+  });
+
+  it('does not block in development when Supabase IS configured', () => {
+    expect(shouldBlockWithoutRateLimit('development', true)).toBe(false);
+  });
+
+  it('production sem Supabase → deve retornar 503 (não deixa chamar Anthropic)', () => {
+    // shouldBlockWithoutRateLimit retorna true → route.ts retorna antes do Anthropic call
+    const blocked = shouldBlockWithoutRateLimit('production', false);
+    expect(blocked).toBe(true);
   });
 });
 
@@ -170,19 +204,19 @@ describe('extractIdentifier', () => {
     expect(identifier.startsWith('ip_')).toBe(true);
   });
 
-  it('prefers x-real-ip over x-forwarded-for', () => {
-    const reqReal  = makeRequest({ 'x-real-ip': '5.6.7.8' });
+  it('prefers x-forwarded-for over x-real-ip (Vercel behavior)', () => {
     const reqFwd   = makeRequest({ 'x-forwarded-for': '5.6.7.8' });
-    const reqBoth  = makeRequest({ 'x-real-ip': '5.6.7.8', 'x-forwarded-for': '9.9.9.9' });
+    const reqReal  = makeRequest({ 'x-real-ip': '5.6.7.8' });
+    const reqBoth  = makeRequest({ 'x-forwarded-for': '5.6.7.8', 'x-real-ip': '9.9.9.9' });
 
-    const { identifier: fromReal } = extractIdentifier(reqReal, null);
     const { identifier: fromFwd  } = extractIdentifier(reqFwd,  null);
+    const { identifier: fromReal } = extractIdentifier(reqReal, null);
     const { identifier: fromBoth } = extractIdentifier(reqBoth, null);
 
-    // Same IP → same hash
-    expect(fromReal).toBe(fromFwd);
-    // x-real-ip takes priority → same hash as fromReal, not 9.9.9.9
-    expect(fromBoth).toBe(fromReal);
+    // Same IP → same hash regardless of header used
+    expect(fromFwd).toBe(fromReal);
+    // x-forwarded-for takes priority → hash of '5.6.7.8', not '9.9.9.9'
+    expect(fromBoth).toBe(fromFwd);
   });
 
   it('produces same hash for same IP on repeated calls (deterministic)', () => {
@@ -222,5 +256,69 @@ describe('extractIdentifier', () => {
     const { identifier: multi  } = extractIdentifier(reqMulti,  null);
     const { identifier: single } = extractIdentifier(reqSingle, null);
     expect(multi).toBe(single);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Migration SQL — integridade de GRANT/REVOKE
+// ---------------------------------------------------------------------------
+
+describe('migration: ask_usage SQL', () => {
+  const migrationSql = readFileSync(
+    resolve(process.cwd(), 'supabase/migrations/20260609120000_create_ask_usage.sql'),
+    'utf-8',
+  );
+
+  it('includes REVOKE EXECUTE FROM PUBLIC', () => {
+    expect(migrationSql).toContain('REVOKE EXECUTE');
+    expect(migrationSql).toContain('FROM PUBLIC');
+  });
+
+  it('includes GRANT EXECUTE TO service_role', () => {
+    expect(migrationSql).toContain('GRANT EXECUTE');
+    expect(migrationSql).toContain('TO service_role');
+  });
+
+  it('GRANT appears after REVOKE (order matters)', () => {
+    const revokeIdx = migrationSql.indexOf('REVOKE EXECUTE');
+    const grantIdx  = migrationSql.indexOf('GRANT EXECUTE');
+    expect(revokeIdx).toBeGreaterThan(0);
+    expect(grantIdx).toBeGreaterThan(0);
+    expect(grantIdx).toBeGreaterThan(revokeIdx);
+  });
+
+  it('RLS is enabled', () => {
+    expect(migrationSql).toContain('ENABLE ROW LEVEL SECURITY');
+  });
+
+  it('function uses SECURITY DEFINER', () => {
+    expect(migrationSql).toContain('SECURITY DEFINER');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Garantia estrutural: 429 é retornado ANTES da chamada Anthropic
+// ---------------------------------------------------------------------------
+
+describe('route.ts structure: rate limit blocks before Anthropic call', () => {
+  const routeSrc = readFileSync(
+    resolve(process.cwd(), 'src/app/api/ask/route.ts'),
+    'utf-8',
+  );
+
+  it('429 early return appears before Anthropic instantiation in source', () => {
+    const idx429      = routeSrc.indexOf('status: 429');
+    const idxAnthropic = routeSrc.indexOf('new Anthropic(');
+    expect(idx429).toBeGreaterThan(0);
+    expect(idxAnthropic).toBeGreaterThan(0);
+    expect(idx429).toBeLessThan(idxAnthropic);
+  });
+
+  it('503 production block appears before Anthropic instantiation in source', () => {
+    const idxBlock    = routeSrc.indexOf('shouldBlockWithoutRateLimit');
+    const idxAnthropic = routeSrc.indexOf('new Anthropic(');
+    expect(idxBlock).toBeGreaterThan(0);
+    expect(idxAnthropic).toBeGreaterThan(0);
+    expect(idxBlock).toBeLessThan(idxAnthropic);
   });
 });
