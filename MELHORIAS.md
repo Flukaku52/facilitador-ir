@@ -42,6 +42,18 @@ Este documento cataloga todas as melhorias identificadas para o IR Facilitador, 
 | 8.3 | `@t3-oss/env-nextjs` + Zod para env vars tipadas (`src/env.ts`) | sprint fundação |
 | 3.1 | PDF nativo com `@react-pdf/renderer` (T6 Sprint 1) | sprint 1 |
 | 3.4 | Autenticação Supabase + sincronização na nuvem (T1–T5 Sprint 1) | sprint 1 |
+| — | Política de privacidade reescrita para refletir autenticação real (Supabase + LGPD) | product-readiness |
+| — | `translateAuthError`: casos `otp_expired`, `token_expired`, `signup_disabled` | product-readiness |
+| — | `/auth/callback`: proteção contra open redirect via `?next=//evil.com` | product-readiness |
+| — | `ErrorBoundary` adicionado em `/questionario` (era a única página sem) | product-readiness |
+| — | `clearAll()` corrigido: remove notas e rascunho além do perfil e checklist | product-readiness |
+| — | `useChecklistNotes`: hook para notas por item com `useSyncExternalStore` | product-readiness |
+| — | Link compartilhado inclui toggles do checklist: `{ profile, checklist? }` | product-readiness |
+| — | Landing: seção "O que o app não faz" para expectativas claras | product-readiness |
+| — | Checklist: banner de conclusão com CTAs ao atingir 100% dos itens obrigatórios | product-readiness |
+| — | Relatório: passo 4 contextual para complexidades `medium` e `complex` | product-readiness |
+| — | guides.ts: linguagem fiscal conservadora (isenções e deduções com qualificadores) | product-readiness |
+| — | PDF + texto copiado: alinhados com a UI (step 4 contextual por complexidade) | product-readiness |
 
 ---
 
