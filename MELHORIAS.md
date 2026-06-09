@@ -486,3 +486,214 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | 7.1 | Modo contador |
 | 7.2 | Marketplace de revisão |
 | 7.3 | Plano premium |
+
+---
+
+## Apêndice A — Auditoria técnica: suporte a múltiplos anos-base e perfis
+
+> Gerado em: overnight-deep-work · Branch: `overnight-deep-work`
+> Objetivo: documentar impactos e estratégia de migração **sem implementar**. Nenhum código funcional é alterado aqui.
+
+---
+
+### A.1 Estado atual do TaxProfile
+
+```typescript
+// src/types/tax-profile.ts
+export interface TaxProfile {
+  id: string;          // UUID gerado no cliente (crypto.randomUUID())
+  taxYear: number;     // Ano-base (calendário), ex.: 2025 para declaração 2026
+  // … demais campos de renda, deduções, bens etc.
+}
+
+export function createEmptyProfile(): TaxProfile {
+  return {
+    id: crypto.randomUUID(),
+    taxYear: new Date().getFullYear() - 1,  // padrão: ano anterior ao atual
+    // …
+  };
+}
+```
+
+**Limitações do modelo atual:**
+- Uma única chave `ir_facilitador_profile` no localStorage — sobrescreve ao trocar de ano.
+- O `id` é um UUID do cliente; não há relação explícita entre anos do mesmo usuário.
+- Ao fazer login em dispositivos diferentes, `useProfileSync` sincroniza apenas o perfil do `taxYear` corrente (derivado de `localProfile?.taxYear ?? getCurrentTaxYear()`).
+
+---
+
+### A.2 Onde `taxYear` é usado hoje
+
+| Arquivo | Uso |
+|---------|-----|
+| `src/types/tax-profile.ts:5` | Campo `taxYear: number` na interface |
+| `src/types/tax-profile.ts:61` | `createEmptyProfile` → `getFullYear() - 1` |
+| `src/lib/tax-years/index.ts` | `getTaxYearThresholds(taxYear)` — tabela de limiares por ano |
+| `src/lib/rules/tax-rules.ts` | Todas as 4 funções públicas recebem `taxYear` opcional |
+| `src/lib/utils/profile-answers.ts:36` | `classifyComplexity(profile, profile.taxYear)` ao salvar respostas |
+| `src/lib/storage/cloud-profile-storage.ts` | Coluna `tax_year` no Supabase; SELECT/UPSERT/DELETE filtram por `taxYear` |
+| `src/lib/hooks/useProfileSync.ts` | Derivação de `taxYear` para queries de nuvem; fallback para `getCurrentTaxYear()` |
+| `src/app/dashboard/page.tsx`, `checklist/page.tsx`, `guias/page.tsx`, `relatorio/page.tsx` | `profile.taxYear` passado explicitamente para funções de regras |
+| `src/components/report/ReportPDF.tsx`, `DownloadPDFButton.tsx` | Nome do arquivo PDF e título do documento |
+
+**Conclusão:** `taxYear` já é um cidadão de primeira classe — o motor de regras e o Supabase são multi-ano por design. O gargalo é o **armazenamento local** (uma chave flat) e o **fluxo de navegação** (sem seletor de ano).
+
+---
+
+### A.3 Impacto em localStorage
+
+**Estado atual:** três chaves flat por perfil ativo.
+
+```
+ir_facilitador_profile          → TaxProfile (JSON)
+ir_facilitador_checklist        → Record<itemId, boolean>
+ir_facilitador_checklist_notes  → Record<itemId, string>
+```
+
+**Modelo proposto:** chaves indexadas por `taxYear`.
+
+```
+ir_facilitador_profile_{taxYear}          → TaxProfile
+ir_facilitador_checklist_{taxYear}        → Record<itemId, boolean>
+ir_facilitador_checklist_notes_{taxYear}  → Record<itemId, string>
+ir_facilitador_active_tax_year            → number (ano selecionado)
+ir_facilitador_known_tax_years            → number[] (anos disponíveis)
+```
+
+**Riscos de migração:**
+1. Chaves antigas sem sufixo são ignoradas pelo novo código → usuário perde dados sem aviso se não houver migração one-shot.
+2. Chave `ir_migration_v1_handled` já existe como marcador; precisaria de `ir_migration_v2_handled` para a migração de chaves.
+3. `localStorage` em mobile tem limite de ~5 MB; múltiplos anos de checklist podem pressionar o limite se os itens forem muitos.
+
+**Estratégia de migração segura (localStorage):**
+```
+1. Ao carregar o app, checar se `ir_migration_v2_handled` está ausente.
+2. Ler `ir_facilitador_profile`, `ir_facilitador_checklist`, `ir_facilitador_checklist_notes`.
+3. Se perfil válido encontrado:
+   a. Ler `taxYear` do perfil.
+   b. Copiar dados para `ir_facilitador_profile_{taxYear}`, etc.
+   c. Remover chaves antigas.
+   d. Gravar `ir_facilitador_active_tax_year = taxYear`.
+   e. Gravar `ir_facilitador_known_tax_years = [taxYear]`.
+4. Gravar `ir_migration_v2_handled = 'v2'`.
+```
+
+---
+
+### A.4 Impacto em cloud sync (Supabase)
+
+O schema do Supabase já suporta múltiplos anos:
+
+```sql
+-- tax_profiles: UNIQUE(user_id, tax_year)
+-- checklist_state: vinculado a profile_id (que já distingue anos)
+```
+
+`cloud-profile-storage.ts` expõe `loadCloudProfile(userId, taxYear)` e `saveCloudProfile(profile)` usando `profile.taxYear`. O suporte multi-ano **já existe** no backend.
+
+**Gap atual em `useProfileSync`:**
+- Ao fazer login, o hook sincroniza apenas o ano derivado de `localProfile?.taxYear ?? getCurrentTaxYear()` (linhas 63, 131).
+- Para suportar múltiplos anos, o hook precisaria iterar sobre `ir_facilitador_known_tax_years` e sincronizar cada ano.
+- Conflito de merge (local mais novo vs nuvem mais novo) precisaria de política explícita — sugestão: `updatedAt` no perfil, last-write-wins, com toast de aviso.
+
+---
+
+### A.5 Impacto em checklist
+
+**Hoje:** `ir_facilitador_checklist` é um `Record<itemId, boolean>` plano — único por dispositivo.
+
+**Com múltiplos anos:** o ID dos itens de checklist já contém o contexto de categoria (`cl_clt_report`, `cl_bank_reports` etc.) mas **não** o `taxYear`. Dois anos com as mesmas perguntas respondidas gerariam os mesmos IDs de itens.
+
+Isso é **seguro** porque o checklist é derivado dinamicamente de `generateChecklist(profile, profile.taxYear)` — os IDs são estáveis por design. Mas ao trocar de ano, o estado de conclusão de um item não deve "vazar" para o outro.
+
+**Solução:** a chave indexada por `taxYear` (`ir_facilitador_checklist_{taxYear}`) resolve completamente — cada ano tem seu próprio mapa de itens.
+
+**Notas:** mesma lógica aplica para `ir_facilitador_checklist_notes_{taxYear}`.
+
+---
+
+### A.6 Impacto em relatório e PDF
+
+- `relatorio/page.tsx` usa `profile.taxYear` para título e para todas as funções de regras → **sem breaking change** se o perfil certo for passado.
+- Link compartilhado (`?d=base64`) codifica `{ profile, checklist? }` → ao adicionar múltiplos anos, o link continua válido para o perfil que ele contém.
+- PDF: `relatorio-ir-{taxYear}.pdf` → nome do arquivo já carrega o ano.
+- **Risco:** link de relatório compartilhado de um ano 2024 aberto num app que exibe o ano 2025 ativo pode confundir o usuário. Solução: banner "Você está visualizando o relatório de {ano-base}".
+
+---
+
+### A.7 Modelo de dados recomendado
+
+```typescript
+// Novo tipo para o store multi-ano
+type ProfilesByYear = Record<number, TaxProfile>;        // taxYear → TaxProfile
+type ChecklistByYear = Record<number, Record<string, boolean>>;
+type NotesByYear    = Record<number, Record<string, string>>;
+
+// Chave única para o ano ativo na UI
+const ACTIVE_YEAR_KEY = 'ir_facilitador_active_tax_year';
+```
+
+```typescript
+// Funções sugeridas em local-profile-storage.ts
+loadTaxProfile(taxYear: number): TaxProfile | null
+saveTaxProfile(profile: TaxProfile): void          // usa profile.taxYear como chave
+loadChecklistState(taxYear: number): Record<string, boolean>
+saveChecklistStateMap(taxYear: number, state: Record<string, boolean>): void
+listKnownTaxYears(): number[]
+deleteProfileYear(taxYear: number): void           // com confirmação explícita
+```
+
+**Invariantes a manter:**
+- Funções do motor de regras (`tax-rules.ts`) já aceitam `taxYear` — nenhuma alteração necessária lá.
+- `TaxProfile.taxYear` permanece como fonte canônica do ano; nunca derivar ano de contexto externo.
+- `createEmptyProfile()` continua gerando `taxYear = getFullYear() - 1`; o seletor de ano na UI pode sobrescrever antes de salvar.
+
+---
+
+### A.8 Estratégia de migração segura (end-to-end)
+
+```
+Fase 1 — localStorage (sem Supabase, sem auth)
+  1. Implementar novo schema de chaves indexadas por taxYear.
+  2. Implementar migração one-shot v2 (seção A.3).
+  3. Adicionar seletor de ano no header/dashboard.
+  4. Testes: migração v1→v2, troca de ano, dados isolados por ano.
+  Commit tag: feat(storage): multi-year localStorage
+
+Fase 2 — Supabase (requer auth ativa)
+  5. Ajustar useProfileSync para iterar anos conhecidos.
+  6. Política de merge last-write-wins com toast.
+  7. Testes de integração com perfil multi-ano.
+  Commit tag: feat(sync): sincronização multi-ano com Supabase
+
+Fase 3 — UI completa
+  8. Tela de histórico de anos (/conta ou /historico).
+  9. Comparação side-by-side (item 3.8).
+```
+
+---
+
+### A.9 Riscos identificados
+
+| Risco | Probabilidade | Impacto | Mitigação |
+|-------|---------------|---------|-----------|
+| Perda de dados na migração v1→v2 | Baixa (migração one-shot defensiva) | Alto | Copiar antes de deletar; testar com perfil real |
+| localStorage cheio com muitos anos | Baixa (anos de IR são ~5 campos JSON) | Médio | Alertar se storage > 80% cheio; oferecer delete de anos antigos |
+| IDs de checklist colisão entre anos | Nula (chaves indexadas por taxYear eliminam colisão) | — | — |
+| Link compartilhado de ano errado confunde destinatário | Média | Baixo | Banner de ano no modo shared view |
+| Race condition na sync Supabase (dois dispositivos, anos diferentes) | Baixa | Alto | Política de merge explícita + `updatedAt` |
+| Regressão em `useProfileSync` ao iterar múltiplos anos | Média (hook complexo) | Alto | Feature flag + testes de integração antes de ativar |
+
+---
+
+### A.10 Passos incrementais recomendados
+
+1. **Pré-requisito (zero código):** Definir convenção de nomenclatura de chaves e aprovar modelo de dados (A.7).
+2. **Sprint isolado — storage layer:** Implementar funções multi-ano em `local-profile-storage.ts` com testes completos. Não ativar na UI ainda.
+3. **Migração defensiva:** Implementar `runMigrationV2()` chamado no boot; cobrir com testes unitários.
+4. **UI mínima:** Seletor de ano no header (dropdown com anos conhecidos + "Novo ano"). Dashboard e checklist reagem ao ano ativo.
+5. **Supabase (post-auth):** Ajustar `useProfileSync` para sincronizar todos os anos conhecidos. Política de merge.
+6. **Tela de histórico:** Listar anos com resumo de complexidade; link para relatório de cada ano.
+7. **Comparação:** Implementar item 3.8 (side-by-side).
+
+> **Critério de conclusão mínimo:** usuário pode declarar IRPF 2025 e IRPF 2026 no mesmo app sem que os dados se sobrescrevam.
