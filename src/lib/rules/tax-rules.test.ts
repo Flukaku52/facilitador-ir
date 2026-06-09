@@ -767,3 +767,33 @@ describe('regressões de texto — guia outras-rendas-alerta', () => {
     expect(fullText).toContain('Confirme a classificação com o informe, documento oficial ou contador');
   });
 });
+
+// ─── perfil "tudo Não" — dashboard não deve ficar em skeleton ────────────────
+
+describe('perfil vazio (tudo false) — sem skeleton infinito no dashboard', () => {
+  const emptyProfile = createEmptyProfile();
+
+  it('generateChecklist retorna [] sem lançar erro', () => {
+    expect(() => generateChecklist(emptyProfile)).not.toThrow();
+    expect(generateChecklist(emptyProfile)).toEqual([]);
+  });
+
+  it('generateAlerts retorna [] sem lançar erro', () => {
+    expect(() => generateAlerts(emptyProfile)).not.toThrow();
+    expect(generateAlerts(emptyProfile)).toEqual([]);
+  });
+
+  it('getApplicableGuideSlugs retorna [] sem lançar erro', () => {
+    expect(() => getApplicableGuideSlugs(emptyProfile)).not.toThrow();
+    expect(getApplicableGuideSlugs(emptyProfile)).toEqual([]);
+  });
+
+  it('calculateChecklistProgress([]) retorna 0 sem lançar erro', () => {
+    expect(() => calculateChecklistProgress([])).not.toThrow();
+    expect(calculateChecklistProgress([])).toBe(0);
+  });
+
+  it('classifyComplexity retorna simple para perfil vazio — estado válido, não loading', () => {
+    expect(classifyComplexity(emptyProfile)).toBe('simple');
+  });
+});
