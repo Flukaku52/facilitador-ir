@@ -18,9 +18,10 @@ export default function ErrorFallback() {
         Algo deu errado ao carregar seus dados
       </h2>
       <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-        Seus dados ficam salvos apenas neste navegador. Em alguns casos, uma
-        atualização de página resolve o problema. Se o erro persistir, limpar
-        os dados locais e recomeçar o diagnóstico vai restaurar o aplicativo.
+        Em alguns casos, uma atualização de página resolve o problema. Se o
+        erro persistir, limpar os dados locais e recomeçar o diagnóstico vai
+        restaurar o aplicativo. Se você tem uma conta, seus dados na nuvem
+        permanecem seguros.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
