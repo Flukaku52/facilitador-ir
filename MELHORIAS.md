@@ -150,11 +150,9 @@ Filtros Todos / Pendentes / Concluídos com contagens em tempo real.
 
 ---
 
-### 2.5 Anotações pessoais nos itens do checklist `P3` ⬜
+### 2.5 Anotações pessoais nos itens do checklist `P3` ✅
 
-**Problema:** O usuário pode querer registrar onde guardou o documento.
-
-**Solução:** Campo de texto livre em cada item, salvo no `localStorage`. Exibido como expansão do item.
+Implementado em `overnight-deep-work`. Campo de texto livre por item, salvo em `ir_facilitador_checklist_notes`. Expansível via botão "+ nota" / "📝". Disclaimer: "Nota salva localmente. Não aparece no link compartilhado."
 
 ---
 
@@ -174,7 +172,7 @@ Filtros Todos / Pendentes / Concluídos com contagens em tempo real.
 
 URL `/relatorio?d=<base64>` com o `TaxProfile` codificado. Ao acessar com o parâmetro, o app lê da URL em vez do `localStorage`. Banner informativo para visualizações compartilhadas.
 
-**Limitação conhecida:** o link codifica apenas o `TaxProfile`. Os toggles explícitos do checklist (`ir_facilitador_checklist`) não são transmitidos. Em modo shared view, apenas os itens auto-marcados pelo perfil (via `profile.documents`) aparecem como concluídos. Isso é esperado — o destinatário vê o estado do diagnóstico, não os toggles manuais.
+**Atualizado em overnight-deep-work:** o link agora codifica `{ profile, checklist? }`. Os toggles manuais do checklist são incluídos no link compartilhado (backward compatible: links antigos decodificam com `checklistState: {}`). Notas pessoais (`ir_facilitador_checklist_notes`) permanecem somente locais e não aparecem no link compartilhado.
 
 ---
 
@@ -454,16 +452,18 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 |---|----------|
 | ~~1.6~~ | ~~Validar valores em `2026/thresholds.ts` com fonte oficial~~ ✅ Corrigido com fonte oficial (P&R IRPF 2026) |
 | ~~3.4~~ | ~~Autenticação + persistência na nuvem~~ ✅ Sprint 1 |
+| 9.3 | Testar magic link manualmente (ver Apêndice D, seção D.7) |
+| D.8 | Validar `?next=` em `/auth/callback` contra `//` — P2; mapear `otp_expired` em translateAuthError |
 
 ### P2 — Próxima versão
 
 | # | Melhoria |
 |---|----------|
-| 2.5 | Anotações no checklist |
+| ~~2.5~~ | ~~Anotações no checklist~~ ✅ overnight-deep-work |
 | ~~3.1~~ | ~~PDF nativo com `@react-pdf/renderer`~~ ✅ Sprint 1 |
-| 3.2 | Múltiplos perfis / anos |
-| 3.3 | Upload de documentos |
-| 4.3 | Service worker / cache offline (PWA completo) |
+| 3.2 | Múltiplos perfis / anos — ver Apêndice A para auditoria técnica completa |
+| 3.3 | Upload de documentos — ver Apêndice B para auditoria técnica completa |
+| 4.3 | Service worker / cache offline (PWA completo) — ver Apêndice C; aguardar suporte App Router |
 | ~~5.3~~ | ~~Verificação de contraste~~ ✅ indigo-400→600 e gray-400→500 corrigidos |
 | ~~5.4~~ | ~~Focus management entre perguntas~~ ✅ QuestionnaireFlow |
 | ~~6.3~~ | ~~Aviso de dados no compartilhamento~~ ✅ Modal de confirmação no relatório |
@@ -482,10 +482,37 @@ O `ErrorBoundary` atual não cobre esse cenário — ele captura apenas exceçõ
 | 2.7 | Modo de impressão para guias |
 | 3.5 | Notificações de prazo por e-mail |
 | 3.7 | OCR de informes |
-| 3.8 | Comparação entre anos |
+| 3.8 | Comparação entre anos — ver Apêndice A, seção A.10 |
 | 7.1 | Modo contador |
 | 7.2 | Marketplace de revisão |
 | 7.3 | Plano premium |
+
+---
+
+## Overnight deep work (2026-06-04/2026-06-09) — overnight-deep-work branch
+
+Branch `overnight-deep-work` — 7 commits sobre `main` (que inclui `beta-polish-safety-work`).
+
+### Implementado
+
+| Tarefa | Commit | Descrição |
+|--------|--------|-----------|
+| T1 — Testes de regressão beta-polish | `a656a59` | 5 testes para perfil vazio (skeleton infinito) + migração do marcador de migração |
+| T2 — Checklist no link compartilhado | `82498b0` | `encodeSharedPayload`/`decodeSharedPayload` com backward compat; 10 testes |
+| T3 — Notas locais no checklist | `518698d` | `useChecklistNotes`, `saveChecklistNote`, `ChecklistItemRow` expansível; 6 testes |
+| T4 — Auditoria multi-anos/perfis | `8baff7a` | Apêndice A em MELHORIAS.md — análise técnica completa sem código funcional |
+| T5 — Auditoria upload de documentos | `750750d` | Apêndice B — Supabase Storage, RLS, privacidade/LGPD, estratégia incremental |
+| T6 — Auditoria PWA/service worker | `65d7fb0` | Apêndice C — riscos de next-pwa@5 com App Router, recomendação conservadora |
+| T7 — Auditoria auth/magic link | `98b0342` | Apêndice D — fluxos PKCE/implícito, open redirect, checklist de testes manuais |
+| T8 — Empty states | `fb95620` | Fix: estado vazio de /guias com CTA "Editar respostas" |
+
+### Estado final
+
+- **Testes:** 257/257 passando
+- **Lint:** OK
+- **Build:** OK
+- **git status:** limpo
+- **Commits acima de main:** 8 (incluindo TAREFA 9)
 
 ---
 
