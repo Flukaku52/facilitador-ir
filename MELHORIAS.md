@@ -999,3 +999,160 @@ Safari iOS usa `apple-touch-icon` em vez do manifest — adicionar em `layout.ts
 | `next-pwa@5.x` | Não recomendado — incompatível com App Router |
 
 > **Critério de conclusão mínimo para PWA completo:** app instalável com ícones corretos, page offline funcional, assets estáticos cacheados, e mecanismo de atualização automática após deploy.
+
+---
+
+## Apêndice D — Auditoria técnica: autenticação e magic link
+
+> Gerado em: overnight-deep-work · Branch: `overnight-deep-work`
+> Objetivo: documentar o fluxo de auth atual, pontos de atenção e checklist de testes manuais **sem implementar**. Magic link não pôde ser testado por rate limit do Supabase (ver item 9.3 de MELHORIAS.md).
+
+---
+
+### D.1 Visão geral do sistema de auth atual
+
+O app suporta dois modos de operação:
+
+**Modo guest (sem env vars):** `NEXT_PUBLIC_SUPABASE_URL` ou `NEXT_PUBLIC_SUPABASE_ANON_KEY` ausentes → `useAuth` retorna `{ user: null, loading: false }` imediatamente. Toda a UI de auth é ocultada. `GuestBanner` aparece para incentivar cadastro.
+
+**Modo autenticado (env vars presentes):** Supabase Auth gerencia sessão. Dois fluxos de callback coexistem:
+
+| Fluxo | Quando acontece | Handler |
+|-------|-----------------|---------|
+| PKCE (`?code=`) | Cadastro com confirmação de e-mail; reset de senha | `src/app/auth/callback/route.ts` |
+| Implícito (`#access_token=`) | Magic link; confirmação de e-mail legado | `src/components/layout/AuthHandler.tsx` |
+
+---
+
+### D.2 Fluxo PKCE (code exchange) — `/auth/callback`
+
+**Implementação atual (`src/app/auth/callback/route.ts`):**
+1. Lê `?code=` da URL.
+2. Troca o code por sessão via `supabase.auth.exchangeCodeForSession(code)`.
+3. Redireciona para `?next=` (padrão: `/dashboard`).
+4. Em erro: redireciona para `/login?error=callback`.
+
+**Uso atual:**
+- `signUp`: `emailRedirectTo = /auth/callback` (sem `?next=`, logo redireciona para `/dashboard`).
+- `requestPasswordReset`: `redirectTo = /auth/callback?next=/recuperar-senha?mode=reset`.
+
+**Pontos de atenção:**
+1. `next` é lido diretamente de `searchParams` sem validação — risco de Open Redirect se `next=/https://evil.com`. **Mitigação recomendada:** validar que `next` começa com `/` antes de usar.
+2. Quando Supabase não está configurado (sem env vars), a rota ainda existe mas `createServerClient` receberia strings vazias — o `if (code && env.NEXT_PUBLIC_SUPABASE_URL && ...)` já protege esse caminho.
+3. Cookies de sessão são `httpOnly` por padrão no `@supabase/ssr` — correto para segurança XSS.
+
+---
+
+### D.3 Fluxo implícito (hash) — `AuthHandler`
+
+**Implementação atual (`src/components/layout/AuthHandler.tsx`):**
+1. Verifica `window.location.hash.includes('access_token=')` no mount.
+2. Registra `onAuthStateChange` do Supabase.
+3. Quando session chega (`SIGNED_IN` ou `INITIAL_SESSION`): limpa hash da URL com `window.history.replaceState` e redireciona para `/dashboard`.
+4. Cancela subscription no cleanup.
+
+**Pontos de atenção:**
+1. O hash (`#access_token=...`) é removido com `replaceState` — correto; tokens não aparecem em logs de servidor nem são enviados como Referer.
+2. `AuthHandler` está em `AppShell` com `ssr: false` (verificar se `dynamic` foi aplicado). Se renderizar no servidor, `window` quebra. **Verificar:** `AppShell` ou o componente pai usa `'use client'` + `dynamic(..., { ssr: false })`?
+3. Magic link via Supabase por padrão usa fluxo implícito, mas Supabase 2.x configurado com PKCE pode enviar um `code` em vez de `access_token` no fragmento — o comportamento depende da configuração do projeto Supabase (Auth → PKCE enabled/disabled). Se PKCE estiver ativo, magic link vai para `/auth/callback?code=...` e `AuthHandler` nunca dispara.
+
+---
+
+### D.4 Páginas protegidas e guest mode
+
+**Proteção atual:** nenhuma rota é hard-blocked no servidor. A proteção é via UI:
+- `UserMenu` e `GuestBanner` condicionais ao estado de auth.
+- Dados de perfil no `localStorage` são acessíveis sem auth.
+- Supabase RLS protege dados de nuvem.
+
+**Implicações:**
+- Um usuário não autenticado pode acessar `/dashboard`, `/checklist`, `/relatorio` normalmente — apenas não sincroniza com a nuvem. Isso é intencional (guest mode funcional).
+- Se no futuro funcionalidades forem restritas por plano, precisaria de proteção de rota no servidor (`middleware.ts`).
+
+**`GuestBanner`:**
+- Usa `sessionStorage` para persistir "dispensado" — some ao fechar a aba, reaparece numa nova sessão. Comportamento aceitável.
+- Inicializado com lazy initializer `() => !!sessionStorage.getItem(DISMISSED_KEY)` — correto porque `GuestBanner` é sempre importado com `ssr: false` (via `AppShell`).
+
+---
+
+### D.5 Mensagens de erro de auth
+
+`translateAuthError` em `src/lib/hooks/useAuth.ts` cobre os casos:
+- Credenciais inválidas → "E-mail ou senha incorretos."
+- E-mail não confirmado → "Confirme seu e-mail antes de entrar."
+- E-mail já cadastrado → "Este e-mail já está cadastrado."
+- Senha fraca → "A senha deve ter pelo menos 8 caracteres."
+- Rate limit → "Muitas tentativas. Aguarde alguns minutos."
+- E-mail inválido → "E-mail inválido."
+- Erro de rede → "Erro de conexão."
+- Nova senha igual → "A nova senha deve ser diferente da senha atual."
+- Fallback → "Ocorreu um erro inesperado."
+
+**Lacunas identificadas:**
+1. Supabase pode retornar `"signup_disabled"` se cadastro estiver desativado no painel — não mapeado → cai no fallback genérico.
+2. `"otp_expired"` (magic link ou OTP expirado) — não mapeado → mostra "Ocorreu um erro inesperado" em vez de "Link expirado. Solicite um novo."
+3. `/login?error=callback` é capturado na `LoginForm`: `"O link de confirmação expirou ou é inválido."` — cobre erros de callback PKCE, mas não diferencia expiração de adulteração.
+
+---
+
+### D.6 Open Redirect em `/auth/callback`
+
+**Risco atual (baixo, mas presente):**
+```typescript
+const next = searchParams.get('next') ?? '/dashboard';
+// … sem validação …
+return NextResponse.redirect(`${origin}${next}`);
+```
+
+Se `next=/https://evil.com`, o redirect seria para `${origin}/https://evil.com` — que resultaria em `https://ir-facilitador.vercel.app/https://evil.com` (erro 404, não um redirect externo real). O prefixo `origin` previne redirecionamento externo porque `next` é concatenado como path.
+
+**Porém:** se `next` começar com `//`, como `//evil.com/path`, o resultado é `https://ir-facilitador.vercel.app//evil.com/path` — alguns navegadores e CDNs tratam `//` como protocol-relative URL. **Mitigação simples:**
+
+```typescript
+// Validar que next é um path interno seguro
+const rawNext = searchParams.get('next') ?? '/dashboard';
+const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard';
+```
+
+---
+
+### D.7 Checklist de testes manuais pendentes
+
+> **Por que pendente:** rate limit do Supabase (nota 9.3 em MELHORIAS.md) impediu os testes durante o desenvolvimento. Executar quando rate limit resetar.
+
+**Fluxo de cadastro + confirmação de e-mail:**
+- [ ] Cadastrar novo e-mail → receber e-mail de confirmação → clicar no link.
+- [ ] Verificar que hash/code é limpo da URL após confirmação.
+- [ ] Verificar redirect para `/dashboard`.
+- [ ] Verificar que dados do `localStorage` são sincronizados com Supabase após primeiro login.
+
+**Fluxo de magic link (se habilitado no Supabase):**
+- [ ] Verificar se Supabase está com PKCE ativo ou implícito (painel → Auth → Settings).
+- [ ] Se implícito: clicar no magic link → `AuthHandler` deve capturar `#access_token=` → limpar hash → redirect para `/dashboard`.
+- [ ] Se PKCE: clicar no magic link → `/auth/callback?code=...` → redirect para `/dashboard`.
+- [ ] Testar magic link expirado (aguardar 1h) → deve redirecionar para `/login?error=callback` com mensagem amigável.
+
+**Fluxo de reset de senha:**
+- [ ] Solicitar reset → receber e-mail → clicar no link.
+- [ ] Verificar redirect para `/recuperar-senha?mode=reset`.
+- [ ] Definir nova senha → verificar que aceita e redireciona para `/dashboard`.
+- [ ] Tentar definir mesma senha → verificar mensagem "A nova senha deve ser diferente da senha atual."
+
+**Proteção de rotas:**
+- [ ] Acessar `/dashboard` sem login → deve funcionar em modo guest (sem crash).
+- [ ] Fazer login → dados do `localStorage` são migrados para nuvem automaticamente.
+- [ ] Fazer logout → dados permanecem no `localStorage`; banner guest reaparece.
+
+---
+
+### D.8 Recomendações de curto prazo
+
+| Ação | Prioridade | Arquivo |
+|------|-----------|---------|
+| Validar `next` em `/auth/callback` (bloquear `//`) | P2 | `src/app/auth/callback/route.ts` |
+| Mapear `otp_expired` em `translateAuthError` | P2 | `src/lib/hooks/useAuth.ts` |
+| Mapear `signup_disabled` em `translateAuthError` | P3 | `src/lib/hooks/useAuth.ts` |
+| Confirmar config PKCE vs implícito no Supabase | P1 | Painel Supabase (não código) |
+| Executar checklist D.7 completo | P1 | Testes manuais |
+
+> **Observação conservadora:** nenhuma mudança de código é urgente sem antes confirmar o comportamento real via testes manuais (D.7). O Open Redirect via `//` é teórico nesta topologia de URL — verificar in-loco antes de corrigir.
