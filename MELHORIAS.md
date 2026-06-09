@@ -879,3 +879,123 @@ Fase 3 — Hardening
 ```
 
 > **Critério de conclusão mínimo:** usuário autenticado pode anexar um PDF a um item do checklist, visualizá-lo na mesma sessão, e deletá-lo. Usuário não autenticado não vê o botão de upload.
+
+---
+
+## Apêndice C — Auditoria técnica: PWA e cache offline
+
+> Gerado em: overnight-deep-work · Branch: `overnight-deep-work`
+> Objetivo: avaliar riscos da estratégia PWA atual e recomendar caminho seguro **sem implementar**.
+
+---
+
+### C.1 Estado atual
+
+`public/manifest.json` existe com `display: "standalone"`, `start_url: "/"` e um único ícone `favicon.ico`. Não há service worker registrado — nem `next-pwa`, `workbox`, nem registro manual em `public/sw.js` ou `src/app/layout.tsx`.
+
+**O que funciona hoje:**
+- O app aparece como instalável em Chrome/Edge/Safari (o `manifest.json` é suficiente para o prompt "Adicionar à tela inicial").
+- Sem service worker = sem cache offline = sem risco de páginas estáticas.
+
+**O que não funciona:**
+- Offline: abre tela em branco (navegador retorna erro 503 sem cache).
+- Ícone de alta resolução: `favicon.ico` é aceito mas subótimo para splash screens e ícones de tela inicial.
+- `theme_color` não é aplicado dinamicamente por dark mode.
+
+---
+
+### C.2 Riscos de adicionar service worker (next-pwa / Workbox)
+
+| Risco | Descrição | Severidade |
+|-------|-----------|------------|
+| **Stale shell** | Cache de app shell (`_next/static`) ficando obsoleto após deploy → usuário vê versão antiga indefinidamente | Alta |
+| **Stale API routes** | `POST /api/ask` (Claude) ou rotas futuras de auth sendo servidas do cache | Alta |
+| **Cache de páginas com dados dinâmicos** | `/relatorio?d=...` ou `/dashboard` cacheados com snapshot de dados antigos | Média |
+| **Falha silenciosa de atualização** | Service worker instala nova versão mas não assume controle até o usuário fechar todas as abas → bug difícil de reproduzir | Média |
+| **Conflito com SSR/RSC** | Next.js App Router usa React Server Components e streaming; Workbox não tem tratamento nativo para payloads de RSC — pode corromper respostas de `/_next/data/` | Alta |
+| **Debugging difícil** | Cache opaco no DevTools; `skipWaiting` agressivo pode causar inconsistências de estado | Média |
+| **Tamanho de cache** | Em mobile, cache de SW pode ocupar dezenas de MB de páginas estáticas — Safari tem limite de 50 MB por origem | Baixa |
+
+---
+
+### C.3 Análise de compatibilidade: next-pwa + App Router
+
+`next-pwa@5.x` foi construído para o Pages Router e usa `getServerSideProps`/`getStaticProps` para pré-cache. Com o App Router (usado neste projeto), os problemas são:
+
+1. As rotas não geram arquivos estáticos previsíveis em `_next/data/` — o Workbox `StaleWhileRevalidate` pode usar dados de render errados.
+2. `next-pwa` ainda não suporta oficialmente o App Router (último release: 2023; repositório com baixa atividade).
+3. Alternativas como `@ducanh2912/next-pwa` oferecem suporte experimental ao App Router mas são não-oficiais.
+
+**Recomendação:** não usar `next-pwa` no estado atual. Aguardar suporte oficial ou migrar para Serwist (fork mantido).
+
+---
+
+### C.4 Estratégia recomendada de cache offline
+
+**Camada 1 — Apenas assets estáticos (seguro):**
+Cachear apenas CSS, JS e fontes de `_next/static/` com estratégia `CacheFirst` (nunca expiram por causa do content hash). Não cachear páginas HTML nem rotas de API.
+
+```javascript
+// sw.js hipotético (Workbox manual)
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/_next/static/'),
+  new CacheFirst({ cacheName: 'static-assets', plugins: [new ExpirationPlugin({ maxEntries: 200 })] }),
+);
+// NUNCA cachear: /api/*, /relatorio, /dashboard, /questionario
+```
+
+**Camada 2 — Offline fallback page:**
+Pré-cachear uma página `/offline` simples com mensagem "Você está offline. Seus dados salvos continuam disponíveis ao reconectar." Servir essa página para qualquer rota de navegação que falhe.
+
+**Camada 3 — localStorage funciona offline por natureza:**
+O checklist, perfil e notas estão em `localStorage` — acessíveis sem rede. O app pode mostrar dados locais mesmo offline; apenas sync com Supabase e Claude API falharão.
+
+---
+
+### C.5 Invalidação de cache após deploy
+
+**Problema central:** um usuário com SW instalado e cache de shell pode não receber o novo deploy por horas ou dias.
+
+**Solução canônica:**
+1. SW verifica hash do `NEXT_DEPLOY_ID` (injetado via `next.config.ts` como variável de build).
+2. Se hash mudou → `self.skipWaiting()` + `clients.claim()` + reload forçado com toast "Nova versão disponível — recarregando...".
+3. Alternativa mais conservadora: toast "Nova versão disponível. [Recarregar]" sem reload automático.
+
+**Opção mais segura para este app:** como o app é simples e o `localStorage` é a fonte de verdade, reload automático é seguro — não há estado em memória crítico que seria perdido.
+
+---
+
+### C.6 Ícones e splash screens
+
+Para instalação correta em Android e iOS, o `manifest.json` precisa de:
+
+```json
+{
+  "icons": [
+    { "src": "/icon-192.png",  "sizes": "192x192",  "type": "image/png" },
+    { "src": "/icon-512.png",  "sizes": "512x512",  "type": "image/png", "purpose": "maskable" }
+  ]
+}
+```
+
+Safari iOS usa `apple-touch-icon` em vez do manifest — adicionar em `layout.tsx`:
+```html
+<link rel="apple-touch-icon" href="/icon-192.png" />
+```
+
+**Custo:** criar dois PNGs (192×192 e 512×512) com margem de segurança para máscara (safe zone: 80% do tamanho).
+
+---
+
+### C.7 Recomendação final
+
+| Ação | Quando |
+|------|--------|
+| Adicionar ícones 192px e 512px ao manifest | Imediato — sem risco, melhora instalabilidade |
+| Adicionar `apple-touch-icon` em `layout.tsx` | Imediato — sem risco |
+| Adicionar `theme-color` meta tag com media query dark | Imediato — sem risco |
+| Service worker com cache de assets estáticos | Após App Router ter suporte estável em next-pwa/Serwist |
+| Cache offline de páginas HTML | Nunca sem estratégia de invalidação testada |
+| `next-pwa@5.x` | Não recomendado — incompatível com App Router |
+
+> **Critério de conclusão mínimo para PWA completo:** app instalável com ícones corretos, page offline funcional, assets estáticos cacheados, e mecanismo de atualização automática após deploy.
