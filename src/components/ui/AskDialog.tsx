@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { TaxProfile } from '@/types/tax-profile';
+import { MAX_QUESTION_LENGTH } from '@/lib/rate-limit/ask-rate-limit';
 
 interface AskDialogProps {
   profile: TaxProfile | null;
@@ -40,6 +41,9 @@ export default function AskDialog({ profile }: AskDialogProps) {
         body: JSON.stringify({ question: question.trim(), profile }),
       });
       const data = (await res.json()) as { answer?: string; error?: string };
+      if (res.status === 429) {
+        throw new Error('Você atingiu o limite de perguntas por enquanto. Tente novamente mais tarde.');
+      }
       if (!res.ok) throw new Error(data.error ?? 'Erro desconhecido');
       setAnswer(data.answer ?? '');
     } catch (err) {
@@ -99,15 +103,21 @@ export default function AskDialog({ profile }: AskDialogProps) {
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-3">
-                <textarea
-                  ref={textareaRef}
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="Ex: Preciso declarar o aluguel que recebi? Como funciona a isenção na venda de ações?"
-                  rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 resize-none"
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <textarea
+                    ref={textareaRef}
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    placeholder="Ex: Preciso declarar o aluguel que recebi? Como funciona a isenção na venda de ações?"
+                    rows={3}
+                    maxLength={MAX_QUESTION_LENGTH}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 resize-none"
+                    disabled={loading}
+                  />
+                  <span className={`absolute bottom-2 right-2 text-xs ${question.length >= MAX_QUESTION_LENGTH ? 'text-red-500' : 'text-gray-400'}`}>
+                    {question.length}/{MAX_QUESTION_LENGTH}
+                  </span>
+                </div>
                 <button
                   type="submit"
                   disabled={loading || !question.trim()}
