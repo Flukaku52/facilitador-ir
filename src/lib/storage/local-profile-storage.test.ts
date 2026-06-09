@@ -262,3 +262,73 @@ describe('loadChecklistNotes / saveChecklistNote', () => {
     expect(loadChecklistNotes()).toEqual({});
   });
 });
+
+describe('clearAll', () => {
+  const CHECKLIST_KEY = 'ir_facilitador_checklist';
+  const DRAFT_KEY = 'ir_facilitador_questionnaire_draft';
+  const NOTES_KEY = 'ir_facilitador_checklist_notes';
+
+  beforeEach(() => {
+    vi.resetModules();
+    // StorageEvent is not available in Node; stub it so notify() doesn't throw
+    vi.stubGlobal('StorageEvent', class { constructor() {} });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('remove perfil do localStorage', async () => {
+    const mock = makeLocalStorageMock({ [PROFILE_KEY]: JSON.stringify({ id: 'x', taxYear: 2025 }) });
+    stubWindow(mock);
+    const { clearAll, loadTaxProfile } = await import('./local-profile-storage');
+    clearAll();
+    expect(loadTaxProfile()).toBeNull();
+  });
+
+  it('remove checklist do localStorage', async () => {
+    const mock = makeLocalStorageMock({ [CHECKLIST_KEY]: JSON.stringify({ cl_clt_report: true }) });
+    stubWindow(mock);
+    const { clearAll } = await import('./local-profile-storage');
+    clearAll();
+    expect(mock.getItem(CHECKLIST_KEY)).toBeNull();
+  });
+
+  it('remove notas do localStorage', async () => {
+    const mock = makeLocalStorageMock({ [NOTES_KEY]: JSON.stringify({ cl_clt_report: 'minha nota' }) });
+    stubWindow(mock);
+    const { clearAll } = await import('./local-profile-storage');
+    clearAll();
+    expect(mock.getItem(NOTES_KEY)).toBeNull();
+  });
+
+  it('remove rascunho do localStorage', async () => {
+    const mock = makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {}, currentIndex: 2, updatedAt: '' }) });
+    stubWindow(mock);
+    const { clearAll, loadDraft } = await import('./local-profile-storage');
+    clearAll();
+    expect(loadDraft()).toBeNull();
+  });
+
+  it('não quebra se as chaves não existirem', async () => {
+    stubWindow(makeLocalStorageMock());
+    const { clearAll } = await import('./local-profile-storage');
+    expect(() => clearAll()).not.toThrow();
+  });
+
+  it('remove todas as chaves em conjunto', async () => {
+    const mock = makeLocalStorageMock({
+      [PROFILE_KEY]:   JSON.stringify({ id: 'x', taxYear: 2025 }),
+      [CHECKLIST_KEY]: JSON.stringify({ cl_clt_report: true }),
+      [NOTES_KEY]:     JSON.stringify({ cl_clt_report: 'nota' }),
+      [DRAFT_KEY]:     JSON.stringify({ answers: {}, currentIndex: 1, updatedAt: '' }),
+    });
+    stubWindow(mock);
+    const { clearAll } = await import('./local-profile-storage');
+    clearAll();
+    expect(mock.getItem(PROFILE_KEY)).toBeNull();
+    expect(mock.getItem(CHECKLIST_KEY)).toBeNull();
+    expect(mock.getItem(NOTES_KEY)).toBeNull();
+    expect(mock.getItem(DRAFT_KEY)).toBeNull();
+  });
+});

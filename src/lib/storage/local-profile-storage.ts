@@ -87,6 +87,11 @@ export function clearChecklistState(): void {
 export function clearAll(): void {
   clearTaxProfile();
   clearChecklistState();
+  clearDraft();
+  if (isBrowser()) {
+    localStorage.removeItem(NOTES_KEY);
+    notify(NOTES_KEY);
+  }
 }
 
 export function saveDraft(answers: QuestionAnswers, currentIndex: number): void {
