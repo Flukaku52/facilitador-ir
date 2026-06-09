@@ -18,7 +18,7 @@ import {
   getApplicableGuideSlugs,
 } from '@/lib/rules/tax-rules';
 import { GUIDES } from '@/lib/data/guides';
-import { decodeSharedProfile, encodeSharedProfile } from '@/lib/utils/share-link';
+import { decodeSharedPayload, encodeSharedPayload } from '@/lib/utils/share-link';
 import { ComplexityBadge } from '@/components/ui/Badge';
 import AlertBox from '@/components/ui/AlertBox';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer';
@@ -138,17 +138,24 @@ function ReportContent() {
 
   // 2.8 — Shared profile from URL ?d= param
   const sharedData = searchParams.get('d');
-  const decodedSharedProfile = sharedData ? decodeSharedProfile(sharedData) : null;
+  const decodedShared = sharedData ? decodeSharedPayload(sharedData) : null;
   const isSharedView = !!sharedData;
-  const isInvalidSharedLink = isSharedView && decodedSharedProfile === null;
-  const profile = isSharedView ? decodedSharedProfile : storedProfile;
+  const isInvalidSharedLink = isSharedView && decodedShared === null;
+  const profile = isSharedView ? (decodedShared?.profile ?? null) : storedProfile;
+  const sharedChecklistState = decodedShared?.checklistState ?? {};
 
   const checklist = useMemo(() => {
     if (!profile) return [];
     return generateChecklist(profile, profile.taxYear).map((item) => ({
       ...item,
-      completed: isSharedView ? item.completed : (checklistState[item.id] ?? item.completed),
+      // In shared view, prefer explicit toggles from the link; fall back to profile defaults.
+      // In local view, prefer manual toggles from localStorage; fall back to profile defaults.
+      completed: isSharedView
+        ? (sharedChecklistState[item.id] ?? item.completed)
+        : (checklistState[item.id] ?? item.completed),
     }));
+  // sharedChecklistState is derived from URL param — stable reference within a render
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, checklistState, isSharedView]);
 
   const alerts = useMemo(() => (profile ? generateAlerts(profile, profile.taxYear) : []), [profile]);
@@ -208,7 +215,7 @@ function ReportContent() {
 
   // 2.8 — Share via URL
   async function confirmAndShare() {
-    const encoded = encodeSharedProfile(profile!);
+    const encoded = encodeSharedPayload(profile!, checklistState);
     const url = `${window.location.origin}/relatorio?d=${encoded}`;
     try {
       await navigator.clipboard.writeText(url);

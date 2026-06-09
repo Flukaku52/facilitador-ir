@@ -1,51 +1,62 @@
 import { describe, it, expect } from 'vitest';
 import { createEmptyProfile } from '@/types/tax-profile';
-import { encodeSharedProfile, decodeSharedProfile } from './share-link';
+import { encodeSharedPayload, decodeSharedPayload } from './share-link';
 import { calculateChecklistProgress } from '@/lib/rules/tax-rules';
 
-describe('encodeSharedProfile / decodeSharedProfile', () => {
-  it('round-trip preserva perfil completo', () => {
+describe('encodeSharedPayload / decodeSharedPayload', () => {
+  it('round-trip preserva perfil e checklist completos', () => {
     const profile = createEmptyProfile();
     profile.income.hasCltIncome = true;
     profile.assets.hasProperty = true;
     profile.taxYear = 2025;
-    const encoded = encodeSharedProfile(profile);
-    const decoded = decodeSharedProfile(encoded);
-    expect(decoded).toEqual(profile);
+    const checklistState = { cl_clt_report: true, cl_bank_reports: false };
+    const encoded = encodeSharedPayload(profile, checklistState);
+    const decoded = decodeSharedPayload(encoded);
+    expect(decoded).not.toBeNull();
+    expect(decoded!.profile).toEqual(profile);
+    expect(decoded!.checklistState).toEqual(checklistState);
   });
 
-  it('perfil vazio sobrevive ao round-trip', () => {
+  it('perfil vazio e checklist vazio sobrevivem ao round-trip', () => {
     const profile = createEmptyProfile();
-    const encoded = encodeSharedProfile(profile);
-    expect(decodeSharedProfile(encoded)).toEqual(profile);
+    const encoded = encodeSharedPayload(profile, {});
+    const decoded = decodeSharedPayload(encoded);
+    expect(decoded).not.toBeNull();
+    expect(decoded!.profile).toEqual(profile);
+    expect(decoded!.checklistState).toEqual({});
+  });
+
+  it('link antigo (apenas TaxProfile, sem wrapper) é retrocompatível', () => {
+    // Simulates old links that encoded raw TaxProfile without { profile, checklist }
+    const oldProfile = { id: 'old-id', taxYear: 2024, income: { hasCltIncome: true } };
+    const oldEncoded = btoa(encodeURIComponent(JSON.stringify(oldProfile)));
+    const decoded = decodeSharedPayload(oldEncoded);
+    expect(decoded).not.toBeNull();
+    expect((decoded!.profile as Record<string, unknown>)['taxYear']).toBe(2024);
+    expect(decoded!.checklistState).toEqual({}); // no checklist in old links
   });
 
   it('string aleatória retorna null (link inválido)', () => {
-    expect(decodeSharedProfile('nao-e-base64-valido!')).toBeNull();
+    expect(decodeSharedPayload('nao-e-base64-valido!')).toBeNull();
   });
 
   it('base64 válido mas JSON inválido retorna null', () => {
     const badJson = btoa(encodeURIComponent('{json inválido'));
-    expect(decodeSharedProfile(badJson)).toBeNull();
+    expect(decodeSharedPayload(badJson)).toBeNull();
   });
 
   it('string vazia retorna null', () => {
-    expect(decodeSharedProfile('')).toBeNull();
+    expect(decodeSharedPayload('')).toBeNull();
   });
 
-  it('link antigo sem campos novos ainda decodifica sem lançar erro', () => {
-    const oldProfile = { id: 'old', taxYear: 2024, income: { hasCltIncome: true } };
-    const encoded = btoa(encodeURIComponent(JSON.stringify(oldProfile)));
-    const decoded = decodeSharedProfile(encoded);
-    expect(decoded).not.toBeNull();
-    expect((decoded as Record<string, unknown>)['taxYear']).toBe(2024);
+  it('payload com profile ausente (array) retorna null', () => {
+    const encoded = btoa(encodeURIComponent(JSON.stringify([])));
+    expect(decodeSharedPayload(encoded)).toBeNull();
   });
 });
 
 describe('calculateChecklistProgress — consistência com itens concluídos', () => {
-  // Verifica que o cálculo de progresso é consistente com os flags completed
-  // Regressão da auditoria de divergência checklist/relatório (BUG 3)
-  it('items sem nenhum required retorna 0', () => {
+  it('lista vazia retorna 0', () => {
     expect(calculateChecklistProgress([])).toBe(0);
   });
 
@@ -66,7 +77,7 @@ describe('calculateChecklistProgress — consistência com itens concluídos', (
     expect(calculateChecklistProgress(items as never)).toBe(50);
   });
 
-  it('itens não-required são ignorados no cálculo de progresso', () => {
+  it('itens não-required ignorados no cálculo de progresso', () => {
     const items = [
       { id: 'a', required: false, completed: false },
       { id: 'b', required: false, completed: true },
