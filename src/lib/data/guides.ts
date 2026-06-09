@@ -40,7 +40,7 @@ export const GUIDES: Guide[] = [
     category: 'income',
     appliesTo: ['income.hasPensionOrRetirement'],
     plainLanguageExplanation:
-      'Quem recebe aposentadoria, pensão por morte, auxílio ou qualquer benefício do INSS precisa declarar. O INSS também envia um informe de rendimentos anual. Uma boa notícia: aposentados e pensionistas com mais de 65 anos têm parte dos rendimentos isenta de imposto.',
+      'Quem recebe aposentadoria, pensão por morte, auxílio ou qualquer benefício do INSS precisa declarar. O INSS também envia um informe de rendimentos anual. Uma boa notícia: aposentados e pensionistas com mais de 65 anos podem ter parte dos rendimentos isenta de imposto, conforme as regras vigentes para o ano-base da declaração.',
     documentsNeeded: [
       'Informe de rendimentos do INSS (disponível no Meu INSS — meu.inss.gov.br)',
       'Se receber pensão de outro fundo (como FUNPRESP, militares, etc.), informe desse fundo também',
@@ -80,7 +80,7 @@ export const GUIDES: Guide[] = [
     howToFill: [
       'Informe o nome da instituição, agência, número da conta e saldo em 31/12.',
       'Use o valor exato do informe ou extrato — não arredonde.',
-      'Conta poupança: informe o saldo em 31/12 conforme o informe ou extrato da instituição. Os rendimentos da poupança são isentos e aparecem em Rendimentos Isentos.',
+      'Conta poupança: informe o saldo em 31/12 conforme o informe ou extrato da instituição. Os rendimentos da poupança costumam ser isentos conforme a legislação vigente e geralmente aparecem em Rendimentos Isentos — confirme sempre no informe da instituição.',
       'Contas remuneradas (conta corrente com rendimento automático, comum em bancos digitais): declare o saldo em Bens e Direitos e os rendimentos conforme o informe — costumam ser sujeitos a tributação exclusiva na fonte, com imposto já retido.',
       'Contas de pagamento (Mercado Pago, PicPay etc.): se tinha saldo em 31/12, declare em Bens e Direitos; se houve rendimentos, o informe da plataforma indicará a classificação correta.',
       'Se tiver conta conjunta, declare apenas a sua parte do saldo.',
@@ -189,7 +189,7 @@ export const GUIDES: Guide[] = [
     category: 'deductions',
     appliesTo: ['deductions.hasMedicalExpenses'],
     plainLanguageExplanation:
-      'Despesas médicas são totalmente dedutíveis — não têm limite de valor. Isso inclui consultas, exames, internações, plano de saúde, dentista, psicólogo e fisioterapeuta. O ponto crítico é que você precisa ter comprovante de tudo: recibo do profissional, nota fiscal ou informe do plano.',
+      'Despesas médicas não têm limite de valor de dedução conforme a legislação vigente. Isso inclui consultas, exames, internações, plano de saúde, dentista, psicólogo e fisioterapeuta. O ponto crítico é que você precisa ter comprovante de tudo: recibo do profissional, nota fiscal ou informe do plano.',
     documentsNeeded: [
       'Recibos ou notas fiscais de cada consulta, exame ou procedimento',
       'Informe de pagamentos do plano de saúde (emitido pela operadora)',
@@ -454,7 +454,7 @@ export const GUIDES: Guide[] = [
     howToFill: [
       'Use o informe da corretora como ponto de partida.',
       'Declare cada ativo separadamente em Bens e Direitos com o custo médio de aquisição.',
-      'Dividendos de ações são isentos e vão em Rendimentos Isentos.',
+      'Dividendos de ações são isentos conforme a legislação vigente e geralmente vão em Rendimentos Isentos — confirme no informe da corretora.',
       'JCP (Juros sobre Capital Próprio) é tributado na fonte e vai em Rendimentos Sujeitos à Tributação Exclusiva.',
       'Se vendeu ativos, use o módulo de Renda Variável para apurar ganho/prejuízo mês a mês.',
     ],
