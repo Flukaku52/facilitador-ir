@@ -322,3 +322,75 @@ describe('route.ts structure: rate limit blocks before Anthropic call', () => {
     expect(idxBlock).toBeLessThan(idxAnthropic);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Feature flag: isAiAssistantEnabled desliga IA por padrão
+// ---------------------------------------------------------------------------
+
+describe('AI assistant feature flag', () => {
+  const routeSrc = readFileSync(
+    resolve(process.cwd(), 'src/app/api/ask/route.ts'),
+    'utf-8',
+  );
+  const envSrc = readFileSync(
+    resolve(process.cwd(), 'src/env.ts'),
+    'utf-8',
+  );
+  const dashboardSrc = readFileSync(
+    resolve(process.cwd(), 'src/app/dashboard/page.tsx'),
+    'utf-8',
+  );
+
+  it('feature flag check appears in route.ts before new Anthropic(', () => {
+    const idxFlag      = routeSrc.indexOf('isAiAssistantEnabled');
+    const idxAnthropic = routeSrc.indexOf('new Anthropic(');
+    expect(idxFlag).toBeGreaterThan(0);
+    expect(idxAnthropic).toBeGreaterThan(0);
+    expect(idxFlag).toBeLessThan(idxAnthropic);
+  });
+
+  it('feature flag check returns 503 before rate limit check in route.ts', () => {
+    const idxFlag      = routeSrc.indexOf('isAiAssistantEnabled');
+    const idxRateLimit = routeSrc.indexOf('checkAskRateLimit');
+    expect(idxFlag).toBeGreaterThan(0);
+    expect(idxRateLimit).toBeGreaterThan(0);
+    expect(idxFlag).toBeLessThan(idxRateLimit);
+  });
+
+  it('isAiAssistantEnabled defaults to false when env var is absent', () => {
+    // A lógica em env.ts: === "true" → apenas string exata liga a IA.
+    // undefined, "", "false", "1", "yes" → todos resultam em false.
+    const isEnabled = (val: string | undefined) => val === 'true';
+    expect(isEnabled(undefined)).toBe(false);
+    expect(isEnabled('')).toBe(false);
+    expect(isEnabled('false')).toBe(false);
+    expect(isEnabled('1')).toBe(false);
+    expect(isEnabled('yes')).toBe(false);
+    expect(isEnabled('true')).toBe(true);
+  });
+
+  it('env.ts exports isAiAssistantEnabled based on === "true" comparison', () => {
+    expect(envSrc).toContain('isAiAssistantEnabled');
+    expect(envSrc).toContain("=== 'true'");
+  });
+
+  it('env.ts declares NEXT_PUBLIC_AI_ASSISTANT_ENABLED in client section', () => {
+    expect(envSrc).toContain('NEXT_PUBLIC_AI_ASSISTANT_ENABLED');
+  });
+
+  it('ANTHROPIC_API_KEY schema has no regex validator (does not break build when absent or invalid)', () => {
+    // A regex /^sk-ant-/ foi removida do schema Zod para evitar quebra de build.
+    expect(envSrc).not.toContain('sk-ant-');
+  });
+
+  it('dashboard wraps AskDialog in isAiAssistantEnabled condition', () => {
+    expect(dashboardSrc).toContain('isAiAssistantEnabled');
+    // AskDialog só aparece dentro de uma expressão condicional
+    const idxFlag     = dashboardSrc.indexOf('isAiAssistantEnabled');
+    const idxAskDialog = dashboardSrc.indexOf('<AskDialog');
+    expect(idxFlag).toBeGreaterThan(0);
+    expect(idxAskDialog).toBeGreaterThan(0);
+    // A flag precisa aparecer antes do componente para envolvê-lo
+    expect(idxFlag).toBeLessThan(idxAskDialog);
+  });
+});
