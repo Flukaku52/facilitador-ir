@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { createServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { env } from '@/env';
+import { env, isAiAssistantEnabled } from '@/env';
 import {
   checkAskRateLimit,
   extractIdentifier,
@@ -12,6 +12,15 @@ import {
 } from '@/lib/rate-limit/ask-rate-limit';
 
 export async function POST(request: Request) {
+  // Feature flag: IA desligada por padrão. Retorna antes de qualquer validação
+  // de Anthropic, rate limit ou consumo de crédito.
+  if (!isAiAssistantEnabled) {
+    return NextResponse.json(
+      { error: 'O assistente IA está temporariamente indisponível.' },
+      { status: 503 },
+    );
+  }
+
   const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

@@ -19,6 +19,7 @@ import Card from '@/components/ui/Card';
 import ProgressBar from '@/components/ui/ProgressBar';
 import ClearDataModal from '@/components/layout/ClearDataModal';
 import AskDialog from '@/components/ui/AskDialog';
+import { isAiAssistantEnabled } from '@/env';
 import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import ErrorFallback from '@/components/layout/ErrorFallback';
@@ -203,7 +204,7 @@ function DashboardContent() {
         <ClearDataModal />
       </div>
 
-      <AskDialog profile={profile} />
+      {isAiAssistantEnabled && <AskDialog profile={profile} />}
       <CorruptedDataToast />
     </div>
   );
