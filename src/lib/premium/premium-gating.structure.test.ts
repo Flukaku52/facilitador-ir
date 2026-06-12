@@ -13,9 +13,10 @@ describe("gating dos guias", () => {
   const guidePageSrc = read("src/app/guias/[slug]/page.tsx");
   const gatedSectionsSrc = read("src/components/guides/GuideGatedSections.tsx");
 
-  it("página do guia delega as seções premium para GuideGatedSections", () => {
-    expect(guidePageSrc).toContain("GuideGatedSections");
-    // As 4 seções bloqueadas não são mais renderizadas direto na página (server)
+  it("página do guia passa apenas slug para GuideGatedSections (guide inteiro não vaza no RSC)", () => {
+    expect(guidePageSrc).toContain("<GuideGatedSections slug=");
+    expect(guidePageSrc).not.toContain("guide={guide}");
+    // As 4 seções travadas não são renderizadas no server da página
     expect(guidePageSrc).not.toContain("documentsNeeded");
     expect(guidePageSrc).not.toContain("howToFill");
     expect(guidePageSrc).not.toContain("commonMistakes");
@@ -27,12 +28,23 @@ describe("gating dos guias", () => {
     expect(guidePageSrc).toContain("whenToCallAccountant");
   });
 
-  it("não-premium: o conteúdo NÃO é renderizado (early return antes das seções)", () => {
-    const idxLockedCheck = gatedSectionsSrc.indexOf("!isPremium");
-    const idxContent = gatedSectionsSrc.indexOf("guide.documentsNeeded");
-    expect(idxLockedCheck).toBeGreaterThan(0);
-    expect(idxContent).toBeGreaterThan(0);
-    expect(idxLockedCheck).toBeLessThan(idxContent);
+  it("GuideGatedSections recebe slug, não o objeto guide", () => {
+    expect(gatedSectionsSrc).toContain("{ slug }: { slug: string }");
+    expect(gatedSectionsSrc).not.toContain("guide: Guide");
+  });
+
+  it("conteúdo travado só vem do fetch da API, nunca embutido no componente", () => {
+    expect(gatedSectionsSrc).toContain("/api/guias/");
+    expect(gatedSectionsSrc).toContain("premium-sections");
+    // renderiza a partir da resposta (data.*), não de um guide estático
+    expect(gatedSectionsSrc).not.toContain("guide.documentsNeeded");
+    expect(gatedSectionsSrc).not.toContain("guide.howToFill");
+    expect(gatedSectionsSrc).not.toContain("guide.commonMistakes");
+    expect(gatedSectionsSrc).not.toContain("guide.whereToDeclare");
+  });
+
+  it("convidado/não-premium não dispara o fetch (guard !user || !isPremium antes)", () => {
+    expect(gatedSectionsSrc).toContain("if (!user || !isPremium) return;");
   });
 
   it("gating não usa classes de blur sobre o texto real", () => {
@@ -41,6 +53,35 @@ describe("gating dos guias", () => {
     expect(gatedSectionsSrc).not.toMatch(
       /[\s"']blur(-\w+)?[\s"']|backdrop-blur/,
     );
+  });
+});
+
+describe("gating server-side da rota premium-sections", () => {
+  const routeSrc = read("src/app/api/guias/[slug]/premium-sections/route.ts");
+
+  it("autentica via getUser ANTES de materializar o conteúdo travado", () => {
+    const idxAuth = routeSrc.indexOf("auth.getUser()");
+    const idxContent = routeSrc.indexOf("getPremiumGuideSections(");
+    expect(idxAuth).toBeGreaterThan(0);
+    expect(idxContent).toBeGreaterThan(0);
+    expect(idxAuth).toBeLessThan(idxContent);
+  });
+
+  it("checa isPremiumActive ANTES de materializar o conteúdo travado", () => {
+    const idxPremium = routeSrc.indexOf("isPremiumActive(");
+    const idxContent = routeSrc.indexOf("getPremiumGuideSections(");
+    expect(idxPremium).toBeGreaterThan(0);
+    expect(idxPremium).toBeLessThan(idxContent);
+  });
+
+  it("é dinâmica e não-cacheável (no-store) para não vazar via CDN", () => {
+    expect(routeSrc).toContain('export const dynamic = "force-dynamic"');
+    expect(routeSrc).toContain("private, no-store");
+  });
+
+  it("usa o cliente cookie-scoped do servidor sob RLS (sem service role)", () => {
+    expect(routeSrc).toContain('from "@/lib/supabase/server"');
+    expect(routeSrc).not.toContain("SERVICE_ROLE");
   });
 });
 

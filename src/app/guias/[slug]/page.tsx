@@ -61,7 +61,7 @@ export default async function GuideDetailPage({
         </p>
       </section>
 
-      <GuideGatedSections guide={guide} />
+      <GuideGatedSections slug={guide.slug} />
 
       {guide.whenToCallAccountant && guide.whenToCallAccountant.length > 0 && (
         <section className="rounded-lg border border-red-200 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950">

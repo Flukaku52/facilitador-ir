@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Guide } from "@/types/guide";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { upgradeHref } from "@/components/premium/UpgradeCta";
 import { PREMIUM_PRICE_LABEL } from "@/lib/premium/constants";
+import { PremiumGuideSections } from "@/lib/premium/guide-sections";
 
 const LOCKED_SECTION_TITLES = [
   "Documentos necessários",
@@ -13,63 +14,57 @@ const LOCKED_SECTION_TITLES = [
   "Erros comuns para evitar",
 ];
 
-// Seções premium do guia. Para não-premium o conteúdo NÃO é renderizado —
-// apenas um placeholder com CTA (renderização condicional, sem desfoque sobre texto real).
-export default function GuideGatedSections({ guide }: { guide: Guide }) {
-  const { isPremium, loading, user } = usePremium();
+function LockedSkeleton() {
+  return (
+    <div className="space-y-8" aria-busy="true">
+      {LOCKED_SECTION_TITLES.map((title) => (
+        <div
+          key={title}
+          className="h-24 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800"
+        />
+      ))}
+    </div>
+  );
+}
 
-  if (loading) {
-    return (
-      <div className="space-y-8" aria-busy="true">
+function LockedPlaceholder({ hasUser }: { hasUser: boolean }) {
+  return (
+    <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-6 space-y-4 dark:border-indigo-900 dark:bg-indigo-950">
+      <h2 className="font-semibold text-indigo-900 dark:text-indigo-100">
+        Conteúdo completo deste guia
+      </h2>
+      <ul className="space-y-2">
         {LOCKED_SECTION_TITLES.map((title) => (
-          <div
+          <li
             key={title}
-            className="h-24 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800"
-          />
+            className="flex items-center gap-2 text-sm text-indigo-800 dark:text-indigo-200"
+          >
+            <span aria-hidden="true">🔒</span>
+            {title}
+          </li>
         ))}
-      </div>
-    );
-  }
-
-  // Guarda explícita: convidado (sem user) é sempre bloqueado, mesmo que o
-  // estado do hook esteja inconsistente.
-  if (!user || !isPremium) {
-    return (
-      <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-6 space-y-4 dark:border-indigo-900 dark:bg-indigo-950">
-        <h2 className="font-semibold text-indigo-900 dark:text-indigo-100">
-          Conteúdo completo deste guia
-        </h2>
-        <ul className="space-y-2">
-          {LOCKED_SECTION_TITLES.map((title) => (
-            <li
-              key={title}
-              className="flex items-center gap-2 text-sm text-indigo-800 dark:text-indigo-200"
-            >
-              <span aria-hidden="true">🔒</span>
-              {title}
-            </li>
-          ))}
-        </ul>
-        <p className="text-sm text-indigo-800 dark:text-indigo-200">
-          Estas seções fazem parte do acesso premium: {PREMIUM_PRICE_LABEL} com
-          acesso até o fim da temporada de declaração.
+      </ul>
+      <p className="text-sm text-indigo-800 dark:text-indigo-200">
+        Estas seções fazem parte do acesso premium: {PREMIUM_PRICE_LABEL} com
+        acesso até o fim da temporada de declaração.
+      </p>
+      <Link
+        href={upgradeHref(hasUser)}
+        className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+      >
+        Quero o acesso completo
+      </Link>
+      {!hasUser && (
+        <p className="text-xs text-indigo-700 dark:text-indigo-300">
+          Você vai criar uma conta gratuita primeiro — o acesso premium é
+          liberado nela.
         </p>
-        <Link
-          href={upgradeHref(!!user)}
-          className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
-        >
-          Quero o acesso completo
-        </Link>
-        {!user && (
-          <p className="text-xs text-indigo-700 dark:text-indigo-300">
-            Você vai criar uma conta gratuita primeiro — o acesso premium é
-            liberado nela.
-          </p>
-        )}
-      </section>
-    );
-  }
+      )}
+    </section>
+  );
+}
 
+function PremiumSections({ data }: { data: PremiumGuideSections }) {
   return (
     <>
       <section>
@@ -77,7 +72,7 @@ export default function GuideGatedSections({ guide }: { guide: Guide }) {
           Documentos necessários
         </h2>
         <ul className="space-y-2">
-          {guide.documentsNeeded.map((doc, i) => (
+          {data.documentsNeeded.map((doc, i) => (
             <li
               key={i}
               className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
@@ -96,7 +91,7 @@ export default function GuideGatedSections({ guide }: { guide: Guide }) {
           Onde declarar no programa
         </h2>
         <p className="text-sm text-gray-700 dark:text-gray-300">
-          {guide.whereToDeclare}
+          {data.whereToDeclare}
         </p>
       </section>
 
@@ -105,7 +100,7 @@ export default function GuideGatedSections({ guide }: { guide: Guide }) {
           Como preencher
         </h2>
         <ol className="space-y-3">
-          {guide.howToFill.map((step, i) => (
+          {data.howToFill.map((step, i) => (
             <li
               key={i}
               className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300"
@@ -124,7 +119,7 @@ export default function GuideGatedSections({ guide }: { guide: Guide }) {
           Erros comuns para evitar
         </h2>
         <ul className="space-y-2">
-          {guide.commonMistakes.map((mistake, i) => (
+          {data.commonMistakes.map((mistake, i) => (
             <li
               key={i}
               className="flex items-start gap-2 text-sm text-yellow-800 dark:text-yellow-200"
@@ -137,4 +132,45 @@ export default function GuideGatedSections({ guide }: { guide: Guide }) {
       </section>
     </>
   );
+}
+
+type FetchResult = {
+  slug: string;
+  sections: PremiumGuideSections | null;
+};
+
+// Recebe apenas o slug — o conteúdo travado NUNCA chega como prop (não vaza no
+// RSC). Para premium, busca o conteúdo numa rota que autentica e checa premium
+// no servidor; não-premium/convidado vê só o placeholder + CTA.
+export default function GuideGatedSections({ slug }: { slug: string }) {
+  const { isPremium, loading, user } = usePremium();
+  const [result, setResult] = useState<FetchResult | null>(null);
+
+  useEffect(() => {
+    // Só busca quando há premium ativo. Convidado/não-premium não dispara fetch
+    // (e mesmo se disparasse, o servidor responde 403 sem conteúdo).
+    if (!user || !isPremium) return;
+    let mounted = true;
+    fetch(`/api/guias/${slug}/premium-sections`)
+      .then(async (res): Promise<PremiumGuideSections | null> => {
+        if (!res.ok) return null;
+        return (await res.json()) as PremiumGuideSections;
+      })
+      .catch(() => null)
+      .then((sections) => {
+        if (mounted) setResult({ slug, sections });
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [slug, user, isPremium]);
+
+  if (loading) return <LockedSkeleton />;
+  if (!user || !isPremium) return <LockedPlaceholder hasUser={!!user} />;
+
+  // Premium: aguarda o fetch desta slug. Erro/403 cai no placeholder (fail-safe).
+  const ready = result !== null && result.slug === slug;
+  if (!ready) return <LockedSkeleton />;
+  if (!result.sections) return <LockedPlaceholder hasUser={!!user} />;
+  return <PremiumSections data={result.sections} />;
 }
