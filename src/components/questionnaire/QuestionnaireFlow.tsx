@@ -1,14 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { getChildPaths, getVisibleQuestions } from '@/lib/data/questions';
-import { QuestionAnswers } from '@/types/question';
-import { saveTaxProfile, saveDraft, loadDraft, clearDraft } from '@/lib/storage/local-profile-storage';
-import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
-import { profileToAnswers, answersToProfile } from '@/lib/utils/profile-answers';
-import Button from '@/components/ui/Button';
-import ProgressBar from '@/components/ui/ProgressBar';
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { getChildPaths, getVisibleQuestions } from "@/lib/data/questions";
+import { QuestionAnswers } from "@/types/question";
+import {
+  saveTaxProfile,
+  saveDraft,
+  loadDraft,
+  clearDraft,
+} from "@/lib/storage/local-profile-storage";
+import { useStoredProfile } from "@/lib/hooks/useStoredProfile";
+import {
+  profileToAnswers,
+  answersToProfile,
+} from "@/lib/utils/profile-answers";
+import Button from "@/components/ui/Button";
+import ProgressBar from "@/components/ui/ProgressBar";
 
 export default function QuestionnaireFlow() {
   const router = useRouter();
@@ -31,15 +39,19 @@ export default function QuestionnaireFlow() {
   // Lazy initializers read localStorage directly on the client. The parent page imports
   // this component with { ssr: false } so it is never server-rendered — no hydration
   // mismatch is possible, and localStorage is always available when the initializer runs.
-  const [overrides, setOverrides] = useState<QuestionAnswers>(() => loadDraft()?.answers ?? {});
+  const [overrides, setOverrides] = useState<QuestionAnswers>(
+    () => loadDraft()?.answers ?? {},
+  );
 
   const answers = useMemo<QuestionAnswers>(
     () => ({ ...profileAnswers, ...overrides }),
     [profileAnswers, overrides],
   );
 
-  const [currentIndex, setCurrentIndex] = useState<number>(() => loadDraft()?.currentIndex ?? 0);
-  const [liveText, setLiveText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState<number>(
+    () => loadDraft()?.currentIndex ?? 0,
+  );
+  const [liveText, setLiveText] = useState("");
   const questionCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,11 +62,16 @@ export default function QuestionnaireFlow() {
   const total = visibleQuestions.length;
   const current = visibleQuestions[currentIndex];
   const progress = total > 0 ? Math.round((currentIndex / total) * 100) : 0;
-  const prevQuestion = currentIndex > 0 ? visibleQuestions[currentIndex - 1] : null;
-  const showSectionHeader = !prevQuestion || prevQuestion.sectionLabel !== current?.sectionLabel;
+  const prevQuestion =
+    currentIndex > 0 ? visibleQuestions[currentIndex - 1] : null;
+  const showSectionHeader =
+    !prevQuestion || prevQuestion.sectionLabel !== current?.sectionLabel;
 
   function answer(value: boolean) {
-    const newOverrides: QuestionAnswers = { ...overrides, [current.fieldPath]: value };
+    const newOverrides: QuestionAnswers = {
+      ...overrides,
+      [current.fieldPath]: value,
+    };
 
     // When the parent is answered false, explicitly set child answers to false in overrides
     // so profile values (e.g. hasStocks=true) don't leak through the merge.
@@ -66,7 +83,7 @@ export default function QuestionnaireFlow() {
     }
 
     setOverrides(newOverrides);
-    setLiveText(value ? 'Sim' : 'Não');
+    setLiveText(value ? "Sim" : "Não");
     const newAnswers = { ...profileAnswers, ...newOverrides };
     const newVisible = getVisibleQuestions(newAnswers);
     if (currentIndex + 1 >= newVisible.length) {
@@ -86,25 +103,25 @@ export default function QuestionnaireFlow() {
     clearDraft();
     const profile = answersToProfile(finalAnswers);
     saveTaxProfile(profile);
-    router.push('/dashboard');
+    router.push("/dashboard");
   }
 
   // 5.1 — Keyboard navigation
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!current) return;
-      if (e.key === 's' || e.key === 'S' || e.key === '1') answer(true);
-      if (e.key === 'n' || e.key === 'N' || e.key === '2') answer(false);
-      if (e.key === '?' || e.key === '3') answer(false);
-      if (e.key === 'ArrowLeft' || e.key === 'Backspace') goBack();
+      if (e.key === "s" || e.key === "S" || e.key === "1") answer(true);
+      if (e.key === "n" || e.key === "N" || e.key === "2") answer(false);
+      if (e.key === "?" || e.key === "3") answer(false);
+      if (e.key === "ArrowLeft" || e.key === "Backspace") goBack();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [current, currentIndex, answers],
   );
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   if (!current) return null;
@@ -112,12 +129,19 @@ export default function QuestionnaireFlow() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* 5.2 — aria-live for screen readers */}
-      <div aria-live="polite" className="sr-only">{liveText}</div>
-      <div aria-live="polite" className="sr-only">{current.title}</div>
+      <div aria-live="polite" className="sr-only">
+        {liveText}
+      </div>
+      <div aria-live="polite" className="sr-only">
+        {current.title}
+      </div>
 
-      <div className="border-b border-gray-200 bg-surface px-4 py-3 dark:border-gray-800">
+      <div className="border-b border-border bg-surface px-4 py-3">
         <div className="mx-auto max-w-xl">
-          <ProgressBar value={progress} label={`Pergunta ${currentIndex + 1} de ${total}`} />
+          <ProgressBar
+            value={progress}
+            label={`Pergunta ${currentIndex + 1} de ${total}`}
+          />
         </div>
       </div>
 
@@ -125,7 +149,10 @@ export default function QuestionnaireFlow() {
         <div className="w-full max-w-xl">
           {currentIndex === 0 && (
             <div className="mb-4 rounded-lg border border-info-100 bg-info-50 px-4 py-3 text-sm text-info-800 dark:border-info-900 dark:bg-info-950 dark:text-info-300">
-              Este app organiza suas informações e mostra documentos e alertas para facilitar sua declaração. Ele não envia a declaração para a Receita, não substitui contador e não garante cálculo definitivo de imposto.
+              Este app organiza suas informações e mostra documentos e alertas
+              para facilitar sua declaração. Ele não envia a declaração para a
+              Receita, não substitui contador e não garante cálculo definitivo
+              de imposto.
             </div>
           )}
 
@@ -135,7 +162,11 @@ export default function QuestionnaireFlow() {
             </p>
           )}
 
-          <div ref={questionCardRef} tabIndex={-1} className="rounded-2xl border border-border bg-surface p-8 shadow-sm focus:outline-none">
+          <div
+            ref={questionCardRef}
+            tabIndex={-1}
+            className="rounded-2xl border border-border bg-surface p-8 shadow-sm focus:outline-none"
+          >
             <h2 className="text-xl font-semibold text-foreground leading-snug">
               {current.title}
             </h2>
@@ -144,17 +175,38 @@ export default function QuestionnaireFlow() {
             )}
 
             <div className="mt-8 flex flex-col gap-3">
-              <Button variant="primary" size="lg" fullWidth onClick={() => answer(true)}>
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                onClick={() => answer(true)}
+              >
                 Sim
-                <span className="ml-auto text-xs opacity-60 font-normal hidden sm:inline">[S]</span>
+                <span className="ml-auto text-xs opacity-60 font-normal hidden sm:inline">
+                  [S]
+                </span>
               </Button>
-              <Button variant="secondary" size="lg" fullWidth onClick={() => answer(false)}>
+              <Button
+                variant="secondary"
+                size="lg"
+                fullWidth
+                onClick={() => answer(false)}
+              >
                 Não
-                <span className="ml-auto text-xs opacity-60 font-normal hidden sm:inline">[N]</span>
+                <span className="ml-auto text-xs opacity-60 font-normal hidden sm:inline">
+                  [N]
+                </span>
               </Button>
-              <Button variant="ghost" size="lg" fullWidth onClick={() => answer(false)}>
+              <Button
+                variant="ghost"
+                size="lg"
+                fullWidth
+                onClick={() => answer(false)}
+              >
                 Não sei / Não se aplica
-                <span className="ml-auto text-xs opacity-60 font-normal hidden sm:inline">[?]</span>
+                <span className="ml-auto text-xs opacity-60 font-normal hidden sm:inline">
+                  [?]
+                </span>
               </Button>
             </div>
           </div>
@@ -163,16 +215,20 @@ export default function QuestionnaireFlow() {
             <div className="mt-4 text-center">
               <button
                 onClick={goBack}
-                className="text-sm text-muted hover:text-gray-700 underline dark:hover:text-gray-300"
+                className="text-sm text-muted hover:text-body underline dark:hover:text-body"
               >
                 ← Voltar
-                <span className="ml-1 text-xs opacity-60 hidden sm:inline">[←]</span>
+                <span className="ml-1 text-xs opacity-60 hidden sm:inline">
+                  [←]
+                </span>
               </button>
             </div>
           )}
 
-          <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-600 hidden sm:block">
-            Atalhos: <kbd className="font-mono">S</kbd> Sim · <kbd className="font-mono">N</kbd> Não · <kbd className="font-mono">←</kbd> Voltar
+          <p className="mt-6 text-center text-xs text-muted hidden sm:block">
+            Atalhos: <kbd className="font-mono">S</kbd> Sim ·{" "}
+            <kbd className="font-mono">N</kbd> Não ·{" "}
+            <kbd className="font-mono">←</kbd> Voltar
           </p>
         </div>
       </div>

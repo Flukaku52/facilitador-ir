@@ -31,7 +31,7 @@ export default function UpgradeCta({
       </div>
       <Link
         href={upgradeHref(!!user)}
-        className="shrink-0 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
+        className="shrink-0 rounded-lg bg-premium-600 px-4 py-2 text-sm font-semibold text-white hover:bg-premium-700 transition-colors"
       >
         Conhecer o Premium
       </Link>

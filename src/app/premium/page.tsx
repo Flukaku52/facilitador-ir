@@ -41,7 +41,7 @@ export default function PremiumPage() {
         <h1 className="mt-4 text-2xl font-bold text-foreground">
           Preencha sua declaração sem medo de errar
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-body">
           O IR Facilitador te guia do primeiro documento até a revisão final —
           em linguagem simples, sem juridiquês.
         </p>
@@ -57,12 +57,8 @@ export default function PremiumPage() {
               ✓
             </span>
             <div>
-              <p className="font-semibold text-foreground">
-                {item.title}
-              </p>
-              <p className="text-sm text-muted">
-                {item.description}
-              </p>
+              <p className="font-semibold text-foreground">{item.title}</p>
+              <p className="text-sm text-muted">{item.description}</p>
             </div>
           </div>
         ))}
@@ -94,7 +90,7 @@ export default function PremiumPage() {
         ) : user ? (
           <a
             href={KIWIFY_CHECKOUT_URL}
-            className="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600 sm:w-auto"
+            className="inline-flex w-full items-center justify-center rounded-lg bg-premium-600 px-6 py-3 font-semibold text-white hover:bg-premium-700 transition-colors sm:w-auto"
           >
             Quero o acesso completo
           </a>
@@ -102,7 +98,7 @@ export default function PremiumPage() {
           <div className="space-y-2">
             <Link
               href="/cadastro?next=/premium"
-              className="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-premium-600 px-6 py-3 font-semibold text-white hover:bg-premium-700 transition-colors sm:w-auto"
             >
               Criar conta para continuar
             </Link>

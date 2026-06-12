@@ -2,8 +2,10 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
 
-// Etapa 1 da camada de tokens: garante que a migração foi completa e que a
-// disciplina se mantém — cores cruas das 6 famílias migradas não voltam.
+// Etapa 2 da camada de tokens: garante que a migração está completa e que a
+// disciplina se mantém — cores cruas das famílias migradas não voltam nunca.
+// Famílias banidas: indigo, red, green, yellow, amber, blue (etapa 1) + gray (etapa 2).
+// Famílias permitidas: slate-* (neutro novo), primary/danger/success/warning/premium/info (tokens).
 
 function read(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), "utf-8");
@@ -17,7 +19,7 @@ function allTsxFiles(): string[] {
 }
 
 const OLD_FAMILY_RE =
-  /\b(indigo|red|green|yellow|amber|blue)-(50|100|200|300|400|500|600|700|800|900|950)\b/;
+  /\b(indigo|red|green|yellow|amber|blue|gray)-(50|100|200|300|400|500|600|700|800|900|950)\b/;
 
 describe("tokens semânticos — globals.css", () => {
   const css = read("src/app/globals.css");
@@ -65,19 +67,29 @@ describe("tokens semânticos — globals.css", () => {
     }
   });
 
-  it("mantém a nota de contraste do muted para a etapa 2", () => {
-    expect(css).toContain("limite de contraste");
+  it("etapa 2: muted documenta resolução do WCAG AA", () => {
+    expect(css).toContain("WCAG AA");
   });
 
-  it("fonte: --font-sans aponta para a variável do next/font (sem override redundante)", () => {
+  it("fonte corpo: --font-sans aponta para a variável do next/font", () => {
     expect(css).toContain("--font-sans: var(--font-geist-sans)");
     expect(css).not.toContain("--font-geist-sans: 'Geist'");
     expect(css).not.toContain('--font-geist-sans: "Geist"');
   });
+
+  it("etapa 2: --font-display aponta para Fraunces do next/font", () => {
+    expect(css).toContain("--font-display: var(--font-fraunces)");
+  });
+
+  it("etapa 2: h1 e h2 usam font-display no @layer base", () => {
+    // formatter pode colocar h1 e h2 em linhas separadas
+    expect(css).toMatch(/h1[\s,\n]+h2/);
+    expect(css).toContain("font-family: var(--font-display");
+  });
 });
 
-describe("migração completa — nenhum tsx usa as famílias antigas", () => {
-  it("zero ocorrências de indigo|red|green|yellow|amber|blue-<tom> em src/**/*.tsx", () => {
+describe("migração completa — nenhum tsx usa as famílias antigas (incl. gray)", () => {
+  it("zero ocorrências de indigo|red|green|yellow|amber|blue|gray-<tom> em src/**/*.tsx", () => {
     const offenders: string[] = [];
     for (const file of allTsxFiles()) {
       const src = readFileSync(file, "utf-8");

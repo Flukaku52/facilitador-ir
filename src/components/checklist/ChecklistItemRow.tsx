@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { ChecklistItem } from '@/types/checklist';
+import { useState } from "react";
+import Link from "next/link";
+import { ChecklistItem } from "@/types/checklist";
 
 interface ChecklistItemRowProps {
   item: ChecklistItem;
@@ -11,7 +11,12 @@ interface ChecklistItemRowProps {
   onNoteChange: (id: string, note: string) => void;
 }
 
-export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }: ChecklistItemRowProps) {
+export default function ChecklistItemRow({
+  item,
+  note,
+  onToggle,
+  onNoteChange,
+}: ChecklistItemRowProps) {
   const [showNote, setShowNote] = useState(!!note);
   const [localNote, setLocalNote] = useState(note);
 
@@ -35,26 +40,30 @@ export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }:
         <label htmlFor={item.id} className="flex-1 cursor-pointer">
           <span
             className={`block text-sm font-medium ${
-              item.completed ? 'text-gray-400 line-through dark:text-gray-600' : 'text-gray-800 dark:text-gray-200'
+              item.completed ? "text-muted line-through" : "text-foreground"
             }`}
           >
             {item.title}
             {!item.required && (
-              <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-600">(opcional)</span>
+              <span className="ml-2 text-xs font-normal text-muted">
+                (opcional)
+              </span>
             )}
           </span>
           {item.description && (
-            <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-500">{item.description}</span>
+            <span className="mt-0.5 block text-xs text-muted">
+              {item.description}
+            </span>
           )}
         </label>
         <div className="flex shrink-0 items-center gap-2">
           <button
             onClick={() => setShowNote((v) => !v)}
-            className="text-xs text-gray-400 hover:text-primary-500 dark:text-gray-600 dark:hover:text-primary-400"
-            aria-label={showNote ? 'Ocultar nota' : 'Adicionar nota'}
-            title={note ? note : 'Adicionar nota'}
+            className="text-xs text-muted hover:text-primary-500 dark:text-body dark:hover:text-primary-400"
+            aria-label={showNote ? "Ocultar nota" : "Adicionar nota"}
+            title={note ? note : "Adicionar nota"}
           >
-            {note ? '📝' : '+ nota'}
+            {note ? "📝" : "+ nota"}
           </button>
           {item.relatedGuideSlug && (
             <Link
@@ -67,17 +76,19 @@ export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }:
         </div>
       </div>
       {showNote && (
-        <div className="border-t border-gray-100 px-4 pb-3 dark:border-gray-800">
+        <div className="border-t border-border/50 px-4 pb-3 dark:border-border">
           <textarea
             value={localNote}
             onChange={(e) => setLocalNote(e.target.value)}
             onBlur={handleNoteBlur}
             placeholder="Sua nota pessoal sobre este documento..."
             rows={2}
-            className="mt-2 w-full resize-none rounded-md border border-border bg-gray-50 px-3 py-2 text-xs text-body placeholder-gray-400 focus:border-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:bg-gray-800 dark:placeholder-gray-600 dark:focus:border-primary-600"
+            className="mt-2 w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-xs text-body placeholder-muted focus:border-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:bg-slate-800 dark:placeholder-muted dark:focus:border-primary-600"
             aria-label={`Nota para ${item.title}`}
           />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-600">Nota salva localmente. Não aparece no link compartilhado.</p>
+          <p className="mt-1 text-xs text-muted">
+            Nota salva localmente. Não aparece no link compartilhado.
+          </p>
         </div>
       )}
     </li>

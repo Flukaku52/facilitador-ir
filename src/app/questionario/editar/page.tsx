@@ -1,177 +1,192 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
-import { SECTION_LABELS, getChildPaths, getVisibleQuestions } from '@/lib/data/questions';
-import { Question, QuestionAnswers } from '@/types/question';
-import { saveTaxProfile } from '@/lib/storage/local-profile-storage';
-import { profileToAnswers, answersToProfile } from '@/lib/utils/profile-answers';
-import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
-import ErrorBoundary from '@/components/layout/ErrorBoundary';
-import ErrorFallback from '@/components/layout/ErrorFallback';
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useStoredProfile } from "@/lib/hooks/useStoredProfile";
+import {
+ SECTION_LABELS,
+ getChildPaths,
+ getVisibleQuestions,
+} from "@/lib/data/questions";
+import { Question, QuestionAnswers } from "@/types/question";
+import { saveTaxProfile } from "@/lib/storage/local-profile-storage";
+import {
+ profileToAnswers,
+ answersToProfile,
+} from "@/lib/utils/profile-answers";
+import CorruptedDataToast from "@/components/ui/CorruptedDataToast";
+import ErrorBoundary from "@/components/layout/ErrorBoundary";
+import ErrorFallback from "@/components/layout/ErrorFallback";
 
 export default function EditarRespostasPage() {
-  return (
-    <ErrorBoundary fallback={<ErrorFallback />}>
-      <EditarRespostasContent />
-    </ErrorBoundary>
-  );
+ return (
+ <ErrorBoundary fallback={<ErrorFallback />}>
+ <EditarRespostasContent />
+ </ErrorBoundary>
+ );
 }
 
 function EditarRespostasContent() {
-  const router = useRouter();
-  const profile = useStoredProfile();
+ const router = useRouter();
+ const profile = useStoredProfile();
 
-  // Only track what the user changes; original values come from profile
-  const [overrides, setOverrides] = useState<QuestionAnswers>({});
-  const [saved, setSaved] = useState(false);
+ // Only track what the user changes; original values come from profile
+ const [overrides, setOverrides] = useState<QuestionAnswers>({});
+ const [saved, setSaved] = useState(false);
 
-  // Merge profile answers with user overrides
-  const answers = useMemo<QuestionAnswers>(() => {
-    if (!profile) return {};
-    return { ...profileToAnswers(profile), ...overrides };
-  }, [profile, overrides]);
+ // Merge profile answers with user overrides
+ const answers = useMemo<QuestionAnswers>(() => {
+ if (!profile) return {};
+ return { ...profileToAnswers(profile), ...overrides };
+ }, [profile, overrides]);
 
-  const visibleQuestions = useMemo(() => getVisibleQuestions(answers), [answers]);
+ const visibleQuestions = useMemo(
+ () => getVisibleQuestions(answers),
+ [answers],
+ );
 
-  const sections = useMemo(() => {
-    const grouped: Record<string, Question[]> = {};
-    for (const q of visibleQuestions) {
-      if (!grouped[q.sectionLabel]) grouped[q.sectionLabel] = [];
-      grouped[q.sectionLabel].push(q);
-    }
-    return SECTION_LABELS.filter((s) => grouped[s]).map((s) => ({
-      label: s,
-      questions: grouped[s],
-    }));
-  }, [visibleQuestions]);
+ const sections = useMemo(() => {
+ const grouped: Record<string, Question[]> = {};
+ for (const q of visibleQuestions) {
+ if (!grouped[q.sectionLabel]) grouped[q.sectionLabel] = [];
+ grouped[q.sectionLabel].push(q);
+ }
+ return SECTION_LABELS.filter((s) => grouped[s]).map((s) => ({
+ label: s,
+ questions: grouped[s],
+ }));
+ }, [visibleQuestions]);
 
-  function toggle(fieldPath: string, value: boolean) {
-    setOverrides((prev) => {
-      const next = { ...prev, [fieldPath]: value };
-      // When toggling a parent to false, also force all child overrides to false.
-      // Without this, profileToAnswers() would re-inject stale profile values
-      // for the now-hidden child questions when saving.
-      if (value === false) {
-        for (const childPath of getChildPaths(fieldPath)) {
-          next[childPath] = false;
-        }
-      }
-      return next;
-    });
-    setSaved(false);
-  }
+ function toggle(fieldPath: string, value: boolean) {
+ setOverrides((prev) => {
+ const next = { ...prev, [fieldPath]: value };
+ // When toggling a parent to false, also force all child overrides to false.
+ // Without this, profileToAnswers() would re-inject stale profile values
+ // for the now-hidden child questions when saving.
+ if (value === false) {
+ for (const childPath of getChildPaths(fieldPath)) {
+ next[childPath] = false;
+ }
+ }
+ return next;
+ });
+ setSaved(false);
+ }
 
-  function handleSave() {
-    const newProfile = answersToProfile(answers);
-    saveTaxProfile(newProfile);
-    setSaved(true);
-    setTimeout(() => router.push('/dashboard'), 800);
-  }
+ function handleSave() {
+ const newProfile = answersToProfile(answers);
+ saveTaxProfile(newProfile);
+ setSaved(true);
+ setTimeout(() => router.push("/dashboard"), 800);
+ }
 
-  if (!profile) {
-    return (
-      <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <p className="text-lg text-gray-600 dark:text-gray-400">
-          Você ainda não concluiu o diagnóstico.
-        </p>
-        <Link
-          href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
-        >
-          Começar questionário
-        </Link>
-      </div>
-    );
-  }
+ if (!profile) {
+ return (
+ <div className="mx-auto max-w-xl px-4 py-20 text-center">
+ <p className="text-lg text-body">
+ Você ainda não concluiu o diagnóstico.
+ </p>
+ <Link
+ href="/questionario"
+ className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
+ >
+ Começar questionário
+ </Link>
+ </div>
+ );
+ }
 
-  return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Editar respostas</h1>
-          <p className="mt-1 text-sm text-muted">
-            Altere suas respostas sem refazer o questionário inteiro.
-          </p>
-        </div>
-        <Link href="/dashboard" className="text-sm text-primary-600 hover:underline dark:text-primary-400">
-          ← Painel
-        </Link>
-      </div>
+ return (
+ <div className="mx-auto max-w-2xl px-4 py-10">
+ <div className="mb-6 flex items-center justify-between">
+ <div>
+ <h1 className="text-2xl font-bold text-foreground">
+ Editar respostas
+ </h1>
+ <p className="mt-1 text-sm text-muted">
+ Altere suas respostas sem refazer o questionário inteiro.
+ </p>
+ </div>
+ <Link
+ href="/dashboard"
+ className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+ >
+ ← Painel
+ </Link>
+ </div>
 
-      <div className="space-y-8">
-        {sections.map(({ label, questions }) => (
-          <section key={label}>
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-primary-400">
-              {label}
-            </h2>
-            <div className="space-y-2">
-              {questions.map((q) => {
-                const current = answers[q.fieldPath];
-                return (
-                  <div
-                    key={q.id}
-                    className="flex items-start justify-between gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground leading-snug">
-                        {q.title}
-                      </p>
-                      {q.description && (
-                        <p className="mt-0.5 text-xs text-muted line-clamp-1">
-                          {q.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex shrink-0 gap-2 mt-0.5">
-                      <button
-                        onClick={() => toggle(q.fieldPath, true)}
-                        aria-pressed={current === true}
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                          current === true
-                            ? 'bg-primary-600 text-white dark:bg-primary-500'
-                            : 'border border-gray-300 text-gray-600 hover:border-primary-300 hover:text-primary-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400'
-                        }`}
-                      >
-                        Sim
-                      </button>
-                      <button
-                        onClick={() => toggle(q.fieldPath, false)}
-                        aria-pressed={current === false}
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                          current === false
-                            ? 'bg-gray-700 text-white dark:bg-gray-500'
-                            : 'border border-gray-300 text-gray-600 hover:border-gray-500 hover:text-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-400 dark:hover:text-gray-200'
-                        }`}
-                      >
-                        Não
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
-      </div>
+ <div className="space-y-8">
+ {sections.map(({ label, questions }) => (
+ <section key={label}>
+ <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-primary-400">
+ {label}
+ </h2>
+ <div className="space-y-2">
+ {questions.map((q) => {
+ const current = answers[q.fieldPath];
+ return (
+ <div
+ key={q.id}
+ className="flex items-start justify-between gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm"
+ >
+ <div className="flex-1 min-w-0">
+ <p className="text-sm font-medium text-foreground leading-snug">
+ {q.title}
+ </p>
+ {q.description && (
+ <p className="mt-0.5 text-xs text-muted line-clamp-1">
+ {q.description}
+ </p>
+ )}
+ </div>
+ <div className="flex shrink-0 gap-2 mt-0.5">
+ <button
+ onClick={() => toggle(q.fieldPath, true)}
+ aria-pressed={current === true}
+ className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+ current === true
+ ? "bg-primary-600 text-white dark:bg-primary-500"
+ : "border border-border text-body hover:border-primary-300 hover:text-primary-600 dark:text-muted dark:hover:border-primary-500 dark:hover:text-primary-400"
+ }`}
+ >
+ Sim
+ </button>
+ <button
+ onClick={() => toggle(q.fieldPath, false)}
+ aria-pressed={current === false}
+ className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+ current === false
+ ? "bg-slate-700 text-white dark:bg-slate-500"
+ : "border border-border text-body hover:border-body hover:text-foreground dark:text-muted dark:hover:border-muted dark:hover:text-foreground"
+ }`}
+ >
+ Não
+ </button>
+ </div>
+ </div>
+ );
+ })}
+ </div>
+ </section>
+ ))}
+ </div>
 
-      <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
-        <Link
-          href="/dashboard"
-          className="text-sm text-muted hover:text-gray-700 underline dark:hover:text-gray-200"
-        >
-          Cancelar
-        </Link>
-        <button
-          onClick={handleSave}
-          className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
-        >
-          {saved ? '✓ Salvo!' : 'Salvar alterações'}
-        </button>
-      </div>
-      <CorruptedDataToast />
-    </div>
-  );
+ <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
+ <Link
+ href="/dashboard"
+ className="text-sm text-muted hover:text-body underline dark:hover:text-foreground"
+ >
+ Cancelar
+ </Link>
+ <button
+ onClick={handleSave}
+ className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
+ >
+ {saved ? "✓ Salvo!" : "Salvar alterações"}
+ </button>
+ </div>
+ <CorruptedDataToast />
+ </div>
+ );
 }

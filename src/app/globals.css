@@ -6,37 +6,44 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   Design tokens — etapa 1: aliases da paleta ATUAL (zero mudança
-   visual). Valores copiados verbatim de tailwindcss/theme.css.
-   Para mudar a identidade visual (etapa 2): edite os valores AQUI
+   Design tokens — etapa 2: redesign "consultoria de confiança".
+   Neutros: escala slate (temperatura fria consistente).
+   Acento: índigo institucional (dessaturado ~30%, 10pp mais profundo no 600).
+   Premium: ouro sóbrio (H=78, hue dourado — selo, não alerta).
+   Fonte display: Fraunces (h1/h2 apenas; Geist Sans no corpo).
+   Para alterar a identidade visual: edite os valores AQUI
    e em src/lib/design/pdf-colors.ts (paleta espelho do PDF).
    ============================================================ */
 
-/* Papéis (neutros): um token, dois valores — trocam com .dark. */
+/* Papéis (neutros slate): um token, dois valores — trocam com .dark. */
 :root {
-  --background: oklch(98.5% 0.002 247.839); /* gray-50 */
-  --surface: #fff; /* white */
-  --border-default: oklch(92.8% 0.006 264.531); /* gray-200 */
-  --foreground: oklch(21% 0.034 264.665); /* gray-900 */
-  --body: oklch(37.3% 0.034 259.733); /* gray-700 */
-  /* TODO etapa 2: muted (gray-500 light / gray-400 dark) está no
-     limite de contraste WCAG para texto pequeno — reavaliar o tom no
-     redesign. Não mudar na etapa 1 (pixel-idêntico). */
-  --muted: oklch(55.1% 0.027 264.364); /* gray-500 */
+  --background: oklch(99% 0.003 248);
+  --surface: #ffffff;
+  --border-default: oklch(91% 0.011 254);
+  --foreground: oklch(18% 0.03 262);
+  --body: oklch(36% 0.03 258);
+  /* muted: slate-500 area — WCAG AA sobre branco: ~5.3:1 ✓ (resolvido da etapa 1) */
+  --muted: oklch(53% 0.033 257);
 }
 
 .dark {
-  --background: oklch(13% 0.028 261.692); /* gray-950 */
-  --surface: oklch(21% 0.034 264.665); /* gray-900 */
-  --border-default: oklch(37.3% 0.034 259.733); /* gray-700 */
-  --foreground: oklch(96.7% 0.003 264.542); /* gray-100 */
-  --body: oklch(87.2% 0.01 258.338); /* gray-300 */
-  --muted: oklch(70.7% 0.022 261.325); /* gray-400 */
+  /* #0D1117 — grafite frio, nunca preto puro */
+  --background: oklch(10% 0.02 260);
+  /* #161C26 — surface ligeiramente mais clara */
+  --surface: oklch(15.5% 0.026 258);
+  --border-default: oklch(30% 0.033 258);
+  --foreground: oklch(97% 0.003 248);
+  --body: oklch(82% 0.015 252);
+  /* muted dark — WCAG AA sobre surface dark (#161C26): ~5.2:1 ✓ */
+  --muted: oklch(66% 0.028 255);
 }
 
+/* prettier-ignore */
 @theme inline {
-  /* Fonte: Geist via next/font (--font-geist-sans definida no layout.tsx). */
+  /* Fonte corpo: Geist via next/font (--font-geist-sans definida no layout.tsx). */
   --font-sans: var(--font-geist-sans);
+  /* Fonte display: Fraunces via next/font (--font-fraunces definida no layout.tsx). */
+  --font-display: var(--font-fraunces);
 
   /* Papéis */
   --color-background: var(--background);
@@ -47,85 +54,120 @@
   --color-muted: var(--muted);
 }
 
-/* Escalas semânticas — aliases 1:1 da paleta default do Tailwind. */
+/* Escalas semânticas */
+/* prettier-ignore */
 @theme {
-  /* primary := indigo */
-  --color-primary-50: oklch(96.2% 0.018 272.314); /* indigo-50 */
-  --color-primary-100: oklch(93% 0.034 272.788); /* indigo-100 */
-  --color-primary-200: oklch(87% 0.065 274.039); /* indigo-200 */
-  --color-primary-300: oklch(78.5% 0.115 274.713); /* indigo-300 */
-  --color-primary-400: oklch(67.3% 0.182 276.935); /* indigo-400 */
-  --color-primary-500: oklch(58.5% 0.233 277.117); /* indigo-500 */
-  --color-primary-600: oklch(51.1% 0.262 276.966); /* indigo-600 */
-  --color-primary-700: oklch(45.7% 0.24 277.023); /* indigo-700 */
-  --color-primary-800: oklch(39.8% 0.195 277.366); /* indigo-800 */
-  --color-primary-900: oklch(35.9% 0.144 278.697); /* indigo-900 */
-  --color-primary-950: oklch(25.7% 0.09 281.288); /* indigo-950 */
+  /* primary := índigo institucional
+     Δ vs indigo nativo: L 51→44 (−7pp mais profundo), C 0.262→0.185 (−30% menos vibrante).
+     Âncora primary-600 ≈ #3B36A8 — entre indigo-700 e indigo-800, porém dessaturado. */
+  --color-primary-50:  oklch(96.5% 0.013 278);
+  --color-primary-100: oklch(93% 0.026 278);
+  --color-primary-200: oklch(87% 0.05 278);
+  --color-primary-300: oklch(78% 0.085 278);
+  --color-primary-400: oklch(67% 0.135 278);
+  --color-primary-500: oklch(55% 0.168 278);
+  /* âncora — CTA principal */
+  --color-primary-600: oklch(44% 0.185 278);
+  /* hover */
+  --color-primary-700: oklch(37% 0.165 278);
+  --color-primary-800: oklch(31% 0.132 278);
+  --color-primary-900: oklch(25% 0.092 278);
+  --color-primary-950: oklch(17% 0.058 278);
 
-  /* danger := red */
-  --color-danger-50: oklch(97.1% 0.013 17.38); /* red-50 */
-  --color-danger-100: oklch(93.6% 0.032 17.717); /* red-100 */
-  --color-danger-200: oklch(88.5% 0.062 18.334); /* red-200 */
-  --color-danger-300: oklch(80.8% 0.114 19.571); /* red-300 */
-  --color-danger-400: oklch(70.4% 0.191 22.216); /* red-400 */
-  --color-danger-500: oklch(63.7% 0.237 25.331); /* red-500 */
-  --color-danger-600: oklch(57.7% 0.245 27.325); /* red-600 */
-  --color-danger-700: oklch(50.5% 0.213 27.518); /* red-700 */
-  --color-danger-800: oklch(44.4% 0.177 26.899); /* red-800 */
-  --color-danger-900: oklch(39.6% 0.141 25.723); /* red-900 */
-  --color-danger-950: oklch(25.8% 0.092 26.042); /* red-950 */
+  /* danger := red (inalterado) */
+  --color-danger-50:  oklch(97.1% 0.013 17.38);
+  --color-danger-100: oklch(93.6% 0.032 17.717);
+  --color-danger-200: oklch(88.5% 0.062 18.334);
+  --color-danger-300: oklch(80.8% 0.114 19.571);
+  --color-danger-400: oklch(70.4% 0.191 22.216);
+  --color-danger-500: oklch(63.7% 0.237 25.331);
+  --color-danger-600: oklch(57.7% 0.245 27.325);
+  --color-danger-700: oklch(50.5% 0.213 27.518);
+  --color-danger-800: oklch(44.4% 0.177 26.899);
+  --color-danger-900: oklch(39.6% 0.141 25.723);
+  --color-danger-950: oklch(25.8% 0.092 26.042);
 
-  /* success := green */
-  --color-success-50: oklch(98.2% 0.018 155.826); /* green-50 */
-  --color-success-100: oklch(96.2% 0.044 156.743); /* green-100 */
-  --color-success-200: oklch(92.5% 0.084 155.995); /* green-200 */
-  --color-success-300: oklch(87.1% 0.15 154.449); /* green-300 */
-  --color-success-400: oklch(79.2% 0.209 151.711); /* green-400 */
-  --color-success-500: oklch(72.3% 0.219 149.579); /* green-500 */
-  --color-success-600: oklch(62.7% 0.194 149.214); /* green-600 */
-  --color-success-700: oklch(52.7% 0.154 150.069); /* green-700 */
-  --color-success-800: oklch(44.8% 0.119 151.328); /* green-800 */
-  --color-success-900: oklch(39.3% 0.095 152.535); /* green-900 */
-  --color-success-950: oklch(26.6% 0.065 152.934); /* green-950 */
+  /* success := green (inalterado) */
+  --color-success-50:  oklch(98.2% 0.018 155.826);
+  --color-success-100: oklch(96.2% 0.044 156.743);
+  --color-success-200: oklch(92.5% 0.084 155.995);
+  --color-success-300: oklch(87.1% 0.15 154.449);
+  --color-success-400: oklch(79.2% 0.209 151.711);
+  --color-success-500: oklch(72.3% 0.219 149.579);
+  --color-success-600: oklch(62.7% 0.194 149.214);
+  --color-success-700: oklch(52.7% 0.154 150.069);
+  --color-success-800: oklch(44.8% 0.119 151.328);
+  --color-success-900: oklch(39.3% 0.095 152.535);
+  --color-success-950: oklch(26.6% 0.065 152.934);
 
-  /* warning := yellow */
-  --color-warning-50: oklch(98.7% 0.026 102.212); /* yellow-50 */
-  --color-warning-100: oklch(97.3% 0.071 103.193); /* yellow-100 */
-  --color-warning-200: oklch(94.5% 0.129 101.54); /* yellow-200 */
-  --color-warning-300: oklch(90.5% 0.182 98.111); /* yellow-300 */
-  --color-warning-400: oklch(85.2% 0.199 91.936); /* yellow-400 */
-  --color-warning-500: oklch(79.5% 0.184 86.047); /* yellow-500 */
-  --color-warning-600: oklch(68.1% 0.162 75.834); /* yellow-600 */
-  --color-warning-700: oklch(55.4% 0.135 66.442); /* yellow-700 */
-  --color-warning-800: oklch(47.6% 0.114 61.907); /* yellow-800 */
-  --color-warning-900: oklch(42.1% 0.095 57.708); /* yellow-900 */
-  --color-warning-950: oklch(28.6% 0.066 53.813); /* yellow-950 */
+  /* warning := yellow (inalterado — avisos reais; token premium separado abaixo) */
+  --color-warning-50:  oklch(98.7% 0.026 102.212);
+  --color-warning-100: oklch(97.3% 0.071 103.193);
+  --color-warning-200: oklch(94.5% 0.129 101.54);
+  --color-warning-300: oklch(90.5% 0.182 98.111);
+  --color-warning-400: oklch(85.2% 0.199 91.936);
+  --color-warning-500: oklch(79.5% 0.184 86.047);
+  --color-warning-600: oklch(68.1% 0.162 75.834);
+  --color-warning-700: oklch(55.4% 0.135 66.442);
+  --color-warning-800: oklch(47.6% 0.114 61.907);
+  --color-warning-900: oklch(42.1% 0.095 57.708);
+  --color-warning-950: oklch(28.6% 0.066 53.813);
 
-  /* premium := amber */
-  --color-premium-50: oklch(98.7% 0.022 95.277); /* amber-50 */
-  --color-premium-100: oklch(96.2% 0.059 95.617); /* amber-100 */
-  --color-premium-200: oklch(92.4% 0.12 95.746); /* amber-200 */
-  --color-premium-300: oklch(87.9% 0.169 91.605); /* amber-300 */
-  --color-premium-400: oklch(82.8% 0.189 84.429); /* amber-400 */
-  --color-premium-500: oklch(76.9% 0.188 70.08); /* amber-500 */
-  --color-premium-600: oklch(66.6% 0.179 58.318); /* amber-600 */
-  --color-premium-700: oklch(55.5% 0.163 48.998); /* amber-700 */
-  --color-premium-800: oklch(47.3% 0.137 46.201); /* amber-800 */
-  --color-premium-900: oklch(41.4% 0.112 45.904); /* amber-900 */
-  --color-premium-950: oklch(27.9% 0.077 45.635); /* amber-950 */
+  /* premium := ouro institucional
+     Δ vs amber: H 60→78 (dourado, não laranja), C −35% (dessaturado, muted).
+     Âncora premium-600 ≈ #8E7023 — dourado de brasão, não kitsch. */
+  --color-premium-50:  oklch(97.5% 0.016 82);
+  --color-premium-100: oklch(94.5% 0.038 82);
+  --color-premium-200: oklch(90% 0.072 82);
+  --color-premium-300: oklch(82% 0.1 80);
+  --color-premium-400: oklch(73% 0.115 79);
+  --color-premium-500: oklch(63% 0.118 78);
+  /* âncora — CTAs premium, selos, badges */
+  --color-premium-600: oklch(53% 0.113 77);
+  /* hover premium */
+  --color-premium-700: oklch(44% 0.098 76);
+  --color-premium-800: oklch(36% 0.082 75);
+  --color-premium-900: oklch(29% 0.064 74);
+  --color-premium-950: oklch(20% 0.042 73);
 
-  /* info := blue */
-  --color-info-50: oklch(97% 0.014 254.604); /* blue-50 */
-  --color-info-100: oklch(93.2% 0.032 255.585); /* blue-100 */
-  --color-info-200: oklch(88.2% 0.059 254.128); /* blue-200 */
-  --color-info-300: oklch(80.9% 0.105 251.813); /* blue-300 */
-  --color-info-400: oklch(70.7% 0.165 254.624); /* blue-400 */
-  --color-info-500: oklch(62.3% 0.214 259.815); /* blue-500 */
-  --color-info-600: oklch(54.6% 0.245 262.881); /* blue-600 */
-  --color-info-700: oklch(48.8% 0.243 264.376); /* blue-700 */
-  --color-info-800: oklch(42.4% 0.199 265.638); /* blue-800 */
-  --color-info-900: oklch(37.9% 0.146 265.522); /* blue-900 */
-  --color-info-950: oklch(28.2% 0.091 267.935); /* blue-950 */
+  /* info := blue (inalterado) */
+  --color-info-50:  oklch(97% 0.014 254.604);
+  --color-info-100: oklch(93.2% 0.032 255.585);
+  --color-info-200: oklch(88.2% 0.059 254.128);
+  --color-info-300: oklch(80.9% 0.105 251.813);
+  --color-info-400: oklch(70.7% 0.165 254.624);
+  --color-info-500: oklch(62.3% 0.214 259.815);
+  --color-info-600: oklch(54.6% 0.245 262.881);
+  --color-info-700: oklch(48.8% 0.243 264.376);
+  --color-info-800: oklch(42.4% 0.199 265.638);
+  --color-info-900: oklch(37.9% 0.146 265.522);
+  --color-info-950: oklch(28.2% 0.091 267.935);
+
+  /* Sombras difusas em duas camadas (substituem as shadow-* duras do Tailwind default) */
+  --shadow-sm:  0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  --shadow-md:  0 4px 12px -2px rgb(0 0 0 / 0.1), 0 2px 6px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg:  0 8px 24px -4px rgb(0 0 0 / 0.12), 0 4px 10px -4px rgb(0 0 0 / 0.06);
+  --shadow-xl:  0 16px 40px -6px rgb(0 0 0 / 0.14), 0 6px 16px -6px rgb(0 0 0 / 0.08);
+  --shadow-2xl: 0 24px 60px -8px rgb(0 0 0 / 0.18), 0 8px 24px -8px rgb(0 0 0 / 0.1);
+}
+
+/* Fonte display nos títulos grandes — Geist continua em todo o restante */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-display, var(--font-sans));
+  }
+
+  /* Transições suaves + cursor em todos os elementos interativos */
+  a,
+  button,
+  [role="button"] {
+    cursor: pointer;
+    transition-property:
+      color, background-color, border-color, box-shadow, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
 }
 
 /* 3.1 — Print / Save as PDF */
