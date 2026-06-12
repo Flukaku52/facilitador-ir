@@ -12,17 +12,17 @@ const INCLUDED = [
   {
     title: "Guias completos de preenchimento",
     description:
-      "Os 20 guias com documentos necessários, onde declarar, passo a passo de preenchimento e erros comuns.",
+      "Os 20 guias com documentos, onde declarar, passo a passo e erros comuns — pra você não travar em nenhuma tela do programa da Receita.",
   },
   {
     title: "Relatório em PDF",
     description:
-      "Baixe o relatório final do seu diagnóstico em PDF para guardar ou enviar ao contador.",
+      "Seu diagnóstico completo num PDF — pra você guardar, consultar na hora de preencher ou entregar pronto ao contador.",
   },
   {
     title: "Checklist com progresso",
     description:
-      "Organize os documentos da declaração marcando o que já separou.",
+      "Marque o que já separou e veja o que falta — pra nenhum comprovante ficar de fora na hora de preencher.",
   },
 ];
 
@@ -39,11 +39,11 @@ export default function PremiumPage() {
           ← Painel
         </Link>
         <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Acesso completo ao IR Facilitador
+          Preencha sua declaração sem medo de errar
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Tudo o que você precisa para organizar e preencher sua declaração com
-          segurança.
+          O IR Facilitador te guia do primeiro documento até a revisão final —
+          em linguagem simples, sem juridiquês.
         </p>
       </div>
 
@@ -76,6 +76,10 @@ export default function PremiumPage() {
           <p className="mt-1 text-sm text-indigo-800 dark:text-indigo-200">
             Pagamento único, com acesso até o fim da temporada de declaração.
           </p>
+          <p className="mt-2 text-xs text-indigo-700 dark:text-indigo-300">
+            Pra comparar: um contador cobra a partir de R$ 150 só pra fazer uma
+            declaração simples.
+          </p>
         </div>
 
         {isPremium ? (
@@ -104,7 +108,7 @@ export default function PremiumPage() {
             </Link>
             <p className="text-xs text-indigo-700 dark:text-indigo-300">
               O acesso premium é liberado na sua conta — crie uma conta gratuita
-              primeiro.{" "}
+              primeiro e você volta direto pra esta página.{" "}
               <Link href="/login?next=/premium" className="underline">
                 Já tem conta? Entrar
               </Link>
