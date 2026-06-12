@@ -1,81 +1,100 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-const PROFILE_KEY = 'ir_facilitador_profile';
+const PROFILE_KEY = "ir_facilitador_profile";
 
 function makeLocalStorageMock(initial: Record<string, string> = {}) {
   const store: Record<string, string> = { ...initial };
   return {
     getItem: (key: string) => store[key] ?? null,
-    setItem: (key: string, val: string) => { store[key] = val; },
-    removeItem: (key: string) => { delete store[key]; },
-    clear: () => { for (const key of Object.keys(store)) delete store[key]; },
+    setItem: (key: string, val: string) => {
+      store[key] = val;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      for (const key of Object.keys(store)) delete store[key];
+    },
   };
 }
 
 function stubWindow(lsMock: ReturnType<typeof makeLocalStorageMock>) {
-  vi.stubGlobal('window', {
+  vi.stubGlobal("window", {
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
     localStorage: lsMock,
   });
-  vi.stubGlobal('localStorage', lsMock);
+  vi.stubGlobal("localStorage", lsMock);
 }
 
 // Tests for the corruption-detection guard logic (mirrors isProfileActuallyInvalid in useStoredProfile)
-describe('detecção de perfil corrompido — lógica de guarda', () => {
+describe("detecção de perfil corrompido — lógica de guarda", () => {
   function isInvalid(raw: string | null): boolean {
     if (raw === null) return false; // no data — not corruption
     try {
       const parsed: unknown = JSON.parse(raw);
-      if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) return false;
+      if (
+        typeof parsed === "object" &&
+        parsed !== null &&
+        !Array.isArray(parsed)
+      )
+        return false;
       return true;
     } catch {
       return true;
     }
   }
 
-  it('perfil válido não dispara flag de corrompido', () => {
-    const profile = JSON.stringify({ id: 'x', taxYear: 2025, income: { hasCltIncome: true } });
+  it("perfil válido não dispara flag de corrompido", () => {
+    const profile = JSON.stringify({
+      id: "x",
+      taxYear: 2025,
+      income: { hasCltIncome: true },
+    });
     expect(isInvalid(profile)).toBe(false);
   });
 
-  it('objeto vazio não dispara flag de corrompido', () => {
-    expect(isInvalid('{}')).toBe(false);
+  it("objeto vazio não dispara flag de corrompido", () => {
+    expect(isInvalid("{}")).toBe(false);
   });
 
-  it('ausência de chave (null) não dispara flag', () => {
+  it("ausência de chave (null) não dispara flag", () => {
     expect(isInvalid(null)).toBe(false);
   });
 
-  it('JSON inválido dispara flag', () => {
-    expect(isInvalid('{json inválido')).toBe(true);
+  it("JSON inválido dispara flag", () => {
+    expect(isInvalid("{json inválido")).toBe(true);
   });
 
-  it('null literal dispara flag', () => {
-    expect(isInvalid('null')).toBe(true);
+  it("null literal dispara flag", () => {
+    expect(isInvalid("null")).toBe(true);
   });
 
-  it('array dispara flag', () => {
-    expect(isInvalid('[]')).toBe(true);
+  it("array dispara flag", () => {
+    expect(isInvalid("[]")).toBe(true);
   });
 
-  it('primitivo (número) dispara flag', () => {
-    expect(isInvalid('42')).toBe(true);
+  it("primitivo (número) dispara flag", () => {
+    expect(isInvalid("42")).toBe(true);
   });
 
-  it('perfil antigo parcial (sem campo novo) não dispara flag', () => {
-    const old = JSON.stringify({ id: 'old', taxYear: 2024, income: { hasCltIncome: true } });
+  it("perfil antigo parcial (sem campo novo) não dispara flag", () => {
+    const old = JSON.stringify({
+      id: "old",
+      taxYear: 2024,
+      income: { hasCltIncome: true },
+    });
     expect(isInvalid(old)).toBe(false);
   });
 
-  it('flag de migração já concluída não interfere (ausência de perfil não é corrompimento)', () => {
+  it("flag de migração já concluída não interfere (ausência de perfil não é corrompimento)", () => {
     expect(isInvalid(null)).toBe(false);
   });
 });
 
-describe('saveDraft / loadDraft / clearDraft', () => {
-  const DRAFT_KEY = 'ir_facilitador_questionnaire_draft';
+describe("saveDraft / loadDraft / clearDraft", () => {
+  const DRAFT_KEY = "ir_facilitador_questionnaire_draft";
 
   beforeEach(() => {
     vi.resetModules();
@@ -86,9 +105,12 @@ describe('saveDraft / loadDraft / clearDraft', () => {
     vi.unstubAllGlobals();
   });
 
-  it('salva e recarrega rascunho válido', async () => {
-    const { saveDraft, loadDraft } = await import('./local-profile-storage');
-    const answers = { 'income.hasCltIncome': true, 'assets.hasBankAccounts': false };
+  it("salva e recarrega rascunho válido", async () => {
+    const { saveDraft, loadDraft } = await import("./local-profile-storage");
+    const answers = {
+      "income.hasCltIncome": true,
+      "assets.hasBankAccounts": false,
+    };
     saveDraft(answers, 3);
     const loaded = loadDraft();
     expect(loaded).not.toBeNull();
@@ -96,40 +118,59 @@ describe('saveDraft / loadDraft / clearDraft', () => {
     expect(loaded?.currentIndex).toBe(3);
   });
 
-  it('loadDraft retorna null quando não há rascunho', async () => {
-    const { loadDraft } = await import('./local-profile-storage');
+  it("loadDraft retorna null quando não há rascunho", async () => {
+    const { loadDraft } = await import("./local-profile-storage");
     expect(loadDraft()).toBeNull();
   });
 
-  it('clearDraft remove o rascunho', async () => {
-    const { saveDraft, loadDraft, clearDraft } = await import('./local-profile-storage');
-    saveDraft({ 'income.hasCltIncome': true }, 1);
+  it("clearDraft remove o rascunho", async () => {
+    const { saveDraft, loadDraft, clearDraft } =
+      await import("./local-profile-storage");
+    saveDraft({ "income.hasCltIncome": true }, 1);
     clearDraft();
     expect(loadDraft()).toBeNull();
   });
 
-  it('rascunho com JSON inválido não quebra — retorna null', async () => {
-    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: '{json inválido' }));
-    const { loadDraft } = await import('./local-profile-storage');
+  it("rascunho com JSON inválido não quebra — retorna null", async () => {
+    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: "{json inválido" }));
+    const { loadDraft } = await import("./local-profile-storage");
     expect(loadDraft()).toBeNull();
   });
 
-  it('rascunho sem currentIndex retorna null', async () => {
-    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {} }) }));
-    const { loadDraft } = await import('./local-profile-storage');
+  it("rascunho sem currentIndex retorna null", async () => {
+    stubWindow(
+      makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {} }) }),
+    );
+    const { loadDraft } = await import("./local-profile-storage");
     expect(loadDraft()).toBeNull();
   });
 
-  it('rascunho com currentIndex negativo é corrigido para 0', async () => {
-    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {}, currentIndex: -5, updatedAt: '' }) }));
-    const { loadDraft } = await import('./local-profile-storage');
+  it("rascunho com currentIndex negativo é corrigido para 0", async () => {
+    stubWindow(
+      makeLocalStorageMock({
+        [DRAFT_KEY]: JSON.stringify({
+          answers: {},
+          currentIndex: -5,
+          updatedAt: "",
+        }),
+      }),
+    );
+    const { loadDraft } = await import("./local-profile-storage");
     const loaded = loadDraft();
     expect(loaded?.currentIndex).toBe(0);
   });
 
-  it('rascunho com answers inválido usa objeto vazio', async () => {
-    stubWindow(makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: 'inválido', currentIndex: 2, updatedAt: '' }) }));
-    const { loadDraft } = await import('./local-profile-storage');
+  it("rascunho com answers inválido usa objeto vazio", async () => {
+    stubWindow(
+      makeLocalStorageMock({
+        [DRAFT_KEY]: JSON.stringify({
+          answers: "inválido",
+          currentIndex: 2,
+          updatedAt: "",
+        }),
+      }),
+    );
+    const { loadDraft } = await import("./local-profile-storage");
     const loaded = loadDraft();
     expect(loaded).not.toBeNull();
     expect(loaded?.answers).toEqual({});
@@ -137,7 +178,7 @@ describe('saveDraft / loadDraft / clearDraft', () => {
   });
 });
 
-describe('loadTaxProfile — validação defensiva', () => {
+describe("loadTaxProfile — validação defensiva", () => {
   beforeEach(() => {
     vi.resetModules();
     stubWindow(makeLocalStorageMock());
@@ -147,70 +188,78 @@ describe('loadTaxProfile — validação defensiva', () => {
     vi.unstubAllGlobals();
   });
 
-  it('retorna null quando localStorage está vazio', async () => {
-    const { loadTaxProfile } = await import('./local-profile-storage');
+  it("retorna null quando localStorage está vazio", async () => {
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toBeNull();
   });
 
-  it('retorna null quando JSON é inválido', async () => {
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: '{json inválido' }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+  it("retorna null quando JSON é inválido", async () => {
+    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: "{json inválido" }));
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toBeNull();
   });
 
   it('retorna null quando JSON é "null" (null literal)', async () => {
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: 'null' }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: "null" }));
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toBeNull();
   });
 
-  it('retorna null quando JSON é um array', async () => {
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: '[]' }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+  it("retorna null quando JSON é um array", async () => {
+    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: "[]" }));
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toBeNull();
   });
 
-  it('retorna null quando JSON é uma string', async () => {
+  it("retorna null quando JSON é uma string", async () => {
     stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: '"perfil"' }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toBeNull();
   });
 
-  it('retorna null quando JSON é um número', async () => {
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: '42' }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+  it("retorna null quando JSON é um número", async () => {
+    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: "42" }));
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toBeNull();
   });
 
-  it('retorna objeto quando JSON é um objeto vazio', async () => {
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: '{}' }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+  it("retorna objeto quando JSON é um objeto vazio", async () => {
+    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: "{}" }));
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toEqual({});
   });
 
-  it('retorna perfil válido corretamente', async () => {
-    const profile = { id: 'abc', taxYear: 2025, income: { hasCltIncome: true } };
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: JSON.stringify(profile) }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+  it("retorna perfil válido corretamente", async () => {
+    const profile = {
+      id: "abc",
+      taxYear: 2025,
+      income: { hasCltIncome: true },
+    };
+    stubWindow(
+      makeLocalStorageMock({ [PROFILE_KEY]: JSON.stringify(profile) }),
+    );
+    const { loadTaxProfile } = await import("./local-profile-storage");
     expect(loadTaxProfile()).toEqual(profile);
   });
 
-  it('perfil antigo sem campo novo (hasBusinessIncome undefined) não quebra', async () => {
+  it("perfil antigo sem campo novo (hasBusinessIncome undefined) não quebra", async () => {
     const oldProfile = {
-      id: 'old',
+      id: "old",
       taxYear: 2024,
       income: { hasCltIncome: true },
     };
-    stubWindow(makeLocalStorageMock({ [PROFILE_KEY]: JSON.stringify(oldProfile) }));
-    const { loadTaxProfile } = await import('./local-profile-storage');
+    stubWindow(
+      makeLocalStorageMock({ [PROFILE_KEY]: JSON.stringify(oldProfile) }),
+    );
+    const { loadTaxProfile } = await import("./local-profile-storage");
     const result = loadTaxProfile();
     expect(result).not.toBeNull();
-    expect((result as Record<string, unknown>)?.['id']).toBe('old');
+    expect(result?.id).toBe("old");
   });
 });
 
-describe('loadChecklistNotes / saveChecklistNote', () => {
-  const NOTES_KEY = 'ir_facilitador_checklist_notes';
+describe("loadChecklistNotes / saveChecklistNote", () => {
+  const NOTES_KEY = "ir_facilitador_checklist_notes";
 
   beforeEach(() => {
     vi.resetModules();
@@ -221,110 +270,138 @@ describe('loadChecklistNotes / saveChecklistNote', () => {
     vi.unstubAllGlobals();
   });
 
-  it('retorna {} quando não há notas salvas', async () => {
-    const { loadChecklistNotes } = await import('./local-profile-storage');
+  it("retorna {} quando não há notas salvas", async () => {
+    const { loadChecklistNotes } = await import("./local-profile-storage");
     expect(loadChecklistNotes()).toEqual({});
   });
 
-  it('salva e carrega nota para um item', async () => {
-    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
-    saveChecklistNote('cl_clt_report', 'Peguei no RH');
+  it("salva e carrega nota para um item", async () => {
+    const { saveChecklistNote, loadChecklistNotes } =
+      await import("./local-profile-storage");
+    saveChecklistNote("cl_clt_report", "Peguei no RH");
     const notes = loadChecklistNotes();
-    expect(notes['cl_clt_report']).toBe('Peguei no RH');
+    expect(notes["cl_clt_report"]).toBe("Peguei no RH");
   });
 
-  it('nota vazia remove a chave', async () => {
-    const mock = makeLocalStorageMock({ [NOTES_KEY]: JSON.stringify({ cl_clt_report: 'existente' }) });
+  it("nota vazia remove a chave", async () => {
+    const mock = makeLocalStorageMock({
+      [NOTES_KEY]: JSON.stringify({ cl_clt_report: "existente" }),
+    });
     stubWindow(mock);
-    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
-    saveChecklistNote('cl_clt_report', '');
-    expect(loadChecklistNotes()['cl_clt_report']).toBeUndefined();
+    const { saveChecklistNote, loadChecklistNotes } =
+      await import("./local-profile-storage");
+    saveChecklistNote("cl_clt_report", "");
+    expect(loadChecklistNotes()["cl_clt_report"]).toBeUndefined();
   });
 
-  it('nota com apenas espaços é tratada como vazia', async () => {
-    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
-    saveChecklistNote('cl_bank_reports', '   ');
-    expect(loadChecklistNotes()['cl_bank_reports']).toBeUndefined();
+  it("nota com apenas espaços é tratada como vazia", async () => {
+    const { saveChecklistNote, loadChecklistNotes } =
+      await import("./local-profile-storage");
+    saveChecklistNote("cl_bank_reports", "   ");
+    expect(loadChecklistNotes()["cl_bank_reports"]).toBeUndefined();
   });
 
-  it('múltiplas notas coexistem sem se sobrescrever', async () => {
-    const { saveChecklistNote, loadChecklistNotes } = await import('./local-profile-storage');
-    saveChecklistNote('item_a', 'Nota A');
-    saveChecklistNote('item_b', 'Nota B');
+  it("múltiplas notas coexistem sem se sobrescrever", async () => {
+    const { saveChecklistNote, loadChecklistNotes } =
+      await import("./local-profile-storage");
+    saveChecklistNote("item_a", "Nota A");
+    saveChecklistNote("item_b", "Nota B");
     const notes = loadChecklistNotes();
-    expect(notes['item_a']).toBe('Nota A');
-    expect(notes['item_b']).toBe('Nota B');
+    expect(notes["item_a"]).toBe("Nota A");
+    expect(notes["item_b"]).toBe("Nota B");
   });
 
-  it('JSON inválido em notes retorna {} sem quebrar', async () => {
-    stubWindow(makeLocalStorageMock({ [NOTES_KEY]: '{inválido' }));
-    const { loadChecklistNotes } = await import('./local-profile-storage');
+  it("JSON inválido em notes retorna {} sem quebrar", async () => {
+    stubWindow(makeLocalStorageMock({ [NOTES_KEY]: "{inválido" }));
+    const { loadChecklistNotes } = await import("./local-profile-storage");
     expect(loadChecklistNotes()).toEqual({});
   });
 });
 
-describe('clearAll', () => {
-  const CHECKLIST_KEY = 'ir_facilitador_checklist';
-  const DRAFT_KEY = 'ir_facilitador_questionnaire_draft';
-  const NOTES_KEY = 'ir_facilitador_checklist_notes';
+describe("clearAll", () => {
+  const CHECKLIST_KEY = "ir_facilitador_checklist";
+  const DRAFT_KEY = "ir_facilitador_questionnaire_draft";
+  const NOTES_KEY = "ir_facilitador_checklist_notes";
 
   beforeEach(() => {
     vi.resetModules();
     // StorageEvent is not available in Node; stub it so notify() doesn't throw
-    vi.stubGlobal('StorageEvent', class { constructor() {} });
+    vi.stubGlobal(
+      "StorageEvent",
+      class {
+        constructor() {}
+      },
+    );
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it('remove perfil do localStorage', async () => {
-    const mock = makeLocalStorageMock({ [PROFILE_KEY]: JSON.stringify({ id: 'x', taxYear: 2025 }) });
+  it("remove perfil do localStorage", async () => {
+    const mock = makeLocalStorageMock({
+      [PROFILE_KEY]: JSON.stringify({ id: "x", taxYear: 2025 }),
+    });
     stubWindow(mock);
-    const { clearAll, loadTaxProfile } = await import('./local-profile-storage');
+    const { clearAll, loadTaxProfile } =
+      await import("./local-profile-storage");
     clearAll();
     expect(loadTaxProfile()).toBeNull();
   });
 
-  it('remove checklist do localStorage', async () => {
-    const mock = makeLocalStorageMock({ [CHECKLIST_KEY]: JSON.stringify({ cl_clt_report: true }) });
+  it("remove checklist do localStorage", async () => {
+    const mock = makeLocalStorageMock({
+      [CHECKLIST_KEY]: JSON.stringify({ cl_clt_report: true }),
+    });
     stubWindow(mock);
-    const { clearAll } = await import('./local-profile-storage');
+    const { clearAll } = await import("./local-profile-storage");
     clearAll();
     expect(mock.getItem(CHECKLIST_KEY)).toBeNull();
   });
 
-  it('remove notas do localStorage', async () => {
-    const mock = makeLocalStorageMock({ [NOTES_KEY]: JSON.stringify({ cl_clt_report: 'minha nota' }) });
+  it("remove notas do localStorage", async () => {
+    const mock = makeLocalStorageMock({
+      [NOTES_KEY]: JSON.stringify({ cl_clt_report: "minha nota" }),
+    });
     stubWindow(mock);
-    const { clearAll } = await import('./local-profile-storage');
+    const { clearAll } = await import("./local-profile-storage");
     clearAll();
     expect(mock.getItem(NOTES_KEY)).toBeNull();
   });
 
-  it('remove rascunho do localStorage', async () => {
-    const mock = makeLocalStorageMock({ [DRAFT_KEY]: JSON.stringify({ answers: {}, currentIndex: 2, updatedAt: '' }) });
+  it("remove rascunho do localStorage", async () => {
+    const mock = makeLocalStorageMock({
+      [DRAFT_KEY]: JSON.stringify({
+        answers: {},
+        currentIndex: 2,
+        updatedAt: "",
+      }),
+    });
     stubWindow(mock);
-    const { clearAll, loadDraft } = await import('./local-profile-storage');
+    const { clearAll, loadDraft } = await import("./local-profile-storage");
     clearAll();
     expect(loadDraft()).toBeNull();
   });
 
-  it('não quebra se as chaves não existirem', async () => {
+  it("não quebra se as chaves não existirem", async () => {
     stubWindow(makeLocalStorageMock());
-    const { clearAll } = await import('./local-profile-storage');
+    const { clearAll } = await import("./local-profile-storage");
     expect(() => clearAll()).not.toThrow();
   });
 
-  it('remove todas as chaves em conjunto', async () => {
+  it("remove todas as chaves em conjunto", async () => {
     const mock = makeLocalStorageMock({
-      [PROFILE_KEY]:   JSON.stringify({ id: 'x', taxYear: 2025 }),
+      [PROFILE_KEY]: JSON.stringify({ id: "x", taxYear: 2025 }),
       [CHECKLIST_KEY]: JSON.stringify({ cl_clt_report: true }),
-      [NOTES_KEY]:     JSON.stringify({ cl_clt_report: 'nota' }),
-      [DRAFT_KEY]:     JSON.stringify({ answers: {}, currentIndex: 1, updatedAt: '' }),
+      [NOTES_KEY]: JSON.stringify({ cl_clt_report: "nota" }),
+      [DRAFT_KEY]: JSON.stringify({
+        answers: {},
+        currentIndex: 1,
+        updatedAt: "",
+      }),
     });
     stubWindow(mock);
-    const { clearAll } = await import('./local-profile-storage');
+    const { clearAll } = await import("./local-profile-storage");
     clearAll();
     expect(mock.getItem(PROFILE_KEY)).toBeNull();
     expect(mock.getItem(CHECKLIST_KEY)).toBeNull();
