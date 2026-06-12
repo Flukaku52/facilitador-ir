@@ -22,13 +22,13 @@ O app **não transmite declarações à Receita Federal**, **não calcula impost
 
 O app conduz o usuário por **29 perguntas de Sim/Não** organizadas em 5 blocos temáticos:
 
-| Bloco | Perguntas | O que mapeia |
-|-------|-----------|--------------|
-| Renda | 6 | CLT, INSS, autônomo, aluguel, empresa/dividendos, outras rendas |
-| Bancos e Investimentos | 8 | Bancos, corretoras, renda fixa, ações, FIIs, ETFs, cripto, exterior |
-| Bens | 3 | Imóvel, financiamento, veículo |
-| Despesas e Deduções | 8 | Dependentes, médico, educação, previdência privada (plano + contribuições), pensão alimentícia |
-| Documentos | 4 | Confirmação de quais informes já foram obtidos |
+| Bloco                  | Perguntas | O que mapeia                                                                                   |
+| ---------------------- | --------- | ---------------------------------------------------------------------------------------------- |
+| Renda                  | 6         | CLT, INSS, autônomo, aluguel, empresa/dividendos, outras rendas                                |
+| Bancos e Investimentos | 8         | Bancos, corretoras, renda fixa, ações, FIIs, ETFs, cripto, exterior                            |
+| Bens                   | 3         | Imóvel, financiamento, veículo                                                                 |
+| Despesas e Deduções    | 8         | Dependentes, médico, educação, previdência privada (plano + contribuições), pensão alimentícia |
+| Documentos             | 4         | Confirmação de quais informes já foram obtidos                                                 |
 
 **Lógica `showWhen`:** perguntas condicionais só aparecem quando a resposta anterior é relevante. Exemplo: "O imóvel é financiado?" só surge se o usuário disse que tem imóvel.
 
@@ -36,10 +36,10 @@ O app conduz o usuário por **29 perguntas de Sim/Não** organizadas em 5 blocos
 
 Ao final do questionário, o motor de regras classifica automaticamente:
 
-| Nível | Critério |
-|-------|----------|
-| **Simples** | CLT, bancos, despesas comuns — sem venda de ativos, sem aluguel, sem exterior |
-| **Média** | Imóvel, veículo, dependentes, previdência privada, investimentos sem venda |
+| Nível        | Critério                                                                                     |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| **Simples**  | CLT, bancos, despesas comuns — sem venda de ativos, sem aluguel, sem exterior                |
+| **Média**    | Imóvel, veículo, dependentes, previdência privada, investimentos sem venda                   |
 | **Complexa** | Venda de renda variável, criptoativos, aluguel recebido, exterior, autônomo, pensão judicial |
 
 Declarações complexas não são bloqueadas — o app continua ajudando, exibindo recomendação de revisão profissional.
@@ -59,39 +59,39 @@ Gerado automaticamente com base no perfil. Cada item:
 
 Cada guia contém: explicação em linguagem simples, documentos necessários, onde declarar no programa, como preencher passo a passo, erros comuns a evitar, e quando chamar um contador.
 
-| Slug | Título | Categoria |
-|------|--------|-----------|
-| `clt-informe-rendimentos` | Trabalho com carteira assinada (CLT) | Renda |
-| `aposentadoria-pensao` | Aposentadoria, pensão e INSS | Renda |
-| `contas-bancarias` | Contas bancárias | Bancos |
-| `investimentos-renda-fixa` | Investimentos de renda fixa | Investimentos |
-| `corretora-investimentos` | Conta em corretora | Investimentos |
-| `despesas-medicas` | Despesas médicas e plano de saúde | Deduções |
-| `despesas-educacao` | Despesas com educação | Deduções |
-| `dependentes` | Dependentes | Deduções |
-| `imovel-proprio` | Imóvel próprio | Bens |
-| `imovel-financiado` | Imóvel financiado | Bens |
-| `veiculo` | Veículo | Bens |
-| `previdencia-privada` | Previdência privada (PGBL e VGBL) | Investimentos |
-| `acoes-fiis-alerta` | Ações e FIIs — requer atenção | Casos complexos |
-| `cripto-alerta` | Criptoativos — requer atenção | Casos complexos |
-| `aluguel-recebido-alerta` | Aluguel recebido — requer atenção | Casos complexos |
-| `exterior-alerta` | Bens e rendimentos no exterior — requer atenção | Casos complexos |
-| `autonomo-freelancer-alerta` | Autônomo e freelancer — requer atenção | Casos complexos |
+| Slug                         | Título                                          | Categoria       |
+| ---------------------------- | ----------------------------------------------- | --------------- |
+| `clt-informe-rendimentos`    | Trabalho com carteira assinada (CLT)            | Renda           |
+| `aposentadoria-pensao`       | Aposentadoria, pensão e INSS                    | Renda           |
+| `contas-bancarias`           | Contas bancárias                                | Bancos          |
+| `investimentos-renda-fixa`   | Investimentos de renda fixa                     | Investimentos   |
+| `corretora-investimentos`    | Conta em corretora                              | Investimentos   |
+| `despesas-medicas`           | Despesas médicas e plano de saúde               | Deduções        |
+| `despesas-educacao`          | Despesas com educação                           | Deduções        |
+| `dependentes`                | Dependentes                                     | Deduções        |
+| `imovel-proprio`             | Imóvel próprio                                  | Bens            |
+| `imovel-financiado`          | Imóvel financiado                               | Bens            |
+| `veiculo`                    | Veículo                                         | Bens            |
+| `previdencia-privada`        | Previdência privada (PGBL e VGBL)               | Investimentos   |
+| `acoes-fiis-alerta`          | Ações e FIIs — requer atenção                   | Casos complexos |
+| `cripto-alerta`              | Criptoativos — requer atenção                   | Casos complexos |
+| `aluguel-recebido-alerta`    | Aluguel recebido — requer atenção               | Casos complexos |
+| `exterior-alerta`            | Bens e rendimentos no exterior — requer atenção | Casos complexos |
+| `autonomo-freelancer-alerta` | Autônomo e freelancer — requer atenção          | Casos complexos |
 
 ### 5. Alertas de risco automáticos
 
 O motor de regras gera alertas com três níveis de severidade:
 
-| ID | Severidade | Gatilho |
-|----|-----------|---------|
-| `alert_medical_no_receipts` | `warning` | Despesas médicas declaradas + sem recibos disponíveis |
-| `alert_financed_property` | `info` | Imóvel financiado presente no perfil |
-| `alert_variable_income` | `danger` | Venda de renda variável confirmada |
-| `alert_crypto` | `danger` | Criptoativos presentes no perfil |
-| `alert_rent` | `warning` | Aluguel recebido confirmado |
-| `alert_foreign` | `danger` | Bens no exterior confirmados |
-| `alert_self_employment` | `warning` | Renda autônoma confirmada |
+| ID                          | Severidade | Gatilho                                               |
+| --------------------------- | ---------- | ----------------------------------------------------- |
+| `alert_medical_no_receipts` | `warning`  | Despesas médicas declaradas + sem recibos disponíveis |
+| `alert_financed_property`   | `info`     | Imóvel financiado presente no perfil                  |
+| `alert_variable_income`     | `danger`   | Venda de renda variável confirmada                    |
+| `alert_crypto`              | `danger`   | Criptoativos presentes no perfil                      |
+| `alert_rent`                | `warning`  | Aluguel recebido confirmado                           |
+| `alert_foreign`             | `danger`   | Bens no exterior confirmados                          |
+| `alert_self_employment`     | `warning`  | Renda autônoma confirmada                             |
 
 ### 6. Painel (Dashboard)
 
@@ -189,21 +189,39 @@ cp .env.local.example .env.local
 
 Obtenha a chave em [console.anthropic.com](https://console.anthropic.com). Sem a chave, o assistente retorna erro 503 — o restante do app funciona normalmente.
 
+### Premium (fase manual)
+
+O acesso premium (guias completos, PDF do relatório) é vendido por checkout externo (Kiwify) e liberado **manualmente** pelo administrador — não há webhook de pagamento nesta fase.
+
+**Setup (uma vez):** rode a migration `supabase/migrations/20260611120000_add_user_entitlements.sql` no SQL Editor do Supabase. Ela cria a tabela `user_entitlements` (`is_premium boolean`, `premium_until date`) com RLS que permite ao usuário apenas **ler** a própria linha — escrita só via service role/SQL Editor.
+
+**Semântica de `premium_until`:** `NULL` = sem expiração (ativo enquanto `is_premium = true`); com data = ativo até a data, inclusive (comparação por dia). Expirado, o app volta a bloquear automaticamente.
+
+**Liberar/revogar acesso** (após confirmar o pagamento, ou para conta de demonstração): use os comandos prontos em [`supabase/scripts/toggle-premium.sql`](supabase/scripts/toggle-premium.sql) no SQL Editor do Supabase, editando o e-mail:
+
+- **(a) ativar sem expiração** — `INSERT ... SELECT id, true, NULL FROM auth.users WHERE email = '...' ON CONFLICT (user_id) DO UPDATE ...`
+- **(b) ativar com data de fim de temporada** — mesmo comando com `premium_until = '2026-05-31'`
+- **(c) desativar** — `UPDATE user_entitlements SET is_premium = false WHERE user_id = (SELECT id FROM auth.users WHERE email = '...')`
+
+O link do checkout fica em `src/lib/premium/constants.ts` (`KIWIFY_CHECKOUT_URL`, hoje um placeholder) — trocar pelo link real é editar uma única constante. Nada de administração de premium é exposto na interface do app.
+
+> Nota da fase 1: o gating é client-side (o conteúdo dos guias continua no bundle JS, como já era público antes). Gating server-side fica para a fase do webhook de pagamento.
+
 ---
 
 ## Documentação Técnica
 
 ### Stack
 
-| Tecnologia | Versão | Função |
-|-----------|--------|--------|
-| Next.js | 16.2.7 | Framework com App Router + SSG |
-| React | 19 | UI com Server e Client Components |
-| TypeScript | 5 | Tipagem estática |
-| Tailwind CSS | 4 | Utilitários de estilo |
-| Geist | — | Fonte tipográfica |
-| `@anthropic-ai/sdk` | ^0.30 | Claude API (assistente IA, server-side) |
-| `next-themes` | — | Dark mode persistido |
+| Tecnologia          | Versão | Função                                  |
+| ------------------- | ------ | --------------------------------------- |
+| Next.js             | 16.2.7 | Framework com App Router + SSG          |
+| React               | 19     | UI com Server e Client Components       |
+| TypeScript          | 5      | Tipagem estática                        |
+| Tailwind CSS        | 4      | Utilitários de estilo                   |
+| Geist               | —      | Fonte tipográfica                       |
+| `@anthropic-ai/sdk` | ^0.30  | Claude API (assistente IA, server-side) |
+| `next-themes`       | —      | Dark mode persistido                    |
 
 ### Comandos
 
@@ -299,56 +317,56 @@ Objeto central. Criado ao final do questionário, persistido em `localStorage`.
 
 ```typescript
 interface TaxProfile {
-  id: string;       // crypto.randomUUID()
-  taxYear: number;  // getFullYear() - 1
+  id: string; // crypto.randomUUID()
+  taxYear: number; // getFullYear() - 1
 
   income: {
-    hasCltIncome: boolean;              // Emprego CLT
-    hasBusinessIncome: boolean;         // Renda empresarial (campo reservado)
-    hasSelfEmploymentIncome: boolean;   // Autônomo / freelancer
-    hasRentIncome: boolean;             // Aluguel recebido
-    hasPensionOrRetirement: boolean;    // INSS / aposentadoria
-    hasOtherIncome: boolean;            // Outras rendas
+    hasCltIncome: boolean; // Emprego CLT
+    hasBusinessIncome: boolean; // Renda empresarial (campo reservado)
+    hasSelfEmploymentIncome: boolean; // Autônomo / freelancer
+    hasRentIncome: boolean; // Aluguel recebido
+    hasPensionOrRetirement: boolean; // INSS / aposentadoria
+    hasOtherIncome: boolean; // Outras rendas
   };
 
   assets: {
-    hasBankAccounts: boolean;       // Contas bancárias
-    hasInvestments: boolean;        // Conta em corretora / aplicações
-    hasProperty: boolean;           // Imóvel próprio
-    hasFinancedProperty: boolean;   // Imóvel financiado
-    hasVehicle: boolean;            // Veículo
-    hasCrypto: boolean;             // Criptoativos
-    hasForeignAssets: boolean;      // Bens / contas no exterior
+    hasBankAccounts: boolean; // Contas bancárias
+    hasInvestments: boolean; // Conta em corretora / aplicações
+    hasProperty: boolean; // Imóvel próprio
+    hasFinancedProperty: boolean; // Imóvel financiado
+    hasVehicle: boolean; // Veículo
+    hasCrypto: boolean; // Criptoativos
+    hasForeignAssets: boolean; // Bens / contas no exterior
   };
 
   investments: {
-    hasFixedIncome: boolean;       // CDB, Tesouro, LCI, LCA, fundos
-    hasStocks: boolean;            // Ações
-    hasFiis: boolean;              // FIIs
-    hasEtfs: boolean;              // ETFs (campo reservado)
-    hasPrivatePension: boolean;    // PGBL/VGBL (campo reservado)
-    soldVariableIncome: boolean;   // Vendeu ativos de renda variável
+    hasFixedIncome: boolean; // CDB, Tesouro, LCI, LCA, fundos
+    hasStocks: boolean; // Ações
+    hasFiis: boolean; // FIIs
+    hasEtfs: boolean; // ETFs (campo reservado)
+    hasPrivatePension: boolean; // PGBL/VGBL (campo reservado)
+    soldVariableIncome: boolean; // Vendeu ativos de renda variável
   };
 
   deductions: {
-    hasDependents: boolean;                    // Dependentes
-    hasMedicalExpenses: boolean;               // Despesas médicas
-    hasEducationExpenses: boolean;             // Escola / faculdade / curso técnico
-    hasPrivatePensionContributions: boolean;   // Contribuições PGBL/VGBL
-    hasAlimony: boolean;                       // Pensão alimentícia judicial
+    hasDependents: boolean; // Dependentes
+    hasMedicalExpenses: boolean; // Despesas médicas
+    hasEducationExpenses: boolean; // Escola / faculdade / curso técnico
+    hasPrivatePensionContributions: boolean; // Contribuições PGBL/VGBL
+    hasAlimony: boolean; // Pensão alimentícia judicial
   };
 
   documents: {
-    hasCltIncomeReport: boolean;    // Informe da empresa já obtido
-    hasBankReports: boolean;        // Informes dos bancos já obtidos
-    hasBrokerReports: boolean;      // Informe da corretora já obtido
-    hasMedicalReceipts: boolean;    // Recibos médicos disponíveis
-    hasPropertyDocuments: boolean;  // Documentos do imóvel disponíveis
+    hasCltIncomeReport: boolean; // Informe da empresa já obtido
+    hasBankReports: boolean; // Informes dos bancos já obtidos
+    hasBrokerReports: boolean; // Informe da corretora já obtido
+    hasMedicalReceipts: boolean; // Recibos médicos disponíveis
+    hasPropertyDocuments: boolean; // Documentos do imóvel disponíveis
   };
 
-  complexity?: ComplexityLevel;  // Calculado por classifyComplexity()
-  createdAt: string;             // ISO 8601
-  updatedAt: string;             // ISO 8601
+  complexity?: ComplexityLevel; // Calculado por classifyComplexity()
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
 }
 ```
 
@@ -359,13 +377,13 @@ interface Question {
   id: string;
   title: string;
   description?: string;
-  type: 'boolean';
-  section: 'income' | 'assets' | 'investments' | 'deductions' | 'documents';
-  sectionLabel: string;     // Legível (ex: "Renda")
-  fieldPath: string;        // Dot-notation para TaxProfile (ex: "income.hasCltIncome")
+  type: "boolean";
+  section: "income" | "assets" | "investments" | "deductions" | "documents";
+  sectionLabel: string; // Legível (ex: "Renda")
+  fieldPath: string; // Dot-notation para TaxProfile (ex: "income.hasCltIncome")
   showWhen?: {
-    fieldPath: string;      // Campo do TaxProfile a verificar
-    equals: boolean;        // Valor esperado para exibir a pergunta
+    fieldPath: string; // Campo do TaxProfile a verificar
+    equals: boolean; // Valor esperado para exibir a pergunta
   };
 }
 
@@ -413,11 +431,11 @@ progress = round((itens_obrigatorios_concluídos / total_obrigatorios) × 100)
 
 ### Camada de storage — `src/lib/storage/local-profile-storage.ts`
 
-| Função | Chave | Tipo armazenado |
-|--------|-------|-----------------|
-| `saveTaxProfile` / `loadTaxProfile` | `ir_facilitador_profile` | `JSON<TaxProfile>` |
+| Função                                         | Chave                      | Tipo armazenado                 |
+| ---------------------------------------------- | -------------------------- | ------------------------------- |
+| `saveTaxProfile` / `loadTaxProfile`            | `ir_facilitador_profile`   | `JSON<TaxProfile>`              |
 | `saveChecklistStateMap` / `loadChecklistState` | `ir_facilitador_checklist` | `JSON<Record<string, boolean>>` |
-| `clearAll` | ambas | — |
+| `clearAll`                                     | ambas                      | —                               |
 
 Todos os `load*` retornam `null` / `{}` como fallback seguro. `save*` dispara `window.dispatchEvent(new StorageEvent('storage'))` para notificar os hooks reativos na mesma aba.
 
@@ -432,6 +450,7 @@ useChecklistStore(): Record<string, boolean>
 ```
 
 Ambos usam `useSyncExternalStore` com:
+
 - `subscribe`: escuta evento `storage` no `window`
 - `getSnapshot`: lê `localStorage`, cacheia o objeto parseado enquanto a string bruta não muda (garantia de referência estável exigida pelo React 18)
 - `getServerSnapshot`: retorna `null` / `{}` para SSR
@@ -454,20 +473,20 @@ Response: { answer: string } | { error: string }
 
 ### Rotas e modo de renderização
 
-| Rota | Modo | Dados |
-|------|------|-------|
-| `/` | Static | Nenhum |
-| `/questionario` | Client | Estado local (useState) |
-| `/questionario/editar` | Client | localStorage (useSyncExternalStore) |
-| `/dashboard` | Client | localStorage (useSyncExternalStore) |
-| `/checklist` | Client | localStorage (useSyncExternalStore + escrita) |
-| `/guias` | Client | localStorage para filtrar guias |
-| `/guias/[slug]` | SSG (17 páginas) | Dados estáticos em `guides.ts` |
-| `/relatorio` | Client | localStorage + searchParams |
-| `/privacidade` | Static | Nenhum |
-| `/termos` | Static | Nenhum |
-| `/api/ask` | Dynamic (server) | Claude API |
-| `/_not-found` | Static | Nenhum |
+| Rota                   | Modo             | Dados                                         |
+| ---------------------- | ---------------- | --------------------------------------------- |
+| `/`                    | Static           | Nenhum                                        |
+| `/questionario`        | Client           | Estado local (useState)                       |
+| `/questionario/editar` | Client           | localStorage (useSyncExternalStore)           |
+| `/dashboard`           | Client           | localStorage (useSyncExternalStore)           |
+| `/checklist`           | Client           | localStorage (useSyncExternalStore + escrita) |
+| `/guias`               | Client           | localStorage para filtrar guias               |
+| `/guias/[slug]`        | SSG (17 páginas) | Dados estáticos em `guides.ts`                |
+| `/relatorio`           | Client           | localStorage + searchParams                   |
+| `/privacidade`         | Static           | Nenhum                                        |
+| `/termos`              | Static           | Nenhum                                        |
+| `/api/ask`             | Dynamic (server) | Claude API                                    |
+| `/_not-found`          | Static           | Nenhum                                        |
 
 **Total no build:** 30 páginas geradas.
 
@@ -494,14 +513,14 @@ Extensões de browser injetam atributos no `<body>` antes da hidratação React.
 
 ### Limitações da v0.2
 
-| Limitação | Impacto | Versão planejada |
-|-----------|---------|-----------------|
-| Sem autenticação | Perfil existe apenas no browser local | v0.3 |
-| Sem exportação PDF nativa | Relatório via `window.print()` apenas | v0.3 |
-| Sem upload de documentos | Organização manual | v0.3 |
-| Regras sem versionamento de limites numéricos | Thresholds por ano-base definidos mas sem uso nas regras | v0.3 |
-| Sem testes automatizados | Risco em refatorações | v0.3 |
-| Assistente IA requer chave manual | Não funciona sem `ANTHROPIC_API_KEY` | — |
+| Limitação                                     | Impacto                                                  | Versão planejada |
+| --------------------------------------------- | -------------------------------------------------------- | ---------------- |
+| Sem autenticação                              | Perfil existe apenas no browser local                    | v0.3             |
+| Sem exportação PDF nativa                     | Relatório via `window.print()` apenas                    | v0.3             |
+| Sem upload de documentos                      | Organização manual                                       | v0.3             |
+| Regras sem versionamento de limites numéricos | Thresholds por ano-base definidos mas sem uso nas regras | v0.3             |
+| Sem testes automatizados                      | Risco em refatorações                                    | v0.3             |
+| Assistente IA requer chave manual             | Não funciona sem `ANTHROPIC_API_KEY`                     | —                |
 
 ---
 

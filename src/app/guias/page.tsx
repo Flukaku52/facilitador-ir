@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useMemo } from 'react';
-import { GUIDES } from '@/lib/data/guides';
-import { Guide } from '@/types/guide';
-import { useStoredProfile } from '@/lib/hooks/useStoredProfile';
-import { getApplicableGuideSlugs } from '@/lib/rules/tax-rules';
-import GuideCard from '@/components/guides/GuideCard';
-import { GuidesSkeleton } from '@/components/ui/Skeleton';
-import CorruptedDataToast from '@/components/ui/CorruptedDataToast';
-import ErrorBoundary from '@/components/layout/ErrorBoundary';
-import ErrorFallback from '@/components/layout/ErrorFallback';
+import Link from "next/link";
+import { useMemo } from "react";
+import { GUIDES } from "@/lib/data/guides";
+import { Guide } from "@/types/guide";
+import { useStoredProfile } from "@/lib/hooks/useStoredProfile";
+import { getApplicableGuideSlugs } from "@/lib/rules/tax-rules";
+import GuideCard from "@/components/guides/GuideCard";
+import UpgradeCta from "@/components/premium/UpgradeCta";
+import { GuidesSkeleton } from "@/components/ui/Skeleton";
+import CorruptedDataToast from "@/components/ui/CorruptedDataToast";
+import ErrorBoundary from "@/components/layout/ErrorBoundary";
+import ErrorFallback from "@/components/layout/ErrorFallback";
 
 export default function GuidesPage() {
   return (
@@ -40,15 +41,23 @@ function GuidesContent() {
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Guias de preenchimento</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Guias de preenchimento
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {guides.length} guia{guides.length !== 1 ? 's' : ''} para o seu perfil
+            {guides.length} guia{guides.length !== 1 ? "s" : ""} para o seu
+            perfil
           </p>
         </div>
-        <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+        <Link
+          href="/dashboard"
+          className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+        >
           ← Painel
         </Link>
       </div>
+
+      <UpgradeCta description="Veja documentos, onde declarar e o passo a passo completo de cada guia." />
 
       {regularGuides.length > 0 && (
         <section>
@@ -56,7 +65,9 @@ function GuidesContent() {
             Guias aplicáveis
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {regularGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}
+            {regularGuides.map((guide) => (
+              <GuideCard key={guide.slug} guide={guide} />
+            ))}
           </div>
         </section>
       )}
@@ -67,15 +78,21 @@ function GuidesContent() {
             Situações que exigem atenção especial
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {alertGuides.map((guide) => <GuideCard key={guide.slug} guide={guide} />)}
+            {alertGuides.map((guide) => (
+              <GuideCard key={guide.slug} guide={guide} />
+            ))}
           </div>
         </section>
       )}
 
       {guides.length === 0 && (
         <div className="text-center py-8 space-y-3">
-          <p className="text-gray-500 dark:text-gray-400">Nenhum guia aplicável foi identificado com as respostas atuais.</p>
-          <p className="text-sm text-gray-400 dark:text-gray-600">Se suas informações mudaram, revise suas respostas.</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Nenhum guia aplicável foi identificado com as respostas atuais.
+          </p>
+          <p className="text-sm text-gray-400 dark:text-gray-600">
+            Se suas informações mudaram, revise suas respostas.
+          </p>
           <Link
             href="/questionario/editar"
             className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
