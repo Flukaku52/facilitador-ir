@@ -23,14 +23,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${geist.variable} h-full antialiased`} suppressHydrationWarning>
-      <body suppressHydrationWarning className="flex min-h-full flex-col bg-gray-50 font-sans dark:bg-gray-950 dark:text-gray-100">
+      <body suppressHydrationWarning className="flex min-h-full flex-col bg-background font-sans dark:text-gray-100">
         <ThemeProvider>
           <AuthHandler />
           <ProfileSyncProvider />
           <DeadlineBanner />
           <AppHeader />
           <main className="flex-1">{children}</main>
-          <footer className="border-t border-gray-200 bg-white py-6 dark:border-gray-800 dark:bg-gray-900 print:hidden">
+          <footer className="border-t border-gray-200 bg-surface py-6 dark:border-gray-800 print:hidden">
             <div className="mx-auto max-w-3xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400 dark:text-gray-600">
               <span>IR Facilitador — orientação educacional, não substituição de contador.</span>
               <nav className="flex gap-4">

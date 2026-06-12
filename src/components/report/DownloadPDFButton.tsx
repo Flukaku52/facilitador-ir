@@ -53,7 +53,7 @@ export default function DownloadPDFButton({ profile, complexity, checklist, guid
     <button
       onClick={handleDownload}
       disabled={generating}
-      className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+      className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors disabled:opacity-60 dark:bg-primary-500 dark:hover:bg-primary-600"
     >
       {generating ? 'Gerando PDF...' : 'Baixar PDF'}
     </button>

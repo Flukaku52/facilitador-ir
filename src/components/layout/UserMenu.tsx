@@ -60,7 +60,7 @@ export default function UserMenu() {
     return (
       <Link
         href="/login"
-        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-indigo-400 hover:text-indigo-600 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
+        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-body hover:border-primary-400 hover:text-primary-600 transition-colors dark:border-gray-600 dark:hover:border-primary-500 dark:hover:text-primary-400"
       >
         Entrar
       </Link>
@@ -77,7 +77,7 @@ export default function UserMenu() {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={`Menu do usuário — ${displayName}`}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
       >
         {initials}
       </button>
@@ -85,12 +85,12 @@ export default function UserMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900"
+          className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-border bg-surface shadow-lg"
         >
           {/* User info row — display only */}
           <div className="border-b border-gray-100 px-4 py-3 dark:border-gray-800">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Logado como</p>
-            <p className="mt-0.5 truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p className="text-xs text-muted">Logado como</p>
+            <p className="mt-0.5 truncate text-sm font-medium text-foreground">
               {displayName}
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function UserMenu() {
               href="/conta"
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
+              className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-body hover:bg-gray-100 transition-colors dark:hover:bg-gray-800"
             >
               Minha conta
             </Link>
@@ -109,7 +109,7 @@ export default function UserMenu() {
               role="menuitem"
               onClick={handleSignOut}
               disabled={signingOut}
-              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60 transition-colors dark:text-red-400 dark:hover:bg-red-950"
+              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-danger-600 hover:bg-danger-50 disabled:opacity-60 transition-colors dark:text-danger-400 dark:hover:bg-danger-950"
             >
               {signingOut ? 'Saindo...' : 'Sair'}
             </button>

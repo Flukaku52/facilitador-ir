@@ -1,18 +1,138 @@
 @import "tailwindcss";
 
+/* Markdown fora do scan: docs com exemplos de codigo geravam utilitarios mortos no CSS */
+@source not "../../**/*.md";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   Design tokens — etapa 1: aliases da paleta ATUAL (zero mudança
+   visual). Valores copiados verbatim de tailwindcss/theme.css.
+   Para mudar a identidade visual (etapa 2): edite os valores AQUI
+   e em src/lib/design/pdf-colors.ts (paleta espelho do PDF).
+   ============================================================ */
+
+/* Papéis (neutros): um token, dois valores — trocam com .dark. */
 :root {
-  --font-geist-sans: 'Geist', sans-serif;
+  --background: oklch(98.5% 0.002 247.839); /* gray-50 */
+  --surface: #fff; /* white */
+  --border-default: oklch(92.8% 0.006 264.531); /* gray-200 */
+  --foreground: oklch(21% 0.034 264.665); /* gray-900 */
+  --body: oklch(37.3% 0.034 259.733); /* gray-700 */
+  /* TODO etapa 2: muted (gray-500 light / gray-400 dark) está no
+     limite de contraste WCAG para texto pequeno — reavaliar o tom no
+     redesign. Não mudar na etapa 1 (pixel-idêntico). */
+  --muted: oklch(55.1% 0.027 264.364); /* gray-500 */
 }
 
-body {
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+.dark {
+  --background: oklch(13% 0.028 261.692); /* gray-950 */
+  --surface: oklch(21% 0.034 264.665); /* gray-900 */
+  --border-default: oklch(37.3% 0.034 259.733); /* gray-700 */
+  --foreground: oklch(96.7% 0.003 264.542); /* gray-100 */
+  --body: oklch(87.2% 0.01 258.338); /* gray-300 */
+  --muted: oklch(70.7% 0.022 261.325); /* gray-400 */
+}
+
+@theme inline {
+  /* Fonte: Geist via next/font (--font-geist-sans definida no layout.tsx). */
+  --font-sans: var(--font-geist-sans);
+
+  /* Papéis */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border-default);
+  --color-foreground: var(--foreground);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+}
+
+/* Escalas semânticas — aliases 1:1 da paleta default do Tailwind. */
+@theme {
+  /* primary := indigo */
+  --color-primary-50: oklch(96.2% 0.018 272.314); /* indigo-50 */
+  --color-primary-100: oklch(93% 0.034 272.788); /* indigo-100 */
+  --color-primary-200: oklch(87% 0.065 274.039); /* indigo-200 */
+  --color-primary-300: oklch(78.5% 0.115 274.713); /* indigo-300 */
+  --color-primary-400: oklch(67.3% 0.182 276.935); /* indigo-400 */
+  --color-primary-500: oklch(58.5% 0.233 277.117); /* indigo-500 */
+  --color-primary-600: oklch(51.1% 0.262 276.966); /* indigo-600 */
+  --color-primary-700: oklch(45.7% 0.24 277.023); /* indigo-700 */
+  --color-primary-800: oklch(39.8% 0.195 277.366); /* indigo-800 */
+  --color-primary-900: oklch(35.9% 0.144 278.697); /* indigo-900 */
+  --color-primary-950: oklch(25.7% 0.09 281.288); /* indigo-950 */
+
+  /* danger := red */
+  --color-danger-50: oklch(97.1% 0.013 17.38); /* red-50 */
+  --color-danger-100: oklch(93.6% 0.032 17.717); /* red-100 */
+  --color-danger-200: oklch(88.5% 0.062 18.334); /* red-200 */
+  --color-danger-300: oklch(80.8% 0.114 19.571); /* red-300 */
+  --color-danger-400: oklch(70.4% 0.191 22.216); /* red-400 */
+  --color-danger-500: oklch(63.7% 0.237 25.331); /* red-500 */
+  --color-danger-600: oklch(57.7% 0.245 27.325); /* red-600 */
+  --color-danger-700: oklch(50.5% 0.213 27.518); /* red-700 */
+  --color-danger-800: oklch(44.4% 0.177 26.899); /* red-800 */
+  --color-danger-900: oklch(39.6% 0.141 25.723); /* red-900 */
+  --color-danger-950: oklch(25.8% 0.092 26.042); /* red-950 */
+
+  /* success := green */
+  --color-success-50: oklch(98.2% 0.018 155.826); /* green-50 */
+  --color-success-100: oklch(96.2% 0.044 156.743); /* green-100 */
+  --color-success-200: oklch(92.5% 0.084 155.995); /* green-200 */
+  --color-success-300: oklch(87.1% 0.15 154.449); /* green-300 */
+  --color-success-400: oklch(79.2% 0.209 151.711); /* green-400 */
+  --color-success-500: oklch(72.3% 0.219 149.579); /* green-500 */
+  --color-success-600: oklch(62.7% 0.194 149.214); /* green-600 */
+  --color-success-700: oklch(52.7% 0.154 150.069); /* green-700 */
+  --color-success-800: oklch(44.8% 0.119 151.328); /* green-800 */
+  --color-success-900: oklch(39.3% 0.095 152.535); /* green-900 */
+  --color-success-950: oklch(26.6% 0.065 152.934); /* green-950 */
+
+  /* warning := yellow */
+  --color-warning-50: oklch(98.7% 0.026 102.212); /* yellow-50 */
+  --color-warning-100: oklch(97.3% 0.071 103.193); /* yellow-100 */
+  --color-warning-200: oklch(94.5% 0.129 101.54); /* yellow-200 */
+  --color-warning-300: oklch(90.5% 0.182 98.111); /* yellow-300 */
+  --color-warning-400: oklch(85.2% 0.199 91.936); /* yellow-400 */
+  --color-warning-500: oklch(79.5% 0.184 86.047); /* yellow-500 */
+  --color-warning-600: oklch(68.1% 0.162 75.834); /* yellow-600 */
+  --color-warning-700: oklch(55.4% 0.135 66.442); /* yellow-700 */
+  --color-warning-800: oklch(47.6% 0.114 61.907); /* yellow-800 */
+  --color-warning-900: oklch(42.1% 0.095 57.708); /* yellow-900 */
+  --color-warning-950: oklch(28.6% 0.066 53.813); /* yellow-950 */
+
+  /* premium := amber */
+  --color-premium-50: oklch(98.7% 0.022 95.277); /* amber-50 */
+  --color-premium-100: oklch(96.2% 0.059 95.617); /* amber-100 */
+  --color-premium-200: oklch(92.4% 0.12 95.746); /* amber-200 */
+  --color-premium-300: oklch(87.9% 0.169 91.605); /* amber-300 */
+  --color-premium-400: oklch(82.8% 0.189 84.429); /* amber-400 */
+  --color-premium-500: oklch(76.9% 0.188 70.08); /* amber-500 */
+  --color-premium-600: oklch(66.6% 0.179 58.318); /* amber-600 */
+  --color-premium-700: oklch(55.5% 0.163 48.998); /* amber-700 */
+  --color-premium-800: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --color-premium-900: oklch(41.4% 0.112 45.904); /* amber-900 */
+  --color-premium-950: oklch(27.9% 0.077 45.635); /* amber-950 */
+
+  /* info := blue */
+  --color-info-50: oklch(97% 0.014 254.604); /* blue-50 */
+  --color-info-100: oklch(93.2% 0.032 255.585); /* blue-100 */
+  --color-info-200: oklch(88.2% 0.059 254.128); /* blue-200 */
+  --color-info-300: oklch(80.9% 0.105 251.813); /* blue-300 */
+  --color-info-400: oklch(70.7% 0.165 254.624); /* blue-400 */
+  --color-info-500: oklch(62.3% 0.214 259.815); /* blue-500 */
+  --color-info-600: oklch(54.6% 0.245 262.881); /* blue-600 */
+  --color-info-700: oklch(48.8% 0.243 264.376); /* blue-700 */
+  --color-info-800: oklch(42.4% 0.199 265.638); /* blue-800 */
+  --color-info-900: oklch(37.9% 0.146 265.522); /* blue-900 */
+  --color-info-950: oklch(28.2% 0.091 267.935); /* blue-950 */
 }
 
 /* 3.1 — Print / Save as PDF */
 @media print {
-  .print\:hidden { display: none !important; }
+  .print\:hidden {
+    display: none !important;
+  }
 
   body {
     background: white !important;
@@ -20,13 +140,20 @@ body {
     font-size: 12pt;
   }
 
-  a { color: black !important; text-decoration: none !important; }
+  a {
+    color: black !important;
+    text-decoration: none !important;
+  }
 
-  .rounded-xl, .rounded-lg, .rounded-2xl {
+  .rounded-xl,
+  .rounded-lg,
+  .rounded-2xl {
     border-radius: 4px !important;
   }
 
-  header, footer, nav {
+  header,
+  footer,
+  nav {
     display: none !important;
   }
 }

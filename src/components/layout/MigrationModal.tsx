@@ -39,12 +39,12 @@ export default function MigrationModal({ open, cloudProfile, onMigrate, onDiscar
         role="dialog"
         aria-modal
         aria-labelledby="migration-title"
-        className="relative z-10 w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+        className="relative z-10 w-full max-w-md rounded-xl border border-border bg-surface p-6 shadow-xl"
       >
         <div className="mb-1 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-premium-100 dark:bg-premium-950">
             <svg
-              className="h-5 w-5 text-amber-600 dark:text-amber-400"
+              className="h-5 w-5 text-premium-600 dark:text-premium-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -59,7 +59,7 @@ export default function MigrationModal({ open, cloudProfile, onMigrate, onDiscar
           </div>
           <h2
             id="migration-title"
-            className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+            className="text-lg font-semibold text-foreground"
           >
             Dados encontrados em dois lugares
           </h2>
@@ -75,12 +75,12 @@ export default function MigrationModal({ open, cloudProfile, onMigrate, onDiscar
           <button
             onClick={handleMigrate}
             disabled={submitting !== null}
-            className="flex w-full flex-col rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-left hover:bg-indigo-100 disabled:opacity-60 transition-colors dark:border-indigo-800 dark:bg-indigo-950 dark:hover:bg-indigo-900"
+            className="flex w-full flex-col rounded-lg border border-primary-200 bg-primary-50 p-3 text-left hover:bg-primary-100 disabled:opacity-60 transition-colors dark:border-primary-800 dark:bg-primary-950 dark:hover:bg-primary-900"
           >
-            <span className="font-medium text-indigo-800 dark:text-indigo-200">
+            <span className="font-medium text-primary-800 dark:text-primary-200">
               {submitting === 'migrate' ? 'Migrando...' : 'Migrar dados deste dispositivo para a nuvem'}
             </span>
-            <span className="mt-0.5 text-xs text-indigo-600 dark:text-indigo-400">
+            <span className="mt-0.5 text-xs text-primary-600 dark:text-primary-400">
               Seu diagnóstico atual fica salvo na conta. {cloudProfile ? 'Os dados anteriores da conta serão substituídos.' : ''}
             </span>
           </button>
@@ -89,12 +89,12 @@ export default function MigrationModal({ open, cloudProfile, onMigrate, onDiscar
             <button
               onClick={handleDiscard}
               disabled={submitting !== null}
-              className="flex w-full flex-col rounded-lg border border-gray-200 bg-gray-50 p-3 text-left hover:bg-gray-100 disabled:opacity-60 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+              className="flex w-full flex-col rounded-lg border border-border bg-gray-50 p-3 text-left hover:bg-gray-100 disabled:opacity-60 transition-colors dark:bg-gray-800 dark:hover:bg-gray-700"
             >
               <span className="font-medium text-gray-800 dark:text-gray-200">
                 {submitting === 'discard' ? 'Carregando...' : 'Usar dados da conta (descartar os deste dispositivo)'}
               </span>
-              <span className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+              <span className="mt-0.5 text-xs text-muted">
                 O diagnóstico salvo na conta substitui o que está neste dispositivo.
               </span>
             </button>
@@ -103,7 +103,7 @@ export default function MigrationModal({ open, cloudProfile, onMigrate, onDiscar
           <button
             onClick={onCancel}
             disabled={submitting !== null}
-            className="w-full rounded-lg border border-gray-200 bg-white p-3 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-60 transition-colors dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800"
+            className="w-full rounded-lg border border-border bg-surface p-3 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-60 transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
           >
             Decidir depois
           </button>

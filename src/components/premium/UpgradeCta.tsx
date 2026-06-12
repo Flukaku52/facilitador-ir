@@ -20,18 +20,18 @@ export default function UpgradeCta({
   if (loading || isPremium) return null;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950 print:hidden">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-premium-200 bg-premium-50 p-4 dark:border-premium-800 dark:bg-premium-950 print:hidden">
       <div className="min-w-0">
-        <p className="font-semibold text-amber-900 dark:text-amber-100">
+        <p className="font-semibold text-premium-900 dark:text-premium-100">
           Destrave o passo a passo completo
         </p>
-        <p className="mt-0.5 text-sm text-amber-800 dark:text-amber-200">
+        <p className="mt-0.5 text-sm text-premium-800 dark:text-premium-200">
           {description}
         </p>
       </div>
       <Link
         href={upgradeHref(!!user)}
-        className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+        className="shrink-0 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
       >
         Conhecer o Premium
       </Link>

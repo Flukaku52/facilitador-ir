@@ -34,11 +34,11 @@ export default function PremiumPage() {
       <div>
         <Link
           href="/dashboard"
-          className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-sm text-primary-600 hover:underline dark:text-primary-400"
         >
           ← Painel
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="mt-4 text-2xl font-bold text-foreground">
           Preencha sua declaração sem medo de errar
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
@@ -51,16 +51,16 @@ export default function PremiumPage() {
         {INCLUDED.map((item) => (
           <div
             key={item.title}
-            className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+            className="flex items-start gap-3 rounded-xl border border-border bg-surface p-4"
           >
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700 text-sm font-bold dark:bg-green-950 dark:text-green-400">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-success-100 text-success-700 text-sm font-bold dark:bg-success-950 dark:text-success-400">
               ✓
             </span>
             <div>
-              <p className="font-semibold text-gray-900 dark:text-gray-100">
+              <p className="font-semibold text-foreground">
                 {item.title}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted">
                 {item.description}
               </p>
             </div>
@@ -68,33 +68,33 @@ export default function PremiumPage() {
         ))}
       </section>
 
-      <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-6 text-center space-y-4 dark:border-indigo-900 dark:bg-indigo-950">
+      <section className="rounded-xl border border-primary-200 bg-primary-50 p-6 text-center space-y-4 dark:border-primary-900 dark:bg-primary-950">
         <div>
-          <p className="text-4xl font-bold text-indigo-900 dark:text-indigo-100">
+          <p className="text-4xl font-bold text-primary-900 dark:text-primary-100">
             {PREMIUM_PRICE_LABEL}
           </p>
-          <p className="mt-1 text-sm text-indigo-800 dark:text-indigo-200">
+          <p className="mt-1 text-sm text-primary-800 dark:text-primary-200">
             Pagamento único, com acesso até o fim da temporada de declaração.
           </p>
-          <p className="mt-2 text-xs text-indigo-700 dark:text-indigo-300">
+          <p className="mt-2 text-xs text-primary-700 dark:text-primary-300">
             Pra comparar: um contador cobra a partir de R$ 150 só pra fazer uma
             declaração simples.
           </p>
         </div>
 
         {isPremium ? (
-          <p className="rounded-lg bg-green-100 px-4 py-3 text-sm font-medium text-green-800 dark:bg-green-950 dark:text-green-300">
+          <p className="rounded-lg bg-success-100 px-4 py-3 text-sm font-medium text-success-800 dark:bg-success-950 dark:text-success-300">
             ✓ Você já tem o acesso completo. Bons preenchimentos!
           </p>
         ) : loading ? (
           <div
-            className="h-12 animate-pulse rounded-lg bg-indigo-100 dark:bg-indigo-900"
+            className="h-12 animate-pulse rounded-lg bg-primary-100 dark:bg-primary-900"
             aria-busy="true"
           />
         ) : user ? (
           <a
             href={KIWIFY_CHECKOUT_URL}
-            className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600 sm:w-auto"
+            className="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600 sm:w-auto"
           >
             Quero o acesso completo
           </a>
@@ -102,11 +102,11 @@ export default function PremiumPage() {
           <div className="space-y-2">
             <Link
               href="/cadastro?next=/premium"
-              className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600 sm:w-auto"
             >
               Criar conta para continuar
             </Link>
-            <p className="text-xs text-indigo-700 dark:text-indigo-300">
+            <p className="text-xs text-primary-700 dark:text-primary-300">
               O acesso premium é liberado na sua conta — crie uma conta gratuita
               primeiro e você volta direto pra esta página.{" "}
               <Link href="/login?next=/premium" className="underline">
@@ -116,7 +116,7 @@ export default function PremiumPage() {
           </div>
         )}
 
-        <div className="space-y-1 text-sm text-indigo-800 dark:text-indigo-200">
+        <div className="space-y-1 text-sm text-primary-800 dark:text-primary-200">
           <p>Garantia de 7 dias: não gostou, devolvemos seu dinheiro.</p>
           <p>
             A liberação do acesso é feita manualmente em até algumas horas após

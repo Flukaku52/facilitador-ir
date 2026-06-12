@@ -13,7 +13,7 @@ export default function PdfLockedButton({
     <Link
       href={upgradeHref(isLoggedIn)}
       title="Disponível no acesso premium"
-      className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600"
+      className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-body hover:border-primary-300 transition-colors dark:hover:border-primary-600"
     >
       <span aria-hidden="true">🔒</span> Baixar PDF
     </Link>

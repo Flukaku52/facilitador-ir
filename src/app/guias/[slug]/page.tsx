@@ -33,16 +33,16 @@ export default async function GuideDetailPage({
       <div>
         <Link
           href="/guias"
-          className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-sm text-primary-600 hover:underline dark:text-primary-400"
         >
           ← Todos os guias
         </Link>
         <div className="mt-4 flex items-start justify-between gap-2">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             {guide.title}
           </h1>
           {guide.isAlert && (
-            <span className="shrink-0 rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700 dark:bg-red-950 dark:text-red-400">
+            <span className="shrink-0 rounded-full bg-danger-100 px-3 py-1 text-sm font-medium text-danger-700 dark:bg-danger-950 dark:text-danger-400">
               Requer atenção
             </span>
           )}
@@ -52,11 +52,11 @@ export default async function GuideDetailPage({
         </p>
       </div>
 
-      <section className="rounded-xl bg-indigo-50 border border-indigo-100 p-5 dark:bg-indigo-950 dark:border-indigo-900">
-        <h2 className="font-semibold text-indigo-900 mb-2 dark:text-indigo-100">
+      <section className="rounded-xl bg-primary-50 border border-primary-100 p-5 dark:bg-primary-950 dark:border-primary-900">
+        <h2 className="font-semibold text-primary-900 mb-2 dark:text-primary-100">
           O que isso significa, em resumo
         </h2>
-        <p className="text-indigo-800 text-sm leading-relaxed dark:text-indigo-200">
+        <p className="text-primary-800 text-sm leading-relaxed dark:text-primary-200">
           {guide.plainLanguageExplanation}
         </p>
       </section>
@@ -64,15 +64,15 @@ export default async function GuideDetailPage({
       <GuideGatedSections slug={guide.slug} />
 
       {guide.whenToCallAccountant && guide.whenToCallAccountant.length > 0 && (
-        <section className="rounded-lg border border-red-200 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950">
-          <h2 className="font-semibold text-red-900 mb-3 dark:text-red-100">
+        <section className="rounded-lg border border-danger-200 bg-danger-50 p-5 dark:border-danger-900 dark:bg-danger-950">
+          <h2 className="font-semibold text-danger-900 mb-3 dark:text-danger-100">
             Quando chamar um contador
           </h2>
           <ul className="space-y-2">
             {guide.whenToCallAccountant.map((item, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2 text-sm text-red-800 dark:text-red-200"
+                className="flex items-start gap-2 text-sm text-danger-800 dark:text-danger-200"
               >
                 <span className="mt-0.5 shrink-0">•</span>
                 {item}

@@ -19,7 +19,7 @@ export default function LandingCTA() {
       <div className="mt-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-sm hover:bg-indigo-700 active:bg-indigo-800 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-8 py-4 text-lg font-semibold text-white shadow-sm hover:bg-primary-700 active:bg-primary-800 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Continuar declaração →
         </Link>
@@ -32,7 +32,7 @@ export default function LandingCTA() {
       <div className="mt-8">
         <Link
           href="/questionario"
-          className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-sm hover:bg-indigo-700 active:bg-indigo-800 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-8 py-4 text-lg font-semibold text-white shadow-sm hover:bg-primary-700 active:bg-primary-800 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Começar diagnóstico gratuito
         </Link>

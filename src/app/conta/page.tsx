@@ -48,7 +48,7 @@ function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
 
   if (success) {
     return (
-      <div className="mt-3 flex items-center gap-3 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+      <div className="mt-3 flex items-center gap-3 rounded-lg bg-success-50 px-4 py-3 text-sm text-success-700 dark:bg-success-950 dark:text-success-300">
         <span>Senha alterada com sucesso.</span>
         <button onClick={onCancel} className="underline underline-offset-2">
           Fechar
@@ -62,7 +62,7 @@ function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
       <div>
         <label
           htmlFor="new-password"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          className="block text-sm font-medium text-body mb-1"
         >
           Nova senha
         </label>
@@ -74,14 +74,14 @@ function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           placeholder="Mínimo 8 caracteres"
         />
       </div>
       <div>
         <label
           htmlFor="confirm-password"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          className="block text-sm font-medium text-body mb-1"
         >
           Confirmar nova senha
         </label>
@@ -92,12 +92,12 @@ function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
           required
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           placeholder="Repita a nova senha"
         />
       </div>
       {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-danger-600 dark:text-danger-400">
           {error}
         </p>
       )}
@@ -105,7 +105,7 @@ function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-60 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           {submitting ? 'Salvando...' : 'Salvar nova senha'}
         </button>
@@ -150,11 +150,11 @@ function DeleteModal({
           role="dialog"
           aria-modal
           aria-labelledby="delete-title-1"
-          className="relative z-10 w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+          className="relative z-10 w-full max-w-sm rounded-xl border border-border bg-surface p-6 shadow-xl"
         >
           <h2
             id="delete-title-1"
-            className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+            className="text-lg font-semibold text-foreground"
           >
             Excluir conta?
           </h2>
@@ -165,7 +165,7 @@ function DeleteModal({
           <div className="mt-5 flex gap-3">
             <button
               onClick={() => setStep('confirm')}
-              className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+              className="flex-1 rounded-lg bg-danger-600 py-2 text-sm font-semibold text-white hover:bg-danger-700 transition-colors"
             >
               Continuar
             </button>
@@ -192,31 +192,31 @@ function DeleteModal({
         role="dialog"
         aria-modal
         aria-labelledby="delete-title-2"
-        className="relative z-10 w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+        className="relative z-10 w-full max-w-sm rounded-xl border border-border bg-surface p-6 shadow-xl"
       >
         <h2
           id="delete-title-2"
-          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+          className="text-lg font-semibold text-foreground"
         >
           Confirmação final
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Para confirmar, digite{' '}
-          <strong className="text-gray-900 dark:text-gray-100">excluir</strong> no campo abaixo.
+          <strong className="text-foreground">excluir</strong> no campo abaixo.
         </p>
         <input
           type="text"
           autoFocus
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
-          className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-danger-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           placeholder="excluir"
         />
         <div className="mt-4 flex gap-3">
           <button
             onClick={onConfirm}
             disabled={typed !== 'excluir' || deleting}
-            className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-40 transition-colors"
+            className="flex-1 rounded-lg bg-danger-600 py-2 text-sm font-semibold text-white hover:bg-danger-700 disabled:opacity-40 transition-colors"
           >
             {deleting ? 'Excluindo...' : 'Excluir minha conta'}
           </button>
@@ -279,31 +279,31 @@ export default function ContaPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Minha conta</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">Minha conta</h1>
 
       {/* User info */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900 space-y-4">
+      <div className="rounded-xl border border-border bg-surface p-6 shadow-sm space-y-4">
         <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">E-mail</p>
-          <p className="mt-0.5 font-medium text-gray-900 dark:text-gray-100">{user.email}</p>
+          <p className="text-xs text-muted">E-mail</p>
+          <p className="mt-0.5 font-medium text-foreground">{user.email}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Membro desde</p>
-          <p className="mt-0.5 font-medium text-gray-900 dark:text-gray-100">{memberSince}</p>
+          <p className="text-xs text-muted">Membro desde</p>
+          <p className="mt-0.5 font-medium text-foreground">{memberSince}</p>
         </div>
       </div>
 
       {/* Password */}
-      <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div className="mt-4 rounded-xl border border-border bg-surface p-6 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
-            <p className="font-medium text-gray-900 dark:text-gray-100">Senha</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Altere sua senha de acesso</p>
+            <p className="font-medium text-foreground">Senha</p>
+            <p className="text-sm text-muted">Altere sua senha de acesso</p>
           </div>
           {!showPasswordForm && (
             <button
               onClick={() => setShowPasswordForm(true)}
-              className="shrink-0 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-indigo-400 hover:text-indigo-600 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
+              className="shrink-0 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-body hover:border-primary-400 hover:text-primary-600 transition-colors dark:border-gray-600 dark:hover:border-primary-500 dark:hover:text-primary-400"
             >
               Alterar senha
             </button>
@@ -313,22 +313,22 @@ export default function ContaPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="mt-4 rounded-xl border border-red-200 bg-white p-6 shadow-sm dark:border-red-900 dark:bg-gray-900">
-        <p className="font-medium text-gray-900 dark:text-gray-100">Zona de risco</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      <div className="mt-4 rounded-xl border border-danger-200 bg-surface p-6 shadow-sm dark:border-danger-900">
+        <p className="font-medium text-foreground">Zona de risco</p>
+        <p className="text-sm text-muted mt-1">
           Ações irreversíveis. Proceda com cuidado.
         </p>
         {deleteError && (
           <p
             role="alert"
-            className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300"
+            className="mt-3 rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700 dark:bg-danger-950 dark:text-danger-300"
           >
             {deleteError}
           </p>
         )}
         <button
           onClick={() => setShowDeleteModal(true)}
-          className="mt-4 text-sm font-medium text-red-600 underline-offset-2 hover:underline hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+          className="mt-4 text-sm font-medium text-danger-600 underline-offset-2 hover:underline hover:text-danger-800 dark:text-danger-400 dark:hover:text-danger-300"
         >
           Excluir conta permanentemente
         </button>

@@ -105,7 +105,7 @@ function ChecklistContent() {
         </p>
         <Link
           href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Começar questionário
         </Link>
@@ -116,28 +116,28 @@ function ChecklistContent() {
   if (allItems.length === 0) {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center space-y-4">
-        <p className="text-lg text-gray-700 dark:text-gray-300">
+        <p className="text-lg text-body">
           Nenhum documento principal foi identificado com as respostas atuais.
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted">
           Se suas informações mudaram, você pode revisar suas respostas.
         </p>
         <div className="flex flex-col items-center gap-3 pt-2">
           <Link
             href="/questionario/editar"
-            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+            className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
           >
             Editar respostas
           </Link>
           <Link
             href="/relatorio"
-            className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+            className="text-sm text-primary-600 hover:underline dark:text-primary-400"
           >
             Ver relatório
           </Link>
           <button
             onClick={handleRestartQuestionnaire}
-            className="text-sm text-gray-500 hover:underline dark:text-gray-400"
+            className="text-sm text-muted hover:underline"
           >
             Refazer questionário
           </button>
@@ -160,8 +160,8 @@ function ChecklistContent() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Checklist de documentos</h1>
-        <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+        <h1 className="text-2xl font-bold text-foreground">Checklist de documentos</h1>
+        <Link href="/dashboard" className="text-sm text-primary-600 hover:underline dark:text-primary-400">
           ← Painel
         </Link>
       </div>
@@ -176,7 +176,7 @@ function ChecklistContent() {
           placeholder="Buscar documentos..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-600 dark:focus:border-indigo-500"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 pr-10 text-sm text-foreground placeholder-gray-400 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400 dark:placeholder-gray-600 dark:focus:border-primary-500"
           aria-label="Buscar documentos"
         />
         {searchQuery && (
@@ -204,7 +204,7 @@ function ChecklistContent() {
             onClick={() => setStatusFilter(value)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               statusFilter === value
-                ? 'bg-indigo-600 text-white dark:bg-indigo-500'
+                ? 'bg-primary-600 text-white dark:bg-primary-500'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
             }`}
           >
@@ -257,29 +257,29 @@ function ChecklistContent() {
 
       {/* Empty state when filters yield no results */}
       {filteredItems.length === 0 && (
-        <p className="text-gray-500 dark:text-gray-400 text-center py-8">{emptyMessage}</p>
+        <p className="text-muted text-center py-8">{emptyMessage}</p>
       )}
 
       {/* Completion banner — shown only when all required items are checked */}
       {progress === 100 && allItems.length > 0 && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-6 dark:border-green-900 dark:bg-green-950">
-          <h2 className="font-semibold text-green-900 mb-2 dark:text-green-100">
+        <div className="rounded-xl border border-success-200 bg-success-50 p-6 dark:border-success-900 dark:bg-success-950">
+          <h2 className="font-semibold text-success-900 mb-2 dark:text-success-100">
             Checklist completo!
           </h2>
-          <p className="text-sm text-green-800 dark:text-green-200 mb-4">
+          <p className="text-sm text-success-800 dark:text-success-200 mb-4">
             Todos os documentos obrigatórios estão reunidos. O próximo passo é revisar o
             relatório do seu perfil e conferir os pontos de atenção antes de preencher.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
               href="/relatorio"
-              className="inline-flex items-center justify-center rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors dark:bg-green-600 dark:hover:bg-green-700"
+              className="inline-flex items-center justify-center rounded-lg bg-success-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-success-800 transition-colors dark:bg-success-600 dark:hover:bg-success-700"
             >
               Ver relatório completo →
             </Link>
             <Link
               href="/guias"
-              className="inline-flex items-center justify-center rounded-lg border border-green-700 px-5 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-100 transition-colors dark:border-green-500 dark:text-green-400 dark:hover:bg-green-900/30"
+              className="inline-flex items-center justify-center rounded-lg border border-success-700 px-5 py-2.5 text-sm font-semibold text-success-700 hover:bg-success-100 transition-colors dark:border-success-500 dark:text-success-400 dark:hover:bg-success-900/30"
             >
               Ler guias de preenchimento
             </Link>

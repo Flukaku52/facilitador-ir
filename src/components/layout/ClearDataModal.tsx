@@ -16,7 +16,7 @@ export default function ClearDataModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-sm text-red-500 hover:text-red-700 hover:underline dark:text-red-400 dark:hover:text-red-300"
+        className="text-sm text-danger-500 hover:text-danger-700 hover:underline dark:text-danger-400 dark:hover:text-danger-300"
       >
         Limpar todos os dados
       </button>
@@ -28,11 +28,11 @@ export default function ClearDataModal() {
           aria-modal="true"
           aria-labelledby="clear-modal-title"
         >
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
-            <h2 id="clear-modal-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl">
+            <h2 id="clear-modal-title" className="text-lg font-semibold text-foreground">
               Limpar todos os dados?
             </h2>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-sm text-muted">
               Isso apaga seu diagnóstico, checklist e progresso salvos neste navegador. Essa ação não pode ser desfeita.
             </p>
             <div className="mt-6 flex gap-3">

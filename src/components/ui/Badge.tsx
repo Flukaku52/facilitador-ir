@@ -6,11 +6,11 @@ interface BadgeProps {
 }
 
 const colorClasses: Record<string, string> = {
-  green: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
-  yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300',
-  red: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
-  blue: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
-  gray: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  green: 'bg-success-100 text-success-800 dark:bg-success-950 dark:text-success-300',
+  yellow: 'bg-warning-100 text-warning-800 dark:bg-warning-950 dark:text-warning-300',
+  red: 'bg-danger-100 text-danger-800 dark:bg-danger-950 dark:text-danger-300',
+  blue: 'bg-info-100 text-info-800 dark:bg-info-950 dark:text-info-300',
+  gray: 'bg-gray-100 text-body dark:bg-gray-800',
 };
 
 export default function Badge({ label, color = 'gray' }: BadgeProps) {

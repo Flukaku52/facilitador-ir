@@ -5,16 +5,16 @@ export const metadata = { title: 'Política de Privacidade — IR Facilitador' }
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Política de Privacidade</h1>
+      <h1 className="text-2xl font-bold text-foreground">Política de Privacidade</h1>
 
-      <section className="space-y-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+      <section className="space-y-4 text-sm text-body leading-relaxed">
         <p>
           O IR Facilitador foi desenvolvido para ajudar pessoas físicas a organizar sua declaração de
           Imposto de Renda. Esta política explica como tratamos os dados que você fornece ao usar o
           aplicativo.
         </p>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Dois modos de uso</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Dois modos de uso</h2>
         <p>
           O IR Facilitador pode ser usado de duas formas:
         </p>
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           </li>
         </ul>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">O que coletamos</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">O que coletamos</h2>
         <p>
           O aplicativo coleta apenas as respostas do questionário de perfil tributário (ex.: se você
           tem imóvel, investimentos ou despesas médicas). <strong>Não coletamos nome, CPF, endereço,
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
           compartilhados ou no PDF gerado.
         </p>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Como usamos os dados</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Como usamos os dados</h2>
         <p>
           As respostas do questionário são usadas exclusivamente para gerar seu checklist
           personalizado, identificar guias de preenchimento aplicáveis e exibir alertas de risco
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
           compartilhamos com terceiros e não fazemos cruzamento com fontes externas.
         </p>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Compartilhamento de relatório</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Compartilhamento de relatório</h2>
         <p>
           Se você usar o botão &quot;Compartilhar link&quot;, as informações do seu perfil tributário e o
           estado do checklist (sem dados pessoais identificáveis) serão codificadas na URL.
@@ -61,7 +61,7 @@ export default function PrivacyPage() {
           <strong> não são incluídas no link</strong>. Compartilhe com cuidado.
         </p>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Seus direitos (LGPD)</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Seus direitos (LGPD)</h2>
         <p>
           Você pode solicitar a exclusão dos seus dados a qualquer momento:
         </p>
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
           </li>
         </ul>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Infraestrutura e segurança</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Infraestrutura e segurança</h2>
         <p>
           A autenticação e o armazenamento em nuvem utilizam a plataforma{' '}
           <strong>Supabase</strong>, com servidores na AWS. Os dados em trânsito são protegidos
@@ -84,14 +84,14 @@ export default function PrivacyPage() {
           (Row-Level Security), garantindo que cada usuário acesse apenas seus próprios dados.
         </p>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Retenção de dados</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Retenção de dados</h2>
         <p>
           Seus dados são mantidos enquanto sua conta estiver ativa. Ao excluir a conta, todos os
           dados associados são removidos permanentemente dos nossos servidores. Backups de
           infraestrutura podem reter cópias por até 30 dias após a exclusão.
         </p>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-6">Contato</h2>
+        <h2 className="text-base font-semibold text-foreground mt-6">Contato</h2>
         <p>
           Dúvidas sobre privacidade ou solicitações relacionadas à LGPD podem ser enviadas para
           o e-mail de contato do projeto ou via repositório público.

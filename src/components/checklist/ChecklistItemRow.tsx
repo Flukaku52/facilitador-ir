@@ -22,14 +22,14 @@ export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }:
   }
 
   return (
-    <li className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <li className="rounded-lg border border-border bg-surface">
       <div className="flex items-start gap-3 p-4">
         <input
           type="checkbox"
           id={item.id}
           checked={item.completed}
           onChange={() => onToggle(item.id)}
-          className="mt-0.5 h-4 w-4 shrink-0 rounded accent-indigo-600 cursor-pointer"
+          className="mt-0.5 h-4 w-4 shrink-0 rounded accent-primary-600 cursor-pointer"
           aria-label={item.title}
         />
         <label htmlFor={item.id} className="flex-1 cursor-pointer">
@@ -50,7 +50,7 @@ export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }:
         <div className="flex shrink-0 items-center gap-2">
           <button
             onClick={() => setShowNote((v) => !v)}
-            className="text-xs text-gray-400 hover:text-indigo-500 dark:text-gray-600 dark:hover:text-indigo-400"
+            className="text-xs text-gray-400 hover:text-primary-500 dark:text-gray-600 dark:hover:text-primary-400"
             aria-label={showNote ? 'Ocultar nota' : 'Adicionar nota'}
             title={note ? note : 'Adicionar nota'}
           >
@@ -59,7 +59,7 @@ export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }:
           {item.relatedGuideSlug && (
             <Link
               href={`/guias/${item.relatedGuideSlug}`}
-              className="shrink-0 text-xs text-indigo-500 hover:text-indigo-700 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
+              className="shrink-0 text-xs text-primary-500 hover:text-primary-700 hover:underline dark:text-primary-400 dark:hover:text-primary-300"
             >
               Ver guia
             </Link>
@@ -74,7 +74,7 @@ export default function ChecklistItemRow({ item, note, onToggle, onNoteChange }:
             onBlur={handleNoteBlur}
             placeholder="Sua nota pessoal sobre este documento..."
             rows={2}
-            className="mt-2 w-full resize-none rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 placeholder-gray-400 focus:border-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-600 dark:focus:border-indigo-600"
+            className="mt-2 w-full resize-none rounded-md border border-border bg-gray-50 px-3 py-2 text-xs text-body placeholder-gray-400 focus:border-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:bg-gray-800 dark:placeholder-gray-600 dark:focus:border-primary-600"
             aria-label={`Nota para ${item.title}`}
           />
           <p className="mt-1 text-xs text-gray-400 dark:text-gray-600">Nota salva localmente. Não aparece no link compartilhado.</p>

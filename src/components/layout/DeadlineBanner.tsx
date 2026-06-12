@@ -31,8 +31,8 @@ export default function DeadlineBanner() {
     <div
       className={`text-center py-2 text-sm font-medium ${
         urgent
-          ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300'
-          : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+          ? 'bg-danger-50 text-danger-700 dark:bg-danger-950 dark:text-danger-300'
+          : 'bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300'
       }`}
     >
       {label}

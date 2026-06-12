@@ -83,11 +83,11 @@ function LoginForm() {
 
   return (
     <div className="mx-auto max-w-sm px-4 py-16">
-      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+      <div className="rounded-xl border border-border bg-surface p-8 shadow-sm">
+        <h1 className="text-2xl font-bold text-foreground mb-1">
           Entrar
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <p className="text-sm text-muted mb-6">
           Acesse sua conta para sincronizar seus dados.
         </p>
 
@@ -95,7 +95,7 @@ function LoginForm() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-body mb-1"
             >
               E-mail
             </label>
@@ -106,7 +106,7 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:placeholder-gray-500"
               placeholder="seu@email.com"
             />
           </div>
@@ -114,7 +114,7 @@ function LoginForm() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-body mb-1"
             >
               Senha
             </label>
@@ -126,7 +126,7 @@ function LoginForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 pr-10 text-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:placeholder-gray-500"
                 placeholder="Sua senha"
               />
               <button
@@ -141,7 +141,7 @@ function LoginForm() {
             <div className="mt-1 text-right">
               <Link
                 href="/recuperar-senha"
-                className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200"
+                className="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
               >
                 Esqueci a senha
               </Link>
@@ -151,7 +151,7 @@ function LoginForm() {
           {error && (
             <p
               role="alert"
-              className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300"
+              className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700 dark:bg-danger-950 dark:text-danger-300"
             >
               {error}
             </p>
@@ -160,13 +160,13 @@ function LoginForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+            className="w-full rounded-lg bg-primary-600 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-60 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
           >
             {submitting ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        <div className="mt-6 space-y-2 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-6 space-y-2 text-center text-sm text-muted">
           <p>
             Não tem conta?{" "}
             <Link
@@ -175,7 +175,7 @@ function LoginForm() {
                   ? `/cadastro?next=${encodeURIComponent(next)}`
                   : "/cadastro"
               }
-              className="font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200"
+              className="font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
             >
               Criar conta
             </Link>
@@ -183,7 +183,7 @@ function LoginForm() {
           <p>
             <Link
               href="/questionario"
-              className="font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200"
+              className="font-medium text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
             >
               Continuar sem conta
             </Link>

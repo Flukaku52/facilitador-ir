@@ -64,7 +64,7 @@ export default function AskDialog({ profile }: AskDialogProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         aria-label="Tirar dúvida com assistente IA"
       >
         <span aria-hidden>🤖</span>
@@ -79,12 +79,12 @@ export default function AskDialog({ profile }: AskDialogProps) {
           aria-modal="true"
           aria-label="Assistente IR"
         >
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900 overflow-hidden">
+          <div className="w-full max-w-lg rounded-2xl bg-surface shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-800">
               <div>
-                <h2 className="font-semibold text-gray-900 dark:text-gray-100">Assistente IR</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Powered by Claude</p>
+                <h2 className="font-semibold text-foreground">Assistente IR</h2>
+                <p className="text-xs text-muted">Powered by Claude</p>
               </div>
               <button
                 onClick={handleClose}
@@ -97,7 +97,7 @@ export default function AskDialog({ profile }: AskDialogProps) {
 
             <div className="px-5 py-4 space-y-4">
               {/* Disclaimer */}
-              <p className="text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+              <p className="text-xs text-premium-800 dark:text-premium-200 bg-premium-50 dark:bg-premium-950 border border-premium-200 dark:border-premium-800 rounded-lg px-3 py-2">
                 ⚠️ Este assistente pode ajudar a interpretar suas respostas, mas pode cometer erros. Não use as respostas como orientação fiscal definitiva. Em caso de dúvida, confirme com um contador ou com a Receita Federal.
               </p>
 
@@ -111,17 +111,17 @@ export default function AskDialog({ profile }: AskDialogProps) {
                     placeholder="Ex: Preciso declarar o aluguel que recebi? Como funciona a isenção na venda de ações?"
                     rows={3}
                     maxLength={MAX_QUESTION_LENGTH}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 resize-none"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 resize-none"
                     disabled={loading}
                   />
-                  <span className={`absolute bottom-2 right-2 text-xs ${question.length >= MAX_QUESTION_LENGTH ? 'text-red-500' : 'text-gray-400'}`}>
+                  <span className={`absolute bottom-2 right-2 text-xs ${question.length >= MAX_QUESTION_LENGTH ? 'text-danger-500' : 'text-gray-400'}`}>
                     {question.length}/{MAX_QUESTION_LENGTH}
                   </span>
                 </div>
                 <button
                   type="submit"
                   disabled={loading || !question.trim()}
-                  className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                  className="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -136,16 +136,16 @@ export default function AskDialog({ profile }: AskDialogProps) {
 
               {/* Error */}
               {error && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+                <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700 dark:bg-danger-950 dark:text-danger-300">
                   {error}
                 </p>
               )}
 
               {/* Answer */}
               {answer && (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800 max-h-64 overflow-y-auto">
-                  <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-2">Resposta</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                <div className="rounded-lg border border-border bg-gray-50 px-4 py-3 dark:bg-gray-800 max-h-64 overflow-y-auto">
+                  <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 mb-2">Resposta</p>
+                  <p className="text-sm text-body leading-relaxed whitespace-pre-wrap">
                     {answer}
                   </p>
                 </div>

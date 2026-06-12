@@ -110,12 +110,12 @@ export default function QuestionnaireFlow() {
   if (!current) return null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* 5.2 — aria-live for screen readers */}
       <div aria-live="polite" className="sr-only">{liveText}</div>
       <div aria-live="polite" className="sr-only">{current.title}</div>
 
-      <div className="border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900">
+      <div className="border-b border-gray-200 bg-surface px-4 py-3 dark:border-gray-800">
         <div className="mx-auto max-w-xl">
           <ProgressBar value={progress} label={`Pergunta ${currentIndex + 1} de ${total}`} />
         </div>
@@ -124,23 +124,23 @@ export default function QuestionnaireFlow() {
       <div className="flex flex-1 flex-col items-center justify-center px-4 py-10">
         <div className="w-full max-w-xl">
           {currentIndex === 0 && (
-            <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
+            <div className="mb-4 rounded-lg border border-info-100 bg-info-50 px-4 py-3 text-sm text-info-800 dark:border-info-900 dark:bg-info-950 dark:text-info-300">
               Este app organiza suas informações e mostra documentos e alertas para facilitar sua declaração. Ele não envia a declaração para a Receita, não substitui contador e não garante cálculo definitivo de imposto.
             </div>
           )}
 
           {showSectionHeader && (
-            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-400">
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary-500 dark:text-primary-400">
               {current.sectionLabel}
             </p>
           )}
 
-          <div ref={questionCardRef} tabIndex={-1} className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-900 focus:outline-none">
-            <h2 className="text-xl font-semibold text-gray-900 leading-snug dark:text-gray-100">
+          <div ref={questionCardRef} tabIndex={-1} className="rounded-2xl border border-border bg-surface p-8 shadow-sm focus:outline-none">
+            <h2 className="text-xl font-semibold text-foreground leading-snug">
               {current.title}
             </h2>
             {current.description && (
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{current.description}</p>
+              <p className="mt-2 text-sm text-muted">{current.description}</p>
             )}
 
             <div className="mt-8 flex flex-col gap-3">
@@ -163,7 +163,7 @@ export default function QuestionnaireFlow() {
             <div className="mt-4 text-center">
               <button
                 onClick={goBack}
-                className="text-sm text-gray-500 hover:text-gray-700 underline dark:text-gray-400 dark:hover:text-gray-300"
+                className="text-sm text-muted hover:text-gray-700 underline dark:hover:text-gray-300"
               >
                 ← Voltar
                 <span className="ml-1 text-xs opacity-60 hidden sm:inline">[←]</span>

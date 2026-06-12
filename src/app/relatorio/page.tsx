@@ -204,15 +204,15 @@ function ReportContent() {
   if (isInvalidSharedLink) {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <p className="text-lg text-gray-700 dark:text-gray-300">
+        <p className="text-lg text-body">
           Este link de relatório parece inválido ou expirado.
         </p>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-muted">
           Peça para a pessoa gerar um novo link pelo relatório dela.
         </p>
         <Link
           href="/"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Ir para o início
         </Link>
@@ -226,13 +226,13 @@ function ReportContent() {
         <p className="text-lg text-gray-600 dark:text-gray-400">
           Você ainda não concluiu o diagnóstico.
         </p>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-muted">
           Responda as perguntas para gerar seu relatório personalizado com
           checklist, guias e alertas.
         </p>
         <Link
           href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Começar questionário
         </Link>
@@ -285,28 +285,28 @@ function ReportContent() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Relatório final
         </h1>
         <div className="flex flex-wrap items-center gap-2">
           {!isSharedView && (
             <Link
               href="/dashboard"
-              className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+              className="text-sm text-primary-600 hover:underline dark:text-primary-400"
             >
               ← Painel
             </Link>
           )}
           <button
             onClick={copyReport}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600"
+            className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-body hover:border-primary-300 transition-colors dark:hover:border-primary-600"
           >
             {copied ? "✓ Copiado!" : "Copiar texto"}
           </button>
           {!isSharedView && (
             <button
               onClick={() => setShowShareConfirm(true)}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600"
+              className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-body hover:border-primary-300 transition-colors dark:hover:border-primary-600"
             >
               {shared ? "✓ Link copiado!" : "Compartilhar link"}
             </button>
@@ -325,7 +325,7 @@ function ReportContent() {
           {user && isPremium ? (
             <button
               onClick={printReport}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600"
+              className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-body hover:border-primary-300 transition-colors dark:hover:border-primary-600"
             >
               Imprimir
             </button>
@@ -333,7 +333,7 @@ function ReportContent() {
             <Link
               href={upgradeHref(!!user)}
               title="Disponível no acesso premium"
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:border-indigo-300 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:border-indigo-600"
+              className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-body hover:border-primary-300 transition-colors dark:hover:border-primary-600"
             >
               <span aria-hidden="true">🔒</span> Imprimir
             </Link>
@@ -351,15 +351,15 @@ function ReportContent() {
           aria-modal="true"
           aria-labelledby="share-confirm-title"
         >
-          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl dark:bg-gray-900 overflow-hidden">
+          <div className="w-full max-w-sm rounded-2xl bg-surface shadow-2xl overflow-hidden">
             <div className="px-5 py-5 space-y-4">
               <h2
                 id="share-confirm-title"
-                className="font-semibold text-gray-900 dark:text-gray-100"
+                className="font-semibold text-foreground"
               >
                 Compartilhar relatório
               </h2>
-              <p className="text-sm text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+              <p className="text-sm text-premium-800 dark:text-premium-200 bg-premium-50 dark:bg-premium-950 border border-premium-200 dark:border-premium-800 rounded-lg px-3 py-2">
                 ⚠️ Este link pode conter informações pessoais do seu perfil
                 fiscal. Compartilhe apenas com pessoas de confiança.
               </p>
@@ -367,13 +367,13 @@ function ReportContent() {
                 <button
                   ref={cancelShareRef}
                   onClick={() => setShowShareConfirm(false)}
-                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-body hover:bg-gray-50 transition-colors dark:hover:bg-gray-800"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={confirmAndShare}
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                  className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
                 >
                   Gerar link mesmo assim
                 </button>
@@ -384,7 +384,7 @@ function ReportContent() {
       )}
 
       {isSharedView && (
-        <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 text-sm text-indigo-700 dark:bg-indigo-950 dark:border-indigo-900 dark:text-indigo-300 print:hidden">
+        <div className="rounded-lg bg-primary-50 border border-primary-100 p-3 text-sm text-primary-700 dark:bg-primary-950 dark:border-primary-900 dark:text-primary-300 print:hidden">
           Você está visualizando um relatório compartilhado. As marcações do
           checklist refletem o estado no momento do compartilhamento.
         </div>
@@ -393,24 +393,24 @@ function ReportContent() {
       <UpgradeCta description="Baixe o relatório em PDF e destrave o passo a passo completo dos guias." />
 
       <div ref={reportRef} className="space-y-6">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+        <div className="rounded-xl border border-border bg-surface p-6">
+          <p className="text-sm text-muted mb-1">
             Ano-base: {profile.taxYear}
           </p>
           <ComplexityBadge level={complexity} />
           {complexity === "complex" && (
-            <p className="mt-3 text-sm text-red-700 font-medium dark:text-red-400">
+            <p className="mt-3 text-sm text-danger-700 font-medium dark:text-danger-400">
               Declaração com pontos de maior risco. Recomendamos revisão com
               contador antes do envio.
             </p>
           )}
         </div>
 
-        <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">
+        <section className="rounded-xl border border-border bg-surface p-6">
+          <h2 className="font-semibold text-foreground mb-3">
             Perfil identificado
           </h2>
-          <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300 columns-2">
+          <ul className="space-y-1 text-sm text-body columns-2">
             {profile.income.hasCltIncome && <li>✓ Trabalho CLT</li>}
             {profile.income.hasPensionOrRetirement && (
               <li>✓ Aposentadoria/INSS</li>
@@ -444,8 +444,8 @@ function ReportContent() {
         </section>
 
         {checklist.length > 0 && (
-          <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
-            <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">
+          <section className="rounded-xl border border-border bg-surface p-6">
+            <h2 className="font-semibold text-foreground mb-3">
               Documentos ({checklist.filter((i) => i.completed).length}/
               {checklist.length} reunidos)
             </h2>
@@ -453,13 +453,13 @@ function ReportContent() {
               {checklist.map((item) => (
                 <li
                   key={item.id}
-                  className={`flex items-start gap-2 ${item.completed ? "text-gray-400 dark:text-gray-600" : "text-gray-700 dark:text-gray-300"}`}
+                  className={`flex items-start gap-2 ${item.completed ? "text-gray-400 dark:text-gray-600" : "text-body"}`}
                 >
                   <span
                     className={
                       item.completed
-                        ? "text-green-500"
-                        : "text-gray-500 dark:text-gray-400"
+                        ? "text-success-500"
+                        : "text-muted"
                     }
                   >
                     {item.completed ? "✓" : "○"}
@@ -474,12 +474,12 @@ function ReportContent() {
         )}
 
         {pending.length > 0 && (
-          <section className="rounded-xl border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900 dark:bg-yellow-950">
-            <h2 className="font-semibold text-yellow-900 mb-3 dark:text-yellow-100">
+          <section className="rounded-xl border border-warning-200 bg-warning-50 p-6 dark:border-warning-900 dark:bg-warning-950">
+            <h2 className="font-semibold text-warning-900 mb-3 dark:text-warning-100">
               Pendências ({pending.length} documento
               {pending.length !== 1 ? "s" : ""})
             </h2>
-            <ul className="space-y-1 text-sm text-yellow-800 dark:text-yellow-200">
+            <ul className="space-y-1 text-sm text-warning-800 dark:text-warning-200">
               {pending.map((item) => (
                 <li key={item.id} className="flex gap-2">
                   <span>•</span>
@@ -492,7 +492,7 @@ function ReportContent() {
 
         {alerts.length > 0 && (
           <section>
-            <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">
+            <h2 className="font-semibold text-foreground mb-3">
               Pontos de atenção
             </h2>
             <div className="space-y-3">
@@ -510,8 +510,8 @@ function ReportContent() {
         )}
 
         {guides.length > 0 && (
-          <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
-            <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">
+          <section className="rounded-xl border border-border bg-surface p-6">
+            <h2 className="font-semibold text-foreground mb-3">
               Guias recomendados
             </h2>
             <ul className="space-y-1.5 text-sm">
@@ -519,7 +519,7 @@ function ReportContent() {
                 <li key={guide.slug}>
                   <Link
                     href={`/guias/${guide.slug}`}
-                    className="text-indigo-600 hover:underline dark:text-indigo-400 print:text-gray-700"
+                    className="text-primary-600 hover:underline dark:text-primary-400 print:text-gray-700"
                   >
                     {guide.title}
                   </Link>
@@ -529,11 +529,11 @@ function ReportContent() {
           </section>
         )}
 
-        <section className="rounded-xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900 dark:bg-indigo-950">
-          <h2 className="font-semibold text-indigo-900 mb-3 dark:text-indigo-100">
+        <section className="rounded-xl border border-primary-100 bg-primary-50 p-6 dark:border-primary-900 dark:bg-primary-950">
+          <h2 className="font-semibold text-primary-900 mb-3 dark:text-primary-100">
             Próximos passos
           </h2>
-          <ol className="space-y-2 text-sm text-indigo-800 dark:text-indigo-200">
+          <ol className="space-y-2 text-sm text-primary-800 dark:text-primary-200">
             <li className="flex gap-2">
               <span className="font-bold">1.</span> Separe todos os documentos
               marcados no checklist.

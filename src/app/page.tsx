@@ -5,7 +5,7 @@ export default function LandingPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16">
       <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-gray-100">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Imposto de Renda sem linguagem complicada.
         </h1>
         <p className="mt-5 text-lg text-gray-600 dark:text-gray-400">
@@ -22,18 +22,18 @@ export default function LandingPage() {
           { step: '2', title: 'Receba seu checklist', desc: 'Lista personalizada dos documentos que você precisa separar.' },
           { step: '3', title: 'Leia os guias', desc: 'Instruções práticas para cada parte da sua declaração.' },
         ].map(({ step, title, desc }) => (
-          <div key={step} className="rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm dark:border-gray-700 dark:bg-gray-900">
-            <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold text-lg dark:bg-indigo-950 dark:text-indigo-400">
+          <div key={step} className="rounded-xl border border-border bg-surface p-6 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold text-lg dark:bg-primary-950 dark:text-primary-400">
               {step}
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{desc}</p>
+            <h3 className="font-semibold text-foreground">{title}</h3>
+            <p className="mt-1 text-sm text-muted">{desc}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-12 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-        <h2 className="font-semibold text-gray-900 mb-3 dark:text-gray-100">O app cobre situações como:</h2>
+      <div className="mt-12 rounded-xl border border-border bg-surface p-6 shadow-sm">
+        <h2 className="font-semibold text-foreground mb-3">O app cobre situações como:</h2>
         <ul className="grid gap-1 sm:grid-cols-2 text-sm text-gray-600 dark:text-gray-400">
           {[
             'Trabalho CLT e informe de rendimentos',
@@ -46,15 +46,15 @@ export default function LandingPage() {
             'Ações, FIIs e criptoativos',
           ].map((item) => (
             <li key={item} className="flex items-center gap-2">
-              <span className="text-indigo-600 dark:text-indigo-400">✓</span> {item}
+              <span className="text-primary-600 dark:text-primary-400">✓</span> {item}
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="mt-10 rounded-xl border border-amber-100 bg-amber-50 p-6 dark:border-amber-900 dark:bg-amber-950">
-        <h2 className="font-semibold text-amber-900 mb-3 dark:text-amber-100">O que o app não faz</h2>
-        <ul className="space-y-1.5 text-sm text-amber-800 dark:text-amber-200">
+      <div className="mt-10 rounded-xl border border-premium-100 bg-premium-50 p-6 dark:border-premium-900 dark:bg-premium-950">
+        <h2 className="font-semibold text-premium-900 mb-3 dark:text-premium-100">O que o app não faz</h2>
+        <ul className="space-y-1.5 text-sm text-premium-800 dark:text-premium-200">
           {[
             'Não envia sua declaração à Receita Federal.',
             'Não calcula imposto a pagar ou restituição exata.',
@@ -63,7 +63,7 @@ export default function LandingPage() {
             'Não garante isenção, deduções ou resultados fiscais específicos.',
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
-              <span className="mt-0.5 text-amber-500">✕</span>
+              <span className="mt-0.5 text-premium-500">✕</span>
               <span>{item}</span>
             </li>
           ))}

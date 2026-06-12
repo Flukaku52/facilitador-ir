@@ -41,17 +41,17 @@ function GuidesContent() {
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground">
             Guias de preenchimento
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-muted">
             {guides.length} guia{guides.length !== 1 ? "s" : ""} para o seu
             perfil
           </p>
         </div>
         <Link
           href="/dashboard"
-          className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-sm text-primary-600 hover:underline dark:text-primary-400"
         >
           ← Painel
         </Link>
@@ -61,7 +61,7 @@ function GuidesContent() {
 
       {regularGuides.length > 0 && (
         <section>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
             Guias aplicáveis
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -74,7 +74,7 @@ function GuidesContent() {
 
       {alertGuides.length > 0 && (
         <section>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-red-500 dark:text-red-400">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-danger-500 dark:text-danger-400">
             Situações que exigem atenção especial
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -87,7 +87,7 @@ function GuidesContent() {
 
       {guides.length === 0 && (
         <div className="text-center py-8 space-y-3">
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-muted">
             Nenhum guia aplicável foi identificado com as respostas atuais.
           </p>
           <p className="text-sm text-gray-400 dark:text-gray-600">
@@ -95,7 +95,7 @@ function GuidesContent() {
           </p>
           <Link
             href="/questionario/editar"
-            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+            className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
           >
             Editar respostas
           </Link>

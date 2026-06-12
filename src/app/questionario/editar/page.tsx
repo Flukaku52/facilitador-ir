@@ -79,7 +79,7 @@ function EditarRespostasContent() {
         </p>
         <Link
           href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Começar questionário
         </Link>
@@ -91,12 +91,12 @@ function EditarRespostasContent() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Editar respostas</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <h1 className="text-2xl font-bold text-foreground">Editar respostas</h1>
+          <p className="mt-1 text-sm text-muted">
             Altere suas respostas sem refazer o questionário inteiro.
           </p>
         </div>
-        <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+        <Link href="/dashboard" className="text-sm text-primary-600 hover:underline dark:text-primary-400">
           ← Painel
         </Link>
       </div>
@@ -104,7 +104,7 @@ function EditarRespostasContent() {
       <div className="space-y-8">
         {sections.map(({ label, questions }) => (
           <section key={label}>
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-400">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-primary-400">
               {label}
             </h2>
             <div className="space-y-2">
@@ -113,14 +113,14 @@ function EditarRespostasContent() {
                 return (
                   <div
                     key={q.id}
-                    className="flex items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
+                    className="flex items-start justify-between gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 leading-snug">
+                      <p className="text-sm font-medium text-foreground leading-snug">
                         {q.title}
                       </p>
                       {q.description && (
-                        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                        <p className="mt-0.5 text-xs text-muted line-clamp-1">
                           {q.description}
                         </p>
                       )}
@@ -131,8 +131,8 @@ function EditarRespostasContent() {
                         aria-pressed={current === true}
                         className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                           current === true
-                            ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                            : 'border border-gray-300 text-gray-600 hover:border-indigo-300 hover:text-indigo-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400'
+                            ? 'bg-primary-600 text-white dark:bg-primary-500'
+                            : 'border border-gray-300 text-gray-600 hover:border-primary-300 hover:text-primary-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400'
                         }`}
                       >
                         Sim
@@ -157,16 +157,16 @@ function EditarRespostasContent() {
         ))}
       </div>
 
-      <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
+      <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
         <Link
           href="/dashboard"
-          className="text-sm text-gray-500 hover:text-gray-700 underline dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-sm text-muted hover:text-gray-700 underline dark:hover:text-gray-200"
         >
           Cancelar
         </Link>
         <button
           onClick={handleSave}
-          className="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           {saved ? '✓ Salvo!' : 'Salvar alterações'}
         </button>

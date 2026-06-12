@@ -22,8 +22,8 @@ export default function GuestBanner() {
   if (loading || user || dismissed) return null;
 
   return (
-    <div className="flex items-start justify-between gap-3 rounded-lg border border-indigo-100 bg-indigo-50 px-4 py-3 dark:border-indigo-900 dark:bg-indigo-950">
-      <p className="text-sm text-indigo-800 dark:text-indigo-300">
+    <div className="flex items-start justify-between gap-3 rounded-lg border border-primary-100 bg-primary-50 px-4 py-3 dark:border-primary-900 dark:bg-primary-950">
+      <p className="text-sm text-primary-800 dark:text-primary-300">
         Você está usando como convidado. Seus dados ficam só neste navegador.{' '}
         <Link
           href="/cadastro"
@@ -35,7 +35,7 @@ export default function GuestBanner() {
       <button
         onClick={handleDismiss}
         aria-label="Fechar aviso de convidado"
-        className="shrink-0 rounded p-0.5 text-indigo-500 hover:bg-indigo-100 transition-colors dark:text-indigo-400 dark:hover:bg-indigo-900"
+        className="shrink-0 rounded p-0.5 text-primary-500 hover:bg-primary-100 transition-colors dark:text-primary-400 dark:hover:bg-primary-900"
       >
         <svg
           className="h-4 w-4"

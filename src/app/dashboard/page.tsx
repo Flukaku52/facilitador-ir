@@ -70,12 +70,12 @@ function DashboardContent() {
         <p className="text-lg text-gray-600 dark:text-gray-400">
           Você ainda não concluiu o diagnóstico.
         </p>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-muted">
           Responda as perguntas para ver seu painel e checklist de documentos.
         </p>
         <Link
           href="/questionario"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition-colors dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-white font-semibold hover:bg-primary-700 transition-colors dark:bg-primary-500 dark:hover:bg-primary-600"
         >
           Começar questionário
         </Link>
@@ -94,12 +94,12 @@ function DashboardContent() {
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
       <GuestBanner />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-foreground">
           Seu painel
         </h1>
         <Link
           href="/questionario/editar"
-          className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-sm text-primary-600 hover:underline dark:text-primary-400"
         >
           Editar respostas
         </Link>
@@ -107,11 +107,11 @@ function DashboardContent() {
 
       {isEmpty ? (
         <Card>
-          <p className="font-medium text-gray-700 dark:text-gray-300">
+          <p className="font-medium text-body">
             Seu diagnóstico foi concluído, mas nenhuma pendência principal foi
             identificada com as respostas atuais.
           </p>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-sm text-muted">
             Se suas informações mudaram, você pode revisar suas respostas ou
             refazer o questionário.
           </p>
@@ -119,7 +119,7 @@ function DashboardContent() {
       ) : (
         <>
           <Card>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            <p className="text-sm text-muted mb-2">
               Complexidade estimada
             </p>
             <ComplexityBadge level={complexity} />
@@ -137,26 +137,26 @@ function DashboardContent() {
 
           <div className="grid gap-4 sm:grid-cols-3">
             <Card className="text-center">
-              <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+              <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
                 {checklist.length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-muted mt-1">
                 documentos
               </p>
             </Card>
             <Card className="text-center">
-              <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+              <p className="text-3xl font-bold text-warning-600 dark:text-warning-400">
                 {pendingCount}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-muted mt-1">
                 pendentes
               </p>
             </Card>
             <Card className="text-center">
-              <p className="text-3xl font-bold text-red-600 dark:text-red-400">
+              <p className="text-3xl font-bold text-danger-600 dark:text-danger-400">
                 {alerts.length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-muted mt-1">
                 alertas
               </p>
             </Card>
@@ -164,12 +164,12 @@ function DashboardContent() {
 
           <Card>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="font-semibold text-foreground">
                 Progresso do checklist
               </h2>
               <Link
                 href="/checklist"
-                className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+                className="text-sm text-primary-600 hover:underline dark:text-primary-400"
               >
                 Ver checklist →
               </Link>
@@ -179,7 +179,7 @@ function DashboardContent() {
 
           {dangerAlerts.length > 0 && (
             <div className="space-y-3">
-              <h2 className="font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="font-semibold text-foreground">
                 Pontos críticos
               </h2>
               {dangerAlerts.map((alert) => (
@@ -197,48 +197,48 @@ function DashboardContent() {
           <>
             <Link
               href="/questionario/editar"
-              className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
+              className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm hover:border-primary-300 hover:shadow-md transition dark:hover:border-primary-600"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold dark:bg-primary-950 dark:text-primary-400">
                 ✏️
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-foreground">
                   Editar respostas
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted">
                   Revise o que você informou
                 </p>
               </div>
             </Link>
             <Link
               href="/relatorio"
-              className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
+              className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm hover:border-primary-300 hover:shadow-md transition dark:hover:border-primary-600"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold dark:bg-primary-950 dark:text-primary-400">
                 📋
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-foreground">
                   Ver relatório
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted">
                   Resumo do seu diagnóstico
                 </p>
               </div>
             </Link>
             <button
               onClick={handleRestartQuestionnaire}
-              className="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition sm:col-span-2 text-left dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
+              className="flex w-full items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm hover:border-primary-300 hover:shadow-md transition sm:col-span-2 text-left dark:hover:border-primary-600"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold dark:bg-primary-950 dark:text-primary-400">
                 ↩️
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-foreground">
                   Refazer questionário
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted">
                   Responder tudo novamente do início
                 </p>
               </div>
@@ -248,48 +248,48 @@ function DashboardContent() {
           <>
             <Link
               href="/checklist"
-              className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
+              className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm hover:border-primary-300 hover:shadow-md transition dark:hover:border-primary-600"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold dark:bg-primary-950 dark:text-primary-400">
                 ✓
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-foreground">
                   Checklist
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted">
                   Marque o que já separou
                 </p>
               </div>
             </Link>
             <Link
               href="/guias"
-              className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
+              className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm hover:border-primary-300 hover:shadow-md transition dark:hover:border-primary-600"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold dark:bg-primary-950 dark:text-primary-400">
                 📖
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-foreground">
                   Guias
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted">
                   Instruções para cada situação
                 </p>
               </div>
             </Link>
             <Link
               href="/relatorio"
-              className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-md transition sm:col-span-2 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-indigo-600"
+              className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm hover:border-primary-300 hover:shadow-md transition sm:col-span-2 dark:hover:border-primary-600"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold dark:bg-indigo-950 dark:text-indigo-400">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-bold dark:bg-primary-950 dark:text-primary-400">
                 📋
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-foreground">
                   Relatório final
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted">
                   Resumo completo para copiar ou imprimir
                 </p>
               </div>
